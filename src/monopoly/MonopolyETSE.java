@@ -1,5 +1,3 @@
-// Modifico main, esta se queda. Commit ahora sin abrir editor con -m...
-
 package monopoly;
 
 public class MonopolyETSE {
