@@ -1,4 +1,4 @@
-// Modifico main, esta se queda.
+// Modifico main, esta se queda. Commit ahora sin abrir editor con -m...
 
 package monopoly;
 
