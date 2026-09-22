@@ -19,6 +19,9 @@ public class Jugador {
 
     //Constructor vacío. Se usará para crear la banca.
     public Jugador() {
+        this.nombre = "Banca";
+        this.fortuna = Valor.FORTUNA_BANCA;
+        this.propiedades = new ArrayList<>();
     }
 
     /*Constructor principal. Requiere parámetros:

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class Casilla {
 
+    //IR HACIENDO GETTERS Y SETTERS DE LOS ATRIBUTOS PARA EMPEZAR
+
     //Atributos:
     private String nombre; //Nombre de la casilla
     private String tipo; //Tipo de casilla (Solar, Especial, Transporte, Servicios, Comunidad, Suerte y Impuesto).
@@ -56,7 +58,7 @@ public class Casilla {
     public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada) {
         return false;
     }
-
+    
     /*Método usado para comprar una casilla determinada. Parámetros:
     * - Jugador que solicita la compra de la casilla.
     * - Banca del monopoly (es el dueño de las casillas no compradas aún).*/
@@ -73,14 +75,14 @@ public class Casilla {
     /*Método para mostrar información sobre una casilla.
     * Devuelve una cadena con información específica de cada tipo de casilla.*/
     public String infoCasilla() {
-        return "infocasilla";
+        return "string";
     }
 
     /* Método para mostrar información de una casilla en venta.
      * Valor devuelto: texto con esa información.
      */
     public String casEnVenta() {
-        return "casaventa";
+        return "string";
     }
 
 }
