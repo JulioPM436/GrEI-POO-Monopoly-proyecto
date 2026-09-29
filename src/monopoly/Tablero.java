@@ -28,6 +28,7 @@ public class Tablero {
     
     //Méŧodo para insertar las casillas del lado norte.
     private void insertarLadoNorte() {
+
     }
 
     //Méŧodo para insertar las casillas del lado sur.
@@ -45,6 +46,8 @@ public class Tablero {
     //Para imprimir el tablero, modificamos el méŧodo toString().
     @Override
     public String toString() {
+        String taboleiro = "";
+
         return "string";
     }
     

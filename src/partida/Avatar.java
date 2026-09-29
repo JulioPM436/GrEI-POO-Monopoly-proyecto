@@ -3,6 +3,7 @@ package partida;
 import monopoly.*;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 
 public class Avatar {
@@ -22,6 +23,11 @@ public class Avatar {
     * avatares creados (usado para crear un ID distinto del de los demás avatares).
      */
     public Avatar(String tipo, Jugador jugador, Casilla lugar, ArrayList<Avatar> avCreados) {
+        // Se asignan los atributos del objeto.
+        this.tipo = tipo;
+        this.jugador = jugador;
+        this.lugar = lugar;
+        generarId(avCreados);
     }
 
     //A continuación, tenemos otros métodos útiles para el desarrollo del juego.
@@ -38,5 +44,29 @@ public class Avatar {
     * - Un arraylist de los avatares ya creados, con el objetivo de evitar que se generen dos ID iguales.
      */
     private void generarId(ArrayList<Avatar> avCreados) {
+        // Se inicializa variables auxiliares, un booleano y una string.
+        boolean repetido = false;
+        String id;
+        // Creamos un generador de números aleatorios.
+        Random r = new Random();
+        // Mientras que el ID generado siga estando repetido...
+        do {
+            // se generará otro aleatorio entre cero y 26 y se suma al ASCII de A, para crear una letra de A a Z
+            id = String.valueOf('A' + r.nextInt(26));
+            // se reincia el detector de repetición para que una sola coincidencia no haga bucle infinito.
+            repetido = false;
+            // Para cada una se itera sobre todos los IDs.
+            for (Avatar a : avCreados){
+                // Si alguno coincide, se marca coincidencia y sale del for (no hace falta iterar sobre el resto.
+                if (id.equals(a.id)){
+                    repetido = true;
+                    break;
+                }
+            }
+
+        } while (repetido);
+
+        // Si sale del bucle, es que el ID no está repetido. Se asigna el atributo.
+        this.id = id;
     }
 }
