@@ -20,7 +20,10 @@ public class Casilla {
     private ArrayList<Avatar> avatares; //Avatares que están situados en la casilla.
 
     //Constructores:
-    public Casilla() {
+    public Casilla(String nombre, int posicion) {
+        this.nombre = nombre;
+        this.posicion = posicion;
+        this.avatares = new ArrayList<>();
 
     }//Parámetros vacíos
 
