@@ -27,6 +27,7 @@ public class Avatar {
         this.tipo = tipo;
         this.jugador = jugador;
         this.lugar = lugar;
+        // La propia función asigna el ID del avatar.
         generarId(avCreados);
     }
 

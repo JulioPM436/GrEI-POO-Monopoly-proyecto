@@ -57,15 +57,15 @@ class Grupo {
      * Parámetro: jugador que se quiere evaluar.
      * Valor devuelto: true si es dueño de todas las casillas del grupo, false en otro caso.
      */
-    public boolean esDuenhoGrupo(Jugador jugador) {
-        if(this.miembros == null || this.miembros.isEmpty()){
-            return false;
-        }
-        for(int i=0; i< this.miembros.size(); i++){
-            Casilla casilla = this.miembros.get(i);
-            if(casilla.getPropietario() == null || !casilla.getPropietario().equals(jugador)) {
-                return false;
-        }
-        return true;
-    }
+    //public boolean esDuenhoGrupo(Jugador jugador) {
+    //    if(this.miembros == null || this.miembros.isEmpty()){
+    //        return false;
+    //    }
+    //    for(int i=0; i< this.miembros.size(); i++){
+    //        Casilla casilla = this.miembros.get(i);
+    //        if(casilla.getPropietario() == null || !casilla.getPropietario().equals(jugador)) {
+    //            return false;
+    //    }
+    //    return true;
+    //}
 }
