@@ -107,7 +107,20 @@ public class Tablero {
     public String toString() {
         String taboleiro = "";
 
-        return "string";
+        ArrayList<Casilla> norte = this.posiciones.get(2);
+        ArrayList<Casilla> este = this.posiciones.get(3);
+
+        for (int i = 0; i < norte.size(); i++) {
+            taboleiro += "| " + norte.get(i).toString() + " ";
+        }
+        taboleiro += "| " + este.get(0).toString() + " |\n";
+
+
+
+        return taboleiro;
+
+
+
     }
     
     //Méŧodo usado para buscar la casilla con el nombre pasado como argumento:
