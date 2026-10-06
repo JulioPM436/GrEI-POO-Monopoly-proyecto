@@ -160,6 +160,12 @@ public class Casilla {
                 }
 
 
+            case "Impuesto":
+
+            case "Especial":
+
+
+
 
 
 
