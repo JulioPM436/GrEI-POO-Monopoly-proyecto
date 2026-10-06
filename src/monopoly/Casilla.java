@@ -185,7 +185,7 @@ public class Casilla {
         if (this.avatares != null && !this.avatares.isEmpty()) {
             res += " &";
             for (Avatar a : this.avatares) {
-                res += a.getId();
+                res += a.getIdAvatar();
             }
         }
         return res;
