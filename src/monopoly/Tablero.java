@@ -106,14 +106,37 @@ public class Tablero {
     @Override
     public String toString() {
         String taboleiro = "";
-
+        ArrayList<Casilla> sur = this.posiciones.get(0);
+        ArrayList<Casilla> oeste = this.posiciones.get(1);
         ArrayList<Casilla> norte = this.posiciones.get(2);
         ArrayList<Casilla> este = this.posiciones.get(3);
 
+        String bordeCasilla = "|------------";
+        String lineaCompleta = "";
+        for (int i = 0; i < 11; i++) {
+            lineaCompleta += bordeCasilla;
+        }
+
+        String huecoCentral = "";
+        for (int i = 0; i < 9; i++) {
+            huecoCentral += "             "; // 13 espacios por cada casilla intermedia
+        }
+        lineaCompleta += "|\n";
+
+        //lado norte
+
+        taboleiro += lineaCompleta;
         for (int i = 0; i < norte.size(); i++) {
-            taboleiro += "| " + norte.get(i).toString() + " ";
+            taboleiro += "| " + casillaespacio(norte.get(i)) + " ";
         }
         taboleiro += "| " + este.get(0).toString() + " |\n";
+        taboleiro += lineaCompleta;
+
+        //intermedias
+        for(int i = 1; i<10; i++){
+            taboleiro += "| " + casillaespacio((oeste.get(10-i))) + huecoCentral + casillaespacio((este.get(i)));
+        }
+
 
 
 
@@ -121,6 +144,15 @@ public class Tablero {
 
 
 
+    }
+
+    // Método auxiliar para que todas las casillas ocupen exactamente 12 caracteres
+    private String casillaespacio (Casilla c) {
+        String texto = c.toString();
+        while (texto.length() < 12) {
+            texto += " ";
+        }
+        return texto;
     }
     
     //Méŧodo usado para buscar la casilla con el nombre pasado como argumento:
