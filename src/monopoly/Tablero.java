@@ -116,34 +116,42 @@ public class Tablero {
         for (int i = 0; i < 11; i++) {
             lineaCompleta += bordeCasilla;
         }
+        lineaCompleta += "|\n";
 
         String huecoCentral = "";
         for (int i = 0; i < 9; i++) {
             huecoCentral += "             "; // 13 espacios por cada casilla intermedia
         }
-        lineaCompleta += "|\n";
 
-        //lado norte
 
+        // LADO NORTE (Fila superior)
         taboleiro += lineaCompleta;
         for (int i = 0; i < norte.size(); i++) {
             taboleiro += "| " + casillaespacio(norte.get(i)) + " ";
         }
-        taboleiro += "| " + este.get(0).toString() + " |\n";
+        taboleiro += "| " + casillaespacio(este.get(0)) + " |\n";
         taboleiro += lineaCompleta;
 
-        //intermedias
-        for(int i = 1; i<10; i++){
-            taboleiro += "| " + casillaespacio((oeste.get(10-i))) + huecoCentral + casillaespacio((este.get(i)));
+
+        // FILAS INTERMEDIAS (Laterales Oeste y Este)
+        for (int i = 1; i < 10; i++) {
+            taboleiro += "| " + casillaespacio(oeste.get(10 - i)) + " "
+                    + huecoCentral
+                    + "| " + casillaespacio(este.get(i)) + " |\n";
         }
 
+        // LADO SUR (Fila inferior)
+        taboleiro += lineaCompleta;
 
+        taboleiro += "| " + casillaespacio(oeste.get(0)) + " ";
 
+        for (int i = sur.size() - 1; i >= 0; i--) {
+            taboleiro += "| " + casillaespacio(sur.get(i)) + " ";
+        }
+        taboleiro += "|\n";
+        taboleiro += lineaCompleta;
 
         return taboleiro;
-
-
-
     }
 
     // Método auxiliar para que todas las casillas ocupen exactamente 12 caracteres
