@@ -24,6 +24,7 @@ public class Casilla {
     public Casilla() {
     }//Parámetros vacíos
 
+
     /*Constructor para casillas tipo Solar, Servicios o Transporte:
      * Parámetros: nombre casilla, tipo (debe ser solar, serv. o transporte), posición en el tablero, valor y dueño.
      */
@@ -190,4 +191,10 @@ public class Casilla {
         }
         return res;
     }
+
+    public String nombreSinAvatares() {
+        return nombre;
+    }
 }
+
+

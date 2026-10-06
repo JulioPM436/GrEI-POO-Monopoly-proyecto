@@ -14,6 +14,18 @@ public class Avatar {
     private Jugador jugador; //Un jugador al que pertenece ese avatar.
     private Casilla lugar; //Los avatares se sitúan en casillas del tablero.
 
+    public Jugador getJugador() {
+        return jugador;
+    }
+
+    public Casilla getLugar() {
+        return lugar;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
     //Constructor vacío
     public Avatar() {
     }
@@ -38,6 +50,9 @@ public class Avatar {
     * EN ESTA VERSIÓN SUPONEMOS QUE valorTirada siemrpe es positivo.
      */
     public void moverAvatar(ArrayList<ArrayList<Casilla>> casillas, int valorTirada) {
+        int posicion = lugar.getPosicion();
+        posicion = (posicion + valorTirada)%40;
+        lugar = 
     }
     public String getIdAvatar(){
         return this.id;
