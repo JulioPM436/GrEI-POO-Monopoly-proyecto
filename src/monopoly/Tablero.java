@@ -183,6 +183,19 @@ public class Tablero {
     }
     
     //Méŧodo usado para buscar la casilla con el nombre pasado como argumento:
-    //public Casilla encontrar_casilla(String nombre){
-    //}
+    public Casilla encontrar_casilla(String nombre){
+
+        // Para encontrar la casilla buscada, iteramos primero sobre cada lado (posición): norte, sur, este y oeste.
+        //      las casillas creadas se guardan cada una en su lado, que es un ArrayList, y cada lado se guarda en
+        for (ArrayList<Casilla> lado : posiciones) {
+            // Y dentro de cada lado, sobre sus casillas.
+            for (Casilla c : lado) {
+                // Si coincide el nombre
+                if (c.getNombre().equals(nombre)) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
 }

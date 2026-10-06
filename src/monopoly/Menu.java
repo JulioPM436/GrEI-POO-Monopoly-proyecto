@@ -33,7 +33,13 @@ public class Menu {
 
     // Método para inciar una partida: crea los jugadores y avatares.
     private void iniciarPartida() {
+        Scanner sc = new Scanner(System.in);
 
+        while (true) {
+            System.out.print("Introduce un comando: ");
+            String linea = sc.nextLine();
+            analizarComando(linea);
+        }
     }
     
     /*Método que interpreta el comando introducido y toma la accion correspondiente.
@@ -43,13 +49,7 @@ public class Menu {
         String[] partes = comando.trim().split("\\s+");
         switch (partes[0]) {
             case "crear":
-                if (partes.length == 4){
-
-                }
-                else {
-                    System.out.println("ERROR: crear jugador <nombre> <avatar>");
-                }
-
+                crearJugador(partes);
 
             case "jugador":
 
@@ -74,7 +74,24 @@ public class Menu {
 
             case "ver":
 
+            case "salir_partida":
+                System.exit(0);
 
+        }
+    }
+
+
+
+    /*Método que realiza las acciones asociadas al comando 'crear jugador'.
+     * Parámetro: comando introducido
+     */
+    private void crearJugador(String[] partes) {
+        if (partes.length == 4){
+            int salida = tablero.encontrar_casilla("Salida");  /// TODO: getter que te de la posición? O vale tipo casilla?
+            Jugador j = new Jugador(partes[2],partes[3],);
+        }
+        else {
+            System.out.println("ERROR: crear jugador <nombre> <avatar>");
         }
     }
 
