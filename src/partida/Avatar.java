@@ -26,6 +26,10 @@ public class Avatar {
         return tipo;
     }
 
+    public String getId(){
+        return id;
+    }
+
     //Constructor vacío
     public Avatar() {
     }
@@ -49,10 +53,22 @@ public class Avatar {
     * - Un entero que indica el numero de casillas a moverse (será el valor sacado en la tirada de los dados).
     * EN ESTA VERSIÓN SUPONEMOS QUE valorTirada siemrpe es positivo.
      */
+
+    public void setLugar(Casilla lugar) {
+        this.lugar = lugar;
+    }
+
     public void moverAvatar(ArrayList<ArrayList<Casilla>> casillas, int valorTirada) {
+        if (this.lugar != null) {
+            this.lugar.eliminarAvatar(this);
+        }
         int posicion = lugar.getPosicion();
         posicion = (posicion + valorTirada)%40;
-        lugar = 
+
+        int lado = posicion / 10;
+        int indice = posicion % 10; //aqui se calcula en que lado y numero está
+        this.lugar = casillas.get(lado).get(indice);
+        this.lugar.anhadirAvatar(this);
     }
     public String getIdAvatar(){
         return this.id;

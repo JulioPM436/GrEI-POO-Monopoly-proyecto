@@ -149,6 +149,22 @@ public class Casilla {
      * Valor devuelto: true en caso de ser solvente (es decir, de cumplir las deudas), y false
      * en caso de no cumplirlas.*/
     public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada) {
+        switch (tipo) {
+
+            case "Solar":
+            case "Transporte":
+            case "Servicios":
+                // Sin dueño (es de la banca) o es suya: no paga nada
+                if (duenho == banca || duenho == actual) {
+                    return true;
+                }
+
+
+
+
+
+
+
         return false;
     }
 
@@ -192,9 +208,11 @@ public class Casilla {
         return res;
     }
 
-    public String nombreSinAvatares() {
+    /*public String nombreSinAvatares() {
         return nombre;
     }
+
+     */
 }
 
 

@@ -1,5 +1,7 @@
 package monopoly;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import partida.*;
 import java.util.Scanner;
@@ -47,37 +49,83 @@ public class Menu {
     */
     private void analizarComando(String comando) {
         String[] partes = comando.trim().split("\\s+");
+
         switch (partes[0]) {
             case "crear":
                 crearJugador(partes);
-            case "jugador":
+                break;
 
-            case "describir jugador":
-                descJugador(partes);
+            case "jugador":
+                turnoActual();
+                break;
 
             case "listar":
+                switch (partes[1]) {
+                    case "jugadores":
 
+                        break;
+                    case "avatares":
 
-            case "lanzar":
+                        break;
+                    case "enventa":
 
-
-            case "acabar":
-
-
-            case "salir":
-
+                        break;
+                }
+                break;
 
             case "describir":
+                switch (partes[1]) {
+                    case "jugador":
+                        descJugador(partes);
+                        break;
+                    case "avatar":
+                        descAvatar(partes[1]);
+                        break;
+                    default:
+                        descCasilla(partes[1]);
+                        break;
+                }
+                break;
 
+            case "lanzar":
+                if (partes.length == 2) {
+                    lanzarDados();
+                } else {
+                    ///////// TODO: Lanzar dados ese de con números 1 a 6 unidos de + como: 2+3? Como va eso???????
+                    lanzarDados();
+                }
+
+            case "acabar":
+                acabarTurno();
+                break;
+
+            case "salir":
+                if (partes[1].equals("carcel")) {
+                    salirCarcel();
+                }
+                break;
 
             case "comprar":
-
+//                if (partes.length != 2) {
+//                    System.out.println("Comando incorrecto. Formato: comprar <casilla>");
+//                    break;
+//                }
+                //comprarCasilla(partes);
+                break;
 
             case "ver":
+                //verTablero();
+                break;
+            case "comandos":
+                Path ruta = Paths.get(partes[1]);
+                break;
 
             case "salir_partida":
                 System.exit(0);
+                break;
 
+            default:
+                System.out.println("Comando erróneo.\n");
         }
     }
 
@@ -178,20 +226,42 @@ public class Menu {
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
     private void lanzarDados() {
-        if(tirado==true){
+        if (tirado) {
             System.out.println("El jugador ya ha tirado los dados");
             return;
         }
+        boolean sonDobles = false;
         //CARCEL/// COMPROBAR SI ESTÁ EN LA CARCEL Y SACA DOBLES O SI ES SU TERCER TURNO EN ELLA
+        Jugador jugador_actual = jugadores.get(turno);
+
         int tirada1 = dado1.hacerTirada();
         int tirada2 = dado2.hacerTirada();
 
         int suma = tirada1 + tirada2;
-        boolean sonDobles = (tirada1 == tirada2);
+        System.out.println("Tirada: " + tirada1 + " y " + tirada2 + " (Total: " + suma + ")");
+        sonDobles = (tirada1 == tirada2);
+        if (sonDobles) {
+            lanzamientos++;
+            if (lanzamientos == 3) {
+                System.out.println("Vas a la Cárcel.");
+                Casilla carcel = tablero.getPosiciones().get(1).get(0);
 
-        moverAvatar(tablero.getPosiciones(),)
+                jugador_actual.getAvatar().getLugar().eliminarAvatar(jugador_actual.getAvatar());
+                jugador_actual.getAvatar().setLugar(carcel);
+                carcel.anhadirAvatar(jugador_actual.getAvatar());
 
-
+                lanzamientos = 0;
+                tirado = true;
+                return;
+            }
+            tirado = false;
+        } else {
+            lanzamientos = 0;
+            tirado = true;
+            jugador_actual.getAvatar().moverAvatar(tablero.getPosiciones(), suma);
+        }
+        Casilla casilla_nueva = jugador_actual.getAvatar().getLugar();
+        if(casilla_nueva.)
 
     }
 
@@ -210,6 +280,8 @@ public class Menu {
     private void listarVenta() {
     }
 
+
+
     // Método que realiza las acciones asociadas al comando 'listar jugadores'.
     private void listarJugadores() {
         if (jugadores.isEmpty()){
@@ -220,18 +292,23 @@ public class Menu {
             Jugador j = jugadores.get(i);
 
             System.out.println("nombre: " + j.getNombre() + ",");
-            //System.out.println("avatar: " + j.getAvatar().getId() + ",");
+            System.out.println("avatar: " + j.getAvatar().getId() + ",");
             System.out.println("fortuna: " + (long) j.getFortuna() + ",");
-            System.out.println("propiedades: " + j.getPropiedades());
+            //System.out.println("propiedades: " + j.getPropiedades());
+            System.out.print("propiedades: [");
+            for (Casilla c : j.getPropiedades()) {
+                System.out.print(c.getNombre() + " ");
+            }
+            System.out.println("]");
             System.out.println("hipotecas: -");
             System.out.println("edificios: -");
-
-    }
+        }
     }
 
     // Método que realiza las acciones asociadas al comando 'listar avatares'.
     private void listarAvatares() {
     }
+
     //Método que indica de quién es el turno
     private void turnoActual(){
         if (this.jugadores.isEmpty()) {
