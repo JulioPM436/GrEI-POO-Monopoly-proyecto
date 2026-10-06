@@ -2,7 +2,7 @@ package monopoly;
 
 import java.util.ArrayList;
 import partida.*;
-
+import java.util.Scanner;
 public class Menu {
 
     //Atributos
@@ -17,15 +17,65 @@ public class Menu {
     private boolean tirado; //Booleano para comprobar si el jugador que tiene el turno ha tirado o no.
     private boolean solvente; //Booleano para comprobar si el jugador que tiene el turno es solvente, es decir, si ha pagado sus deudas.
 
+    //contructor
+    public Menu(){
+        this.banca = new Jugador();
+        this.tablero = new Tablero(banca);
+        this.dado1 = new Dado();
+        this.dado2 = new Dado();
+        this.lanzamientos = 0;
+        this.tirado = false;
+        this.solvente = true;
+        ArrayList<Jugador> jugadores = new ArrayList<>();
+        ArrayList<Avatar> avatares = new ArrayList<>();
+        iniciarPartida();
+    }
 
     // Método para inciar una partida: crea los jugadores y avatares.
     private void iniciarPartida() {
+
     }
     
     /*Método que interpreta el comando introducido y toma la accion correspondiente.
     * Parámetro: cadena de caracteres (el comando).
     */
     private void analizarComando(String comando) {
+        String[] partes = comando.trim().split("\\s+");
+        switch (partes[0]) {
+            case "crear":
+                if (partes.length == 4){
+
+                }
+                else {
+                    System.out.println("ERROR: crear jugador <nombre> <avatar>");
+                }
+
+
+            case "jugador":
+
+
+            case "listar":
+
+
+            case "lanzar":
+
+
+            case "acabar":
+
+
+            case "salir":
+
+
+            case "describir":
+
+
+            case "comprar":
+
+
+            case "ver":
+
+
+        }
     }
 
     /*Método que realiza las acciones asociadas al comando 'describir jugador'.

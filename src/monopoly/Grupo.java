@@ -17,7 +17,21 @@ class Grupo {
         this.colorGrupo = "";
         this.numCasillas = 0;
     }
+    public String getColorGrupo() {
+        return colorGrupo;
+    }
 
+    public void setColorGrupo(String colorGrupo) {
+        this.colorGrupo = colorGrupo;
+    }
+
+    public ArrayList<Casilla> getMiembros() {
+        return miembros;
+    }
+
+    public int getNumCasillas() {
+        return numCasillas;
+    }
     /*Constructor para cuando el grupo está formado por DOS CASILLAS:
      * Requiere como parámetros las dos casillas miembro y el color del grupo.
      */
@@ -27,6 +41,8 @@ class Grupo {
         this.miembros.add(cas2);
         this.colorGrupo = colorGrupo;
         this.numCasillas = 2;
+        cas1.setGrupo(this);
+        cas2.setGrupo(this);
     }
 
     /*Constructor para cuando el grupo está formado por TRES CASILLAS:
@@ -39,6 +55,10 @@ class Grupo {
         this.miembros.add(cas3);
         this.colorGrupo = colorGrupo;
         this.numCasillas = 3;
+
+        cas1.setGrupo(this);
+        cas2.setGrupo(this);
+        cas3.setGrupo(this);
     }
 
 

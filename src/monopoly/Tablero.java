@@ -45,6 +45,8 @@ public class Tablero {
         norte.add(new Casilla("Solar17", "Solar", 30, 2800000f, this.banca));
 
         this.posiciones.add(norte);
+        this.grupos.put("Rojo", new Grupo(norte.get(1), norte.get(3), norte.get(4), Valor.RED));
+        this.grupos.put("Blanco", new Grupo(norte.get(6), norte.get(7), norte.get(9), Valor.WHITE));
 
     }
 
@@ -64,6 +66,10 @@ public class Tablero {
         sur.add(new Casilla("Solar5", "Solar", 10, 1200000f, this.banca));
 
         this.posiciones.add(sur);
+
+        this.grupos.put("Negro", new Grupo(sur.get(1), sur.get(3), Valor.BLACK));
+
+        this.grupos.put("Cian", new Grupo(sur.get(6), sur.get(8), sur.get(9), Valor.CYAN));
     }
 
     //Méŧodo que inserta casillas del lado oeste.
@@ -82,6 +88,10 @@ public class Tablero {
         oeste.add(new Casilla("Solar11", "Solar", 20, 2200000f, this.banca));
 
         this.posiciones.add(oeste);
+        this.grupos.put("Morado", new Grupo(oeste.get(1), oeste.get(3), oeste.get(4), Valor.PURPLE));
+
+        // Grupo 4: Amarillo (Solar9, Solar10 y Solar11)
+        this.grupos.put("Amarillo", new Grupo(oeste.get(6), oeste.get(7), oeste.get(9), Valor.YELLOW));
     }
 
     //Méŧodo que inserta las casillas del lado este.
@@ -100,6 +110,9 @@ public class Tablero {
         este.add(new Casilla("Solar22", "Solar", 40, 4000000f, this.banca));
 
         this.posiciones.add(este);
+        this.grupos.put("Verde", new Grupo(este.get(1), este.get(2), este.get(4), Valor.GREEN));
+
+        this.grupos.put("Azul", new Grupo(este.get(7), este.get(9), Valor.BLUE));
     }
 
     //Para imprimir el tablero, modificamos el méŧodo toString().
@@ -111,7 +124,7 @@ public class Tablero {
         ArrayList<Casilla> norte = this.posiciones.get(2);
         ArrayList<Casilla> este = this.posiciones.get(3);
 
-        String bordeCasilla = "|------------";
+        String bordeCasilla = "|-----------";
         String lineaCompleta = "";
         for (int i = 0; i < 11; i++) {
             lineaCompleta += bordeCasilla;
@@ -119,34 +132,36 @@ public class Tablero {
         lineaCompleta += "|\n";
 
         String huecoCentral = "";
-        for (int i = 0; i < 9; i++) {
-            huecoCentral += "             "; // 13 espacios por cada casilla intermedia
-        }
+        for (int i = 0; i < 8; i++) {
+            huecoCentral += "            ";
+            // 12 espacios por cada casilla intermedia
+        }huecoCentral += "          ";
 
 
         // LADO NORTE (Fila superior)
         taboleiro += lineaCompleta;
         for (int i = 0; i < norte.size(); i++) {
-            taboleiro += "| " + casillaespacio(norte.get(i)) + " ";
+            taboleiro += "| " + casillaespacio(norte.get(i));
         }
-        taboleiro += "| " + casillaespacio(este.get(0)) + " |\n";
+        taboleiro += "| " + casillaespacio(este.get(0)) + "|\n";
         taboleiro += lineaCompleta;
 
 
         // FILAS INTERMEDIAS (Laterales Oeste y Este)
         for (int i = 1; i < 10; i++) {
-            taboleiro += "| " + casillaespacio(oeste.get(10 - i)) + " "
-                    + huecoCentral
-                    + "| " + casillaespacio(este.get(i)) + " |\n";
+            taboleiro += "| " + casillaespacio(oeste.get(10 - i)) + "| " + huecoCentral+ "| " + casillaespacio(este.get(i)) + "|\n";
+            if(i!=9){
+                taboleiro += "|-----------| " + huecoCentral + "|-----------|\n";
+            }
         }
 
         // LADO SUR (Fila inferior)
         taboleiro += lineaCompleta;
 
-        taboleiro += "| " + casillaespacio(oeste.get(0)) + " ";
+        taboleiro += "| " + casillaespacio(oeste.get(0)) ;
 
         for (int i = sur.size() - 1; i >= 0; i--) {
-            taboleiro += "| " + casillaespacio(sur.get(i)) + " ";
+            taboleiro += "| " + casillaespacio(sur.get(i));
         }
         taboleiro += "|\n";
         taboleiro += lineaCompleta;
@@ -154,13 +169,17 @@ public class Tablero {
         return taboleiro;
     }
 
-    // Método auxiliar para que todas las casillas ocupen exactamente 12 caracteres
+    // Método auxiliar para que todas las casillas ocupen exactamente 10 caracteres
     private String casillaespacio (Casilla c) {
         String texto = c.toString();
-        while (texto.length() < 12) {
+        while (texto.length() < 10) {
             texto += " ";
         }
+        if (c.getGrupo() != null) {
+            return c.getGrupo().getColorGrupo() + texto + Valor.RESET;
+        }
         return texto;
+
     }
     
     //Méŧodo usado para buscar la casilla con el nombre pasado como argumento:
