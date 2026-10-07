@@ -1,7 +1,8 @@
 package monopoly;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import partida.*;
 import java.util.Scanner;
@@ -117,7 +118,40 @@ public class Menu {
                 //verTablero();
                 break;
             case "comandos":
-                Path ruta = Paths.get(partes[1]);
+                if (partes.length != 2) {
+                    System.out.println("Comando erróneo. Formato: comandos <ruta>\n");
+                    break;
+                }
+                // En un try-catch, la parte try es un bloque de código que puede fallar, como por ejemplo abrir
+                //      un archivo y leerlo. "partes[1]" es la ruta al archivo. "new FileReader" abre ese archivo y crea
+                //      un objeto que puede leerlo. "new BufferedReader" recibe ese objeto y lo envuelve, añadiendo un búfer
+                //      para agilizar las lecturas, y el método readLine(), que junta caracteres hasta encontrar un cambio
+                //      de línea, entonces devuelve la línea entera.
+                // "BufferedReader lector" es la variable en la que se guarda el resultado, y así se puede usar "lector" para no
+                //      interactuar con FileReader directamente.
+                try (BufferedReader lector = new BufferedReader(new FileReader(partes[1]))) {
+                    String linea;
+                    // Mientras que lea líneas (no haya llegado al final del archivo),
+                    while ((linea = lector.readLine()) != null) {
+                        // a cada línea le saca los espacios en blanco que hayan al principio y al final,
+                        //      dejando los del medio.
+                        linea = linea.trim();
+                        // Si es una línea vacía, empieza por # o por //, la salta, porque o la línea no tiene nada o
+                        //      son comentarios.
+                        if (linea.isEmpty() || linea.startsWith("#") || linea.startsWith("//")) {
+                            continue;
+                        }
+                        // Si es un posible comando, lo imprime en pantalla para saber de qué es la salida.
+                        System.out.println("$> " + linea);
+                        // Llamada recursiva a analizarComando() para intentar ejecutar la línea.
+                        analizarComando(linea);
+                    } // Como se asume que lo de try puede fallar, se tiene el catch; un código que se lanza cuando falle
+                    //      el try. Si el archivo no pudiera leerse, saltaría esa excepción y dejaría de ejecutar más código.
+                    //   Imprime un mensaje de error.
+                } catch (IOException e) {
+                    System.out.println("ERROR: No se pudo leer el archivo: " + partes[1]);
+                }
+
                 break;
 
             case "salir_partida":
@@ -261,7 +295,9 @@ public class Menu {
             jugador_actual.getAvatar().moverAvatar(tablero.getPosiciones(), suma);
         }
         Casilla casilla_nueva = jugador_actual.getAvatar().getLugar();
-        if(casilla_nueva.)
+        //if(casilla_nueva){
+
+        //}
 
     }
 

@@ -149,76 +149,86 @@ public class Casilla {
      * Valor devuelto: true en caso de ser solvente (es decir, de cumplir las deudas), y false
      * en caso de no cumplirlas.*/
     public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada) {
+        float alquiler;
         switch (tipo) {
 
             case "Solar":
-            case "Transporte":
-            case "Servicios":
+
                 // Sin dueño (es de la banca) o es suya: no paga nada
                 if (duenho == banca || duenho == actual) {
                     return true;
                 }
 
+                alquiler = impuesto;
+                if (grupo.esDuenhoGrupo(duenho)) {
+                    alquiler = impuesto * 2;
+                }
 
-            case "Impuesto":
+                // ¿Puede pagar?
+                if (actual.getFortuna() < alquiler) {
+                    System.out.println(actual.getNombre() + " no puede pagar " + (long) alquiler
+                            + "€. Debe hipotecar alguna propiedad o declararse en bancarrota.");
+                    return false;
+                }
+                //Paga
+                actual.sumarFortuna(-alquiler);
+                actual.sumarGastos(alquiler);
+                duenho.sumarFortuna(alquiler);
+                System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a "
+                        + duenho.getNombre() + ".");
+                return true;
 
-            case "Especial":
-
-
-
-
-
-
-
-
-        return false;
-    }
-
-    /*Método usado para comprar una casilla determinada. Parámetros:
-     * - Jugador que solicita la compra de la casilla.
-     * - Banca del monopoly (es el dueño de las casillas no compradas aún).*/
-    public void comprarCasilla(Jugador solicitante, Jugador banca) {
-    }
-
-    /*Método para añadir valor a una casilla. Utilidad:
-     * - Sumar valor a la casilla de parking.
-     * - Sumar valor a las casillas de solar al no comprarlas tras cuatro vueltas de todos los jugadores.
-     * Este método toma como argumento la cantidad a añadir del valor de la casilla.*/
-    public void sumarValor(float suma) {
-        this.valor += suma;
-    }
-
-    /*Método para mostrar información sobre una casilla.
-     * Devuelve una cadena con información específica de cada tipo de casilla.*/
-    public String infoCasilla() {
-        return "string";
-    }
-
-    /* Método para mostrar información de una casilla en venta.
-     * Valor devuelto: texto con esa información.
-     */
-    public String casEnVenta() {
-        return "string";
-    }
+            case "Transporte":
 
 
-    @Override
-    public String toString() {
-        String res = this.nombre;
-        if (this.avatares != null && !this.avatares.isEmpty()) {
-            res += " &";
-            for (Avatar a : this.avatares) {
-                res += a.getIdAvatar();
-            }
+                return true;
         }
-        return res;
     }
+        /*Método usado para comprar una casilla determinada. Parámetros:
+         * - Jugador que solicita la compra de la casilla.
+         * - Banca del monopoly (es el dueño de las casillas no compradas aún).*/
+        public void comprarCasilla (Jugador solicitante, Jugador banca){
+        }
+
+        /*Método para añadir valor a una casilla. Utilidad:
+         * - Sumar valor a la casilla de parking.
+         * - Sumar valor a las casillas de solar al no comprarlas tras cuatro vueltas de todos los jugadores.
+         * Este método toma como argumento la cantidad a añadir del valor de la casilla.*/
+        public void sumarValor ( float suma){
+            this.valor += suma;
+        }
+
+        /*Método para mostrar información sobre una casilla.
+         * Devuelve una cadena con información específica de cada tipo de casilla.*/
+        public String infoCasilla () {
+            return "string";
+        }
+
+        /* Método para mostrar información de una casilla en venta.
+         * Valor devuelto: texto con esa información.
+         */
+        public String casEnVenta () {
+            return "string";
+        }
+
+
+        @Override
+        public String toString () {
+            String res = this.nombre;
+            if (this.avatares != null && !this.avatares.isEmpty()) {
+                res += " &";
+                for (Avatar a : this.avatares) {
+                    res += a.getIdAvatar();
+                }
+            }
+            return res;
+        }
 
     /*public String nombreSinAvatares() {
         return nombre;
     }
 
      */
-}
+    }
 
 

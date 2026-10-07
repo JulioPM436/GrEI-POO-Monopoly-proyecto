@@ -88,4 +88,20 @@ class Grupo {
     //    }
     //    return true;
     //}
+
+    public boolean esDuenhoGrupo(Jugador jugador) {
+        for (Casilla c : miembros) {
+            if (c.getDuenho() != jugador) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
+
+
+
+
 }
