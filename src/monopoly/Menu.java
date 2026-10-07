@@ -19,6 +19,7 @@ public class Menu {
     private Jugador banca; //El jugador banca.
     private boolean tirado; //Booleano para comprobar si el jugador que tiene el turno ha tirado o no.
     private boolean solvente; //Booleano para comprobar si el jugador que tiene el turno es solvente, es decir, si ha pagado sus deudas.
+    private Jugador jugador_actual = jugadores.get(turno);
 
     //contructor
     public Menu(){
@@ -259,14 +260,17 @@ public class Menu {
     }
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
-    private void lanzarDados() {
+    private void lanzarDados(String[] partes) {
         if (tirado) {
             System.out.println("El jugador ya ha tirado los dados");
             return;
         }
+        if(partes.length==3){
+            //TERMINAR ESTO PARA FORZAR LOS DADOS
+        }
         boolean sonDobles = false;
         //CARCEL/// COMPROBAR SI ESTÁ EN LA CARCEL Y SACA DOBLES O SI ES SU TERCER TURNO EN ELLA
-        Jugador jugador_actual = jugadores.get(turno);
+
 
         int tirada1 = dado1.hacerTirada();
         int tirada2 = dado2.hacerTirada();
@@ -274,15 +278,37 @@ public class Menu {
         int suma = tirada1 + tirada2;
         System.out.println("Tirada: " + tirada1 + " y " + tirada2 + " (Total: " + suma + ")");
         sonDobles = (tirada1 == tirada2);
+
+
+        //PRIMERA PARTE: SI EL JUGADOR ESTÁ EN LA CÁRCEL
+        if(jugador_actual.isEnCarcel()==true) {
+            if (sonDobles == true) {
+                System.out.println("Son dobles, sales de la cárcel");
+                jugador_actual.setEnCarcel(false);
+
+            } else {
+                jugador_actual.sumaTiradasCarcel(); //se usa esta función para sumar 1;
+                if (jugador_actual.getTiradasCarcel() == 3) {
+                    System.out.println("Tercer intento sin sacar dobles: pagas");
+                    jugador_actual.setEnCarcel(false);
+                    jugador_actual.setTiradasCarcel(0);
+                    jugador_actual.getAvatar().moverAvatar(tablero.getPosiciones(), suma);
+                } else {
+                    System.out.println("No son dobles, lamentablemente te quedas en la cárcel");
+                    tirado = true;
+                }
+
+            }
+            return;
+        }
+
+
+        //SEGUNDA PARTE: TIRO NORMALITO
         if (sonDobles) {
             lanzamientos++;
             if (lanzamientos == 3) {
                 System.out.println("Vas a la Cárcel.");
-                Casilla carcel = tablero.getPosiciones().get(1).get(0);
-
-                jugador_actual.getAvatar().getLugar().eliminarAvatar(jugador_actual.getAvatar());
-                jugador_actual.getAvatar().setLugar(carcel);
-                carcel.anhadirAvatar(jugador_actual.getAvatar());
+                jugador_actual.encarcelar(tablero.getPosiciones());
 
                 lanzamientos = 0;
                 tirado = true;
@@ -293,11 +319,11 @@ public class Menu {
             lanzamientos = 0;
             tirado = true;
             jugador_actual.getAvatar().moverAvatar(tablero.getPosiciones(), suma);
+            Casilla casillaActual = jugador_actual.getAvatar().getLugar();
+            casillaActual.evaluarCasilla(jugador_actual, banca, suma);
+            return;
         }
-        Casilla casilla_nueva = jugador_actual.getAvatar().getLugar();
-        //if(casilla_nueva){
 
-        //}
 
     }
 
@@ -305,6 +331,18 @@ public class Menu {
     * Parámetro: cadena de caracteres con el nombre de la casilla.
      */
     private void comprar(String nombre) {
+
+        if(!jugador_actual.getAvatar().getLugar().getNombre().equals(nombre)){
+            System.out.println("No se puede comprar está casilla");
+            return;
+        }
+        Casilla casilla_a_comprar = jugador_actual.getAvatar().getLugar();
+        if(casilla_a_comprar.getDuenho() != this.banca){
+            System.out.println("No puedes comprar esta casilla porque es de otro jugador");
+        }else{
+
+        }
+
     }
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'salir carcel'. 

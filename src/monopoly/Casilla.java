@@ -183,6 +183,7 @@ public class Casilla {
 
                 return true;
         }
+        return true;
     }
         /*Método usado para comprar una casilla determinada. Parámetros:
          * - Jugador que solicita la compra de la casilla.
