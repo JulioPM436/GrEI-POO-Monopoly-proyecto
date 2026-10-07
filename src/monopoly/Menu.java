@@ -332,13 +332,12 @@ public class Menu {
      */
     private void comprar(String nombre) {
 
-        if(!jugador_actual.getAvatar().getLugar().getNombre().equals(nombre)){
+        if(!jugador_actual.getAvatar().getLugar().getNombre().equalsIgnoreCase(nombre)){
             System.out.println("No se puede comprar está casilla");
             return;
         }
-        Casilla casilla_a_comprar = jugador_actual.getAvatar().getLugar();
 
-        casilla_a_comprar.comprarCasilla(jugador_actual,banca);
+        jugador_actual.getAvatar().getLugar().comprarCasilla(jugador_actual,banca);
 
 
     }
