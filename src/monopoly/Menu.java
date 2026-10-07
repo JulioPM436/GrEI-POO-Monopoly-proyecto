@@ -337,11 +337,9 @@ public class Menu {
             return;
         }
         Casilla casilla_a_comprar = jugador_actual.getAvatar().getLugar();
-        if(casilla_a_comprar.getDuenho() != this.banca){
-            System.out.println("No puedes comprar esta casilla porque es de otro jugador");
-        }else{
 
-        }
+        casilla_a_comprar.comprarCasilla(jugador_actual,banca);
+
 
     }
 

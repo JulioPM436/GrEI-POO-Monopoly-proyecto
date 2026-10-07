@@ -189,6 +189,26 @@ public class Casilla {
          * - Jugador que solicita la compra de la casilla.
          * - Banca del monopoly (es el dueño de las casillas no compradas aún).*/
         public void comprarCasilla (Jugador solicitante, Jugador banca){
+            if(this.getDuenho() != banca) {
+                System.out.println("No puedes comprar esta casilla porque es de otro jugador");
+                return;
+            }else if(solicitante.getFortuna()<this.getValor()){
+                System.out.println("No puedes comprar esta casilla porque no tienes saldo suficiente. |SALDO ACTUAL:" + solicitante.getFortuna());
+                return;
+            }if (!this.tipo.equals("Solar") && !this.tipo.equals("Servicio") && !this.tipo.equals("Transporte")) {
+                System.out.println("No puedes comprar este tipo de casilla.");
+                return;
+            }
+
+            solicitante.sumarFortuna(-this.valor);
+            solicitante.sumarGastos(this.valor);
+            banca.sumarFortuna(this.valor);
+
+            this.duenho = solicitante;
+            solicitante.anhadirPropiedad(this);
+
+            System.out.println("El jugador " + solicitante.getNombre() + " compra la casilla " + this.nombre + " por " + this.valor + "€.");
+
         }
 
         /*Método para añadir valor a una casilla. Utilidad:

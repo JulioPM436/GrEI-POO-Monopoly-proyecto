@@ -76,20 +76,34 @@ public class Jugador {
     //Otros métodos:
     //Método para añadir una propiedad al jugador. Como parámetro, la casilla a añadir.
     public void anhadirPropiedad(Casilla casilla) {
+        if (casilla == null) {
+            return;
+        }
+        if (!this.propiedades.contains(casilla)) {
+            this.propiedades.add(casilla);
+        }
     }
 
     //Método para eliminar una propiedad del arraylist de propiedades de jugador.
     public void eliminarPropiedad(Casilla casilla) {
+        if (casilla == null) {
+            return;
+        }
+        this.propiedades.remove(casilla);
     }
 
     //Método para añadir fortuna a un jugador
     //Como parámetro se pide el valor a añadir. Si hay que restar fortuna, se pasaría un valor negativo.
     public void sumarFortuna(float valor) {
+        this.fortuna += valor;
     }
 
     //Método para sumar gastos a un jugador.
     //Parámetro: valor a añadir a los gastos del jugador (será el precio de un solar, impuestos pagados...).
     public void sumarGastos(float valor) {
+        if (valor > 0) {
+            this.gastos += valor;
+        }
     }
 
     /*Método para establecer al jugador en la cárcel. 
