@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import partida.*;
+
+import java.util.Objects;
 import java.util.Scanner;
 public class Menu {
 
@@ -42,6 +44,7 @@ public class Menu {
     // Método para inciar una partida: crea los jugadores y avatares.
     private void iniciarPartida() {
         Scanner sc = new Scanner(System.in);
+        Tablero tablero = new Tablero(banca);
 
         while (true) {
             System.out.print("Introduce un comando: ");
@@ -117,14 +120,19 @@ public class Menu {
                 break;
 
             case "ver":
-                //verTablero();
+                System.out.println(tablero);
                 break;
             case "comandos":
                 procesarComandos(partes);
                 break;
 
-            case "salir_partida":
+            case "exit":
                 System.exit(0);
+                break;
+
+            case "clear":
+                System.out.print("\033[H\033[2J\033[3J");
+                System.out.flush();
                 break;
 
             default:
@@ -229,6 +237,10 @@ public class Menu {
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
     private void lanzarDados(String[] partes) {
+        if (!jugadores.isEmpty()) {
+            System.out.println("Aún no hay jugadores en la partida.\n");
+            return;
+        }
         if (tirado) {
             System.out.println("El jugador ya ha tirado los dados");
             return;
@@ -249,8 +261,8 @@ public class Menu {
 
 
         //PRIMERA PARTE: SI EL JUGADOR ESTÁ EN LA CÁRCEL
-        if(getJugadorActual().isEnCarcel()==true) {
-            if (sonDobles == true) {
+        if (Objects.requireNonNull(getJugadorActual()).isEnCarcel()) {
+            if (sonDobles) {
                 System.out.println("Son dobles, sales de la cárcel");
                 getJugadorActual().setEnCarcel(false);
 
@@ -265,7 +277,6 @@ public class Menu {
                     System.out.println("No son dobles, lamentablemente te quedas en la cárcel");
                     tirado = true;
                 }
-
             }
             return;
         }
@@ -333,8 +344,6 @@ public class Menu {
     // Método que realiza las acciones asociadas al comando 'listar enventa'.
     private void listarVenta() {
     }
-
-
 
     // Método que realiza las acciones asociadas al comando 'listar jugadores'.
     private void listarJugadores() {
