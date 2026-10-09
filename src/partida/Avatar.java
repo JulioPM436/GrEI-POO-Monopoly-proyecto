@@ -84,7 +84,7 @@ public class Avatar {
         // Mientras que el ID generado siga estando repetido...
         do {
             // se generará otro aleatorio entre cero y 26 y se suma al ASCII de A, para crear una letra de A a Z
-            id = String.valueOf('A' + r.nextInt(26));
+            id = String.valueOf((char) ('A' + r.nextInt(26)));
             // se reincia el detector de repetición para que una sola coincidencia no haga bucle infinito.
             repetido = false;
             // Para cada una se itera sobre todos los IDs.

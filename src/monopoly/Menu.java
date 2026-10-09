@@ -392,7 +392,7 @@ public class Menu {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
-        System.out.println("El turno actual es de: " + jugadores.get(turno).getNombre());
+        System.out.println("El turno actual es de: " + jugadores.get(turno).getNombre() + ", avatar: " + jugadores.get(turno).getAvatar().getId());
     }
     // Método que realiza las acciones asociadas al comando 'acabar turno'.
     private void acabarTurno(){
