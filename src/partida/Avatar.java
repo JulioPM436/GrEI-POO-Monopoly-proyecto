@@ -62,9 +62,7 @@ public class Avatar {
         if (this.lugar != null) {
             this.lugar.eliminarAvatar(this);
         }
-        int posicion = lugar.getPosicion();
-        posicion = (posicion + valorTirada)%40;
-
+        int posicion = (lugar.getPosicion() - 1 + valorTirada) % 40;
         int lado = posicion / 10;
         int indice = posicion % 10; //aqui se calcula en que lado y numero está
         this.lugar = casillas.get(lado).get(indice);

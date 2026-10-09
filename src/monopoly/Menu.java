@@ -299,13 +299,13 @@ public class Menu {
             tirado = false;
             getJugadorActual().getAvatar().moverAvatar(tablero.getPosiciones(), suma);
             Casilla casillaActual = getJugadorActual().getAvatar().getLugar();
-            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma);
+            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma, tablero.encontrar_casilla("Parking"));
         } else {
             lanzamientos = 0;
             tirado = true;
             getJugadorActual().getAvatar().moverAvatar(tablero.getPosiciones(), suma);
             Casilla casillaActual = getJugadorActual().getAvatar().getLugar();
-            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma);
+            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma, tablero.encontrar_casilla("Parking"));
         }
     }
 
@@ -314,7 +314,7 @@ public class Menu {
      */
     private void comprar(String nombre) {
 
-        if (!jugadores.isEmpty()) {
+        if (jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
@@ -331,7 +331,7 @@ public class Menu {
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'salir carcel'. 
     private void salirCarcel() {
-        if (!jugadores.isEmpty()) {
+        if (jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }

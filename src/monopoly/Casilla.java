@@ -148,7 +148,7 @@ public class Casilla {
      * - El valor de la tirada: para determinar impuesto a pagar en casillas de servicios.
      * Valor devuelto: true en caso de ser solvente (es decir, de cumplir las deudas), y false
      * en caso de no cumplirlas.*/
-    public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada) {
+    public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada, Casilla parking) {
         float alquiler;
         switch (tipo) {
 
@@ -218,7 +218,7 @@ public class Casilla {
                 parking.sumarValor(impuesto);
                 System.out.println("El jugador paga " + (long) impuesto + "€ que se depositan en el Parking.");
                 return true;
-            case "Especial":
+            case "especial":
                 if (nombre.equals("Parking")) {
                     actual.sumarFortuna(valor);
                     System.out.println("El jugador " + actual.getNombre() + " recibe " + (long) valor + "€.");
@@ -242,7 +242,7 @@ public class Casilla {
             }else if(solicitante.getFortuna()<this.getValor()){
                 System.out.println("No puedes comprar esta casilla porque no tienes saldo suficiente. |SALDO ACTUAL:" + solicitante.getFortuna());
                 return;
-            }if (!this.tipo.equals("Solar") && !this.tipo.equals("Servicio") && !this.tipo.equals("Transporte")) {
+            }if (!this.tipo.equals("Solar") && !this.tipo.equals("Servicios") && !this.tipo.equals("Transporte")) {
                 System.out.println("No puedes comprar este tipo de casilla.");
                 return;
             }
