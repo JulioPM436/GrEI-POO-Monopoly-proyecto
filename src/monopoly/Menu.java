@@ -68,6 +68,10 @@ public class Menu {
                 break;
 
             case "listar":
+                if (partes.length == 1) {
+                    System.out.println("ERROR: listar jugadores|avatares|enventa");
+                    break;
+                }
                 switch (partes[1]) {
                     case "jugadores":
                         listarJugadores();
@@ -78,10 +82,16 @@ public class Menu {
                     case "enventa":
                         listarVenta();
                         break;
+                    default:
+                        System.out.println("ERROR: listar jugadores|avatares|enventa");
                 }
                 break;
 
             case "describir":
+                if (partes.length == 1) {
+                    System.out.println("ERROR: describir jugador <nombre>|avatar <id>");
+                    break;
+                }
                 switch (partes[1]) {
                     case "jugador":
                         descJugador(partes);
@@ -146,13 +156,18 @@ public class Menu {
     private void crearJugador(String[] partes) {
         // Se comprueba que el formato del comando sea correcto, esto es, tiene 4 argumentos.
         if (partes.length == 4){
-            // Se busca cuál es la casilla de salida, todos los jugadores empiezan ahí.
-            Casilla salida = tablero.encontrar_casilla("Salida");
-            // Se crea el jugador como tal.
-            Jugador j = new Jugador(partes[2],partes[3],salida,avatares);
-            // Se guardan sus datos y su avatar en un arraylist para no perder su referencia.
-            jugadores.add(j);
-            avatares.add(j.getAvatar());
+            // Se impide crear más jugadores si ya hay 4.
+            if (jugadores.size() < 4) {
+                // Se busca cuál es la casilla de salida, todos los jugadores empiezan ahí.
+                Casilla salida = tablero.encontrar_casilla("Salida");
+                // Se crea el jugador como tal.
+                Jugador j = new Jugador(partes[2], partes[3], salida, avatares);
+                // Se guardan sus datos y su avatar en un arraylist para no perder su referencia.
+                jugadores.add(j);
+                avatares.add(j.getAvatar());
+            } else {
+                System.out.println("ERROR: No se pueden crear más de 4 jugadores.");
+            }
         }
         else {
             // Si no, se asume que el comando era erróneo y no hace nada.
@@ -166,7 +181,6 @@ public class Menu {
      */
     private void descJugador(String[] partes) {
         // Si la cantidad de parámetros introducidos es menor que 2, el comando no se introdujo correctamente.
-        /// TODO: SI SÓLO PROHIBE MENOR QUE DOS, PERMITIRÍA INFINITOS ARGUMENTOS. NO AFECTARÍAN AL COMANDO PERO NO ES ADECUADO???
         if (partes.length <= 2){
             System.out.println("No ha introducido el nombre del jugador\n");
             return;
@@ -179,19 +193,23 @@ public class Menu {
             return;
         }
         // Si existe, se imprimen por pantalla los atributos del jugador.
-        System.out.println("nombre: "+ j.getNombre());
-        System.out.println("avatar: "+ j.getAvatar().getId());
-        System.out.println("fortuna: "+ (long) j.getFortuna());
-        System.out.println("propiedades: ");
-        // Se itera sobre las propiedades del jugador imprimiendo su nombre.
-        for(Casilla elemento: j.getPropiedades()){
-            System.out.print("["+ elemento.getNombre() + "] ");
+        System.out.println("{");
+        System.out.println("  nombre: " + j.getNombre() + ",");
+        System.out.println("  avatar: " + j.getAvatar().getId() + ",");
+        System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
+        //System.out.println("propiedades: " + j.getPropiedades());
+        System.out.print("  propiedades: [");
+        for (Casilla c : j.getPropiedades()) {
+            System.out.print(c.getNombre() + " ");
         }
-        System.out.println();
+        System.out.println("  ]");
+        System.out.println("  hipotecas: -");
+        System.out.println("  edificios: -");
+        System.out.println("}");
     }
 
     // Método para buscar jugadores. Dada una string con el nombre del jugador, devuelve su objeto.
-    private Jugador buscarjugador(String nombre_jugador){
+    private Jugador buscarjugador(String nombre_jugador) {
         // Se itera sobre la lista de jugadores.
         for(Jugador jugador: jugadores){
             // Si la string coincide con el nombre de alguno, devuelve ese objeto.
@@ -218,7 +236,9 @@ public class Menu {
         System.out.println("jugador: "+ a.getJugador().getNombre());
 
     }
-    private Avatar buscarAvatar(String ID){
+
+    // Método que devuelve un objeto avatar según su ID.
+    private Avatar buscarAvatar(String ID) {
         for(Avatar avatar: avatares){
             if(avatar.getId().equals(ID)){
                 return avatar;
@@ -241,6 +261,9 @@ public class Menu {
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
     // Ya incluye el modo de tirada fija.
+
+    /// TODO:       Debería decir en texto las casillas que se mueve y a cuál va a parar, igual que en el guión?
+
     private void lanzarDados(String[] partes) {
         if (jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.\n");
@@ -383,18 +406,24 @@ public class Menu {
         }
         for (int i = 0; i < jugadores.size(); i++){
             Jugador j = jugadores.get(i);
-
-            System.out.println("nombre: " + j.getNombre() + ",");
-            System.out.println("avatar: " + j.getAvatar().getId() + ",");
-            System.out.println("fortuna: " + (long) j.getFortuna() + ",");
+            System.out.println("{");
+            System.out.println("  nombre: " + j.getNombre() + ",");
+            System.out.println("  avatar: " + j.getAvatar().getId() + ",");
+            System.out.println("  fortuna: " + (long) j.getFortuna() + "€,");
             //System.out.println("propiedades: " + j.getPropiedades());
-            System.out.print("propiedades: [");
+            System.out.print("  propiedades: [");
             for (Casilla c : j.getPropiedades()) {
                 System.out.print(c.getNombre() + " ");
             }
-            System.out.println("]");
-            System.out.println("hipotecas: -");
-            System.out.println("edificios: -");
+            System.out.println("  ]");
+            System.out.println("  hipotecas: -");
+            System.out.println("  edificios: -");
+            if (jugadores.size()-1 == i){
+                System.out.println("}");
+            } else {
+                System.out.println("},");
+            }
+
         }
     }
 
@@ -417,28 +446,30 @@ public class Menu {
     }
 
     //Método que indica de quién es el turno
-    private void turnoActual(){
+    private void turnoActual() {
         if (this.jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
-        System.out.println("El turno actual es de: " + jugadores.get(turno).getNombre() + ", avatar: " +
-                jugadores.get(turno).getAvatar().getId());
+        System.out.println("{");
+        System.out.println("  nombre: " + jugadores.get(turno).getNombre() + ",");
+        System.out.println("  avatar: " + jugadores.get(turno).getAvatar().getId());
+        System.out.println("}");
     }
     // Método que realiza las acciones asociadas al comando 'acabar turno'.
-    private void acabarTurno(){
+    private void acabarTurno() {
         if (jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.");
             return;
         }
         if(!tirado){
-            System.out.println("Aún tiene que tirar los dados");
+            System.out.println("Aún tiene que tirar los dados.");
             return;
         }
         turno = (turno + 1)% jugadores.size();
         tirado = false;
         lanzamientos = 0; //Ya está hecho en lanzarDados() pero bueno
-        System.out.println("Le toca a" + Objects.requireNonNull(getJugadorActual()).getNombre());
+        System.out.println("Le toca a " + Objects.requireNonNull(getJugadorActual()).getNombre());
     }
 
     // Método que procesa los comandos dentro de un archivo de texto.
@@ -477,5 +508,4 @@ public class Menu {
             System.out.println("ERROR: No se pudo leer el archivo: " + partes[1]);
         }
     }
-
 }

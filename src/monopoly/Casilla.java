@@ -269,11 +269,22 @@ public class Casilla {
         /*Método para mostrar información sobre una casilla.
          * Devuelve una cadena con información específica de cada tipo de casilla.*/
         public String infoCasilla() {
-            String info = "nombre: " + this.nombre + "\n" + "tipo: " + this.tipo + "\n";
+            String info = "{\n" + "  nombre: " + this.nombre + "\n" + "  tipo: " + this.tipo + "\n";
 
             if (this.duenho != null) {
-                info += "propietario: " + this.duenho.getNombre() + "\n" +"valor: " + this.valor + "€\n";
+                info += "  propietario: " + this.duenho.getNombre() + "\n" +"  valor: " + this.valor + "€\n";
             }
+
+            info += "  alquiler: " + Valor.SOLAR_ALQUILERES[this.posicion] + "€\n";
+            info += "  valor hotel: " + Valor.SOLAR_PRECIOS_HOTEL[this.posicion] + "€\n";
+            info += "  valor casa: " + Valor.SOLAR_PRECIOS_CASA[this.posicion] + "€\n";
+            info += "  valor piscina: " + Valor.SOLAR_PRECIOS_PISCINA[this.posicion] + "€\n";
+            info += "  valor pista de deporte: " + Valor.SOLAR_PRECIOS_PISTADEPORTE[this.posicion] + "€\n";
+            info += "  alquiler casa: " + Valor.SOLAR_ALQUILERES_CASA[this.posicion] + "€\n";
+            info += "  alquiler hotel: " + (long)Valor.SOLAR_ALQUILERES_HOTEL[this.posicion] + "€\n";
+            info += "  alquiler piscina: " + Valor.SOLAR_ALQUILERES_PISCINA[this.posicion] + "€\n";
+            info += "  alquiler pista de deporte: " + Valor.SOLAR_ALQUILERES_PISTADEPORTE[this.posicion] + "€\n" + "}";
+
 
             return info;
         }

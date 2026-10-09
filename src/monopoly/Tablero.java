@@ -79,7 +79,7 @@ public class Tablero {
     private void insertarLadoOeste() {
         ArrayList<Casilla> oeste = new ArrayList<>();
 
-        oeste.add(new Casilla("Cárcel", "especial", 11, this.banca));
+        oeste.add(new Casilla("Carcel", "especial", 11, this.banca));
         oeste.add(new Casilla("Solar6", "Solar", 12, 1400000f, this.banca));
         oeste.add(new Casilla("Serv1", "Servicios", 13, 500000f, this.banca));
         oeste.add(new Casilla("Solar7", "Solar", 14, 1400000f, this.banca));
