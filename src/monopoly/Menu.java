@@ -87,7 +87,7 @@ public class Menu {
                         descJugador(partes);
                         break;
                     case "avatar":
-                        descAvatar(partes[1]);
+                        descAvatar(partes[2]);
                         break;
                     default:
                         descCasilla(partes[1]);
@@ -181,7 +181,7 @@ public class Menu {
         // Si existe, se imprimen por pantalla los atributos del jugador.
         System.out.println("nombre: "+ j.getNombre());
         System.out.println("avatar: "+ j.getAvatar().getId());
-        System.out.println("fortuna: "+ j.getFortuna());
+        System.out.println("fortuna: "+ (long) j.getFortuna());
         System.out.println("propiedades: ");
         // Se itera sobre las propiedades del jugador imprimiendo su nombre.
         for(Casilla elemento: j.getPropiedades()){

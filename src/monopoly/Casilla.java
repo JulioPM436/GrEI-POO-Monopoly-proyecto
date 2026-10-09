@@ -215,7 +215,7 @@ public class Casilla {
                 }
                 actual.sumarFortuna(-impuesto);
                 actual.sumarGastos(impuesto);
-                parking.sumarValor(impuesto);
+                //parking.sumarValor(impuesto);
                 System.out.println("El jugador paga " + (long) impuesto + "€ que se depositan en el Parking.");
                 return true;
             case "especial":
