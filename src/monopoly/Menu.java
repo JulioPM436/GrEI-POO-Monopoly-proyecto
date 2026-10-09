@@ -247,10 +247,10 @@ public class Menu {
         }
         int tirada1;
         int tirada2;
-        if(partes.length==3){
+        if (partes.length==3) {
             tirada1 = partes[2].charAt(0) - '0';
             tirada2 = partes[2].charAt(2) - '0';
-        }else{
+        } else {
             tirada1 = dado1.hacerTirada();
             tirada2 = dado2.hacerTirada();
         }
@@ -280,8 +280,6 @@ public class Menu {
             }
             return;
         }
-
-
         //SEGUNDA PARTE: TIRO NORMALITO
         if (sonDobles) {
             lanzamientos++;
@@ -302,8 +300,18 @@ public class Menu {
             casillaActual.evaluarCasilla(getJugadorActual(), banca, suma);
             return;
         }
+    }
 
-
+    private void lanzarDados(int valor1, int valor2) {
+        /// TODO: Esto es llamado desde el caseswittch del menu, ya pasa la string de partes separada.
+        if (!jugadores.isEmpty()) {
+            System.out.println("Aún no hay jugadores en la partida.\n");
+            return;
+        }
+        if (tirado) {
+            System.out.println("El jugador ya ha tirado los dados");
+            return;
+        }
     }
 
     /*Método que ejecuta todas las acciones realizadas con el comando 'comprar nombre_casilla'.
