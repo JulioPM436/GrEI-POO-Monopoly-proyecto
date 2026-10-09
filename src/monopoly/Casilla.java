@@ -221,8 +221,14 @@ public class Casilla {
 
         /*Método para mostrar información sobre una casilla.
          * Devuelve una cadena con información específica de cada tipo de casilla.*/
-        public String infoCasilla () {
-            return "string";
+        public String infoCasilla() {
+            String info = "nombre: " + this.nombre + "\n" + "tipo: " + this.tipo + "\n";
+
+            if (this.duenho != null) {
+                info += "propietario: " + this.duenho.getNombre() + "\n" +"valor: " + this.valor + "€\n";
+            }
+
+            return info;
         }
 
         /* Método para mostrar información de una casilla en venta.
@@ -239,7 +245,7 @@ public class Casilla {
             if (this.avatares != null && !this.avatares.isEmpty()) {
                 res += " &";
                 for (Avatar a : this.avatares) {
-                    res += a.getIdAvatar();
+                    res += a.getId();
                 }
             }
             return res;
