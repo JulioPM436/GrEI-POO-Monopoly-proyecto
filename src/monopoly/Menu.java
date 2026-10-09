@@ -20,7 +20,7 @@ public class Menu {
     private Dado dado2;
     private Jugador banca; //El jugador banca.
     private boolean tirado; //Booleano para comprobar si el jugador que tiene el turno ha tirado o no.
-    private boolean solvente; //Booleano para comprobar si el jugador que tiene el turno es solvente, es decir, si ha pagado sus deudas.
+    private boolean solvente; //Booleano para comprobar si el jugador que tiene el turno ha pagado sus deudas.
 
     //contructor
     public Menu(){
@@ -392,7 +392,8 @@ public class Menu {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
-        System.out.println("El turno actual es de: " + jugadores.get(turno).getNombre() + ", avatar: " + jugadores.get(turno).getAvatar().getId());
+        System.out.println("El turno actual es de: " + jugadores.get(turno).getNombre() + ", avatar: " +
+                jugadores.get(turno).getAvatar().getId());
     }
     // Método que realiza las acciones asociadas al comando 'acabar turno'.
     private void acabarTurno(){
