@@ -282,7 +282,14 @@ public class Casilla {
          * Valor devuelto: texto con esa información.
          */
         public String casEnVenta () {
-            return "string";
+
+            String info = "{\n";
+            info += "  nombre: " + this.nombre + ",\n";
+            info += "  tipo: " + this.tipo + ",\n";
+            info += "  valor: " + (long) this.valor + "\n";
+            info += "}";
+            return info;
+
         }
 
 
