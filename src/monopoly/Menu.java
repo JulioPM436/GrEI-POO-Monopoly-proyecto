@@ -99,7 +99,6 @@ public class Menu {
                 lanzarDados(partes);
                 break;
 
-
             case "acabar":
                 acabarTurno();
                 break;
@@ -241,6 +240,7 @@ public class Menu {
     }
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
+    // Ya incluye el modo de tirada fija.
     private void lanzarDados(String[] partes) {
         if (jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.\n");
@@ -263,7 +263,6 @@ public class Menu {
         int suma = tirada1 + tirada2;
         System.out.println("Tirada: " + tirada1 + " y " + tirada2 + " (Total: " + suma + ")");
         sonDobles = (tirada1 == tirada2);
-
 
         //PRIMERA PARTE: SI EL JUGADOR ESTÁ EN LA CÁRCEL
         if (Objects.requireNonNull(getJugadorActual()).isEnCarcel()) {
@@ -310,24 +309,17 @@ public class Menu {
         }
     }
 
-    private void lanzarDados(int valor1, int valor2) {
-        /// TODO: Esto es llamado desde el caseswittch del menu, ya pasa la string de partes separada.
-        if (!jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
-            return;
-        }
-        if (tirado) {
-            System.out.println("El jugador ya ha tirado los dados");
-            return;
-        }
-    }
-
     /*Método que ejecuta todas las acciones realizadas con el comando 'comprar nombre_casilla'.
     * Parámetro: cadena de caracteres con el nombre de la casilla.
      */
     private void comprar(String nombre) {
 
-        if(!getJugadorActual().getAvatar().getLugar().getNombre().equalsIgnoreCase(nombre)){
+        if (!jugadores.isEmpty()) {
+            System.out.println("Aún no hay jugadores en la partida.\n");
+            return;
+        }
+
+        if (!Objects.requireNonNull(getJugadorActual()).getAvatar().getLugar().getNombre().equalsIgnoreCase(nombre)) {
             System.out.println("No se puede comprar está casilla");
             return;
         }
@@ -344,12 +336,12 @@ public class Menu {
             return;
         }
 
-        if(!Objects.requireNonNull(getJugadorActual()).isEnCarcel()){
+        if (!Objects.requireNonNull(getJugadorActual()).isEnCarcel()) {
             System.out.println("El jugador actual no está en la cárcel");
             return;
         }
         float fianza = 500000f;
-        if(getJugadorActual().getFortuna() < fianza){
+        if (getJugadorActual().getFortuna() < fianza) {
             System.out.println("El jugador no tiene dinero suficiente para salir de la cárcel");
             return;
         }
@@ -364,6 +356,7 @@ public class Menu {
 
     // Método que realiza las acciones asociadas al comando 'listar enventa'.
     private void listarVenta() {
+
     }
 
     // Método que realiza las acciones asociadas al comando 'listar jugadores'.
@@ -414,7 +407,7 @@ public class Menu {
         turno = (turno + 1)% jugadores.size();
         tirado = false;
         lanzamientos = 0; //Ya está hecho en lanzarDados() pero bueno
-        System.out.println("Le toca a" + getJugadorActual().getNombre());
+        System.out.println("Le toca a" + Objects.requireNonNull(getJugadorActual()).getNombre());
     }
 
     // Método que procesa los comandos dentro de un archivo de texto.
