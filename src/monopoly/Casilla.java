@@ -274,6 +274,22 @@ public class Casilla {
             if (this.duenho != null) {
                 info += "  propietario: " + this.duenho.getNombre() + "\n" +"  valor: " + this.valor + "€\n";
             }
+            if (this.getNombre().equals("Caja") || this.getNombre().equals("IrCarcel") || this.getNombre().equals("Suerte")) {
+                info = "No se puede describir la casilla " + this.getNombre() + "\n";
+                return info;
+            }
+            if (this.tipo.equals("impuesto")) {
+                info = "{\n" + "  tipo: " + this.tipo + "\n" + "  a pagar: " + Valor.IMPUESTOS + "\n" + "}";
+                return info;
+            }
+
+            if (this.getNombre().equals("Parking")) {
+                info = "{\n" + "  bote: " + this.valor + "\n" + "  jugadores: [" + this.valor + "]\n" + "}";
+                return info;
+            }
+            if (this.tipo.equals("Servicios")) {
+
+            }
 
             info += "  alquiler: " + Valor.SOLAR_ALQUILERES[this.posicion] + "€\n";
             info += "  valor hotel: " + Valor.SOLAR_PRECIOS_HOTEL[this.posicion] + "€\n";
