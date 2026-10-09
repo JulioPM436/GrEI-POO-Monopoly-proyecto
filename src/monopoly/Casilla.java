@@ -148,7 +148,7 @@ public class Casilla {
      * - El valor de la tirada: para determinar impuesto a pagar en casillas de servicios.
      * Valor devuelto: true en caso de ser solvente (es decir, de cumplir las deudas), y false
      * en caso de no cumplirlas.*/
-    public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada) {
+    public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada, Casilla parking) {
         float alquiler;
         switch (tipo) {
 
@@ -179,12 +179,59 @@ public class Casilla {
                 return true;
 
             case "Transporte":
+                if (duenho == banca || duenho == actual) {
+                    return true;
+                }
+                alquiler = 250000;
+                if (actual.getFortuna() < alquiler) {
+                    System.out.println(actual.getNombre() + " no puede pagar " + (long) alquiler + "€. Debe hipotecar alguna propiedad o declararse en bancarrota.");
+                    return false;
+                }
+                actual.sumarFortuna(-alquiler);
+                actual.sumarGastos(alquiler);
+                duenho.sumarFortuna(alquiler);
+                System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a " + duenho.getNombre() + ".");
+                return true;
+            case "Servicios":
+                if (duenho == banca || duenho == actual) {
+                    return true;
+                }
+                alquiler = 4 * tirada * 50000;
+                if (actual.getFortuna() < alquiler) {
+                    System.out.println(actual.getNombre() + " no puede pagar " + (long) alquiler + "€. Debe hipotecar alguna propiedad o declararse en bancarrota.");
+                    return false;
+                }
+                actual.sumarFortuna(-alquiler);
+                actual.sumarGastos(alquiler);
+                duenho.sumarFortuna(alquiler);
+                System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a " + duenho.getNombre() + ".");
+                return true;
 
 
+            case "Impuesto":
+                if (actual.getFortuna() < impuesto) {
+                    System.out.println(actual.getNombre() + " no puede pagar el impuesto. " + "Debe hipotecar alguna propiedad o declararse en bancarrota.");
+                    return false;
+                }
+                actual.sumarFortuna(-impuesto);
+                actual.sumarGastos(impuesto);
+                //parking.sumarValor(impuesto);
+                System.out.println("El jugador paga " + (long) impuesto + "€ que se depositan en el Parking.");
+                return true;
+            case "especial":
+                if (nombre.equals("Parking")) {
+                    actual.sumarFortuna(valor);
+                    System.out.println("El jugador " + actual.getNombre() + " recibe " + (long) valor + "€.");
+                    valor = 0;
+                }
+                return true;
+
+            default:   // Suerte y Comunidad
                 return true;
         }
-        return true;
     }
+
+
         /*Método usado para comprar una casilla determinada. Parámetros:
          * - Jugador que solicita la compra de la casilla.
          * - Banca del monopoly (es el dueño de las casillas no compradas aún).*/
@@ -195,7 +242,7 @@ public class Casilla {
             }else if(solicitante.getFortuna()<this.getValor()){
                 System.out.println("No puedes comprar esta casilla porque no tienes saldo suficiente. |SALDO ACTUAL:" + solicitante.getFortuna());
                 return;
-            }if (!this.tipo.equals("Solar") && !this.tipo.equals("Servicio") && !this.tipo.equals("Transporte")) {
+            }if (!this.tipo.equals("Solar") && !this.tipo.equals("Servicios") && !this.tipo.equals("Transporte")) {
                 System.out.println("No puedes comprar este tipo de casilla.");
                 return;
             }
@@ -235,7 +282,14 @@ public class Casilla {
          * Valor devuelto: texto con esa información.
          */
         public String casEnVenta () {
-            return "string";
+
+            String info = "{\n";
+            info += "  nombre: " + this.nombre + ",\n";
+            info += "  tipo: " + this.tipo + ",\n";
+            info += "  valor: " + (long) this.valor + "\n";
+            info += "}";
+            return info;
+
         }
 
 

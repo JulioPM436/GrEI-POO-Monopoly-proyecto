@@ -70,13 +70,13 @@ public class Menu {
             case "listar":
                 switch (partes[1]) {
                     case "jugadores":
-
+                        listarJugadores();
                         break;
                     case "avatares":
-
+                        listarAvatares();
                         break;
                     case "enventa":
-
+                        listarVenta();
                         break;
                 }
                 break;
@@ -87,7 +87,7 @@ public class Menu {
                         descJugador(partes);
                         break;
                     case "avatar":
-                        descAvatar(partes[1]);
+                        descAvatar(partes[2]);
                         break;
                     default:
                         descCasilla(partes[1]);
@@ -181,7 +181,7 @@ public class Menu {
         // Si existe, se imprimen por pantalla los atributos del jugador.
         System.out.println("nombre: "+ j.getNombre());
         System.out.println("avatar: "+ j.getAvatar().getId());
-        System.out.println("fortuna: "+ j.getFortuna());
+        System.out.println("fortuna: "+ (long) j.getFortuna());
         System.out.println("propiedades: ");
         // Se itera sobre las propiedades del jugador imprimiendo su nombre.
         for(Casilla elemento: j.getPropiedades()){
@@ -299,13 +299,13 @@ public class Menu {
             tirado = false;
             getJugadorActual().getAvatar().moverAvatar(tablero.getPosiciones(), suma);
             Casilla casillaActual = getJugadorActual().getAvatar().getLugar();
-            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma);
+            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma, tablero.encontrar_casilla("Parking"));
         } else {
             lanzamientos = 0;
             tirado = true;
             getJugadorActual().getAvatar().moverAvatar(tablero.getPosiciones(), suma);
             Casilla casillaActual = getJugadorActual().getAvatar().getLugar();
-            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma);
+            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma, tablero.encontrar_casilla("Parking"));
         }
     }
 
@@ -314,7 +314,7 @@ public class Menu {
      */
     private void comprar(String nombre) {
 
-        if (!jugadores.isEmpty()) {
+        if (jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
@@ -331,7 +331,7 @@ public class Menu {
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'salir carcel'. 
     private void salirCarcel() {
-        if (!jugadores.isEmpty()) {
+        if (jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
@@ -356,7 +356,23 @@ public class Menu {
 
     // Método que realiza las acciones asociadas al comando 'listar enventa'.
     private void listarVenta() {
-
+        boolean hayEnVenta = false;
+        // Se recorren los cuatro lados del tablero y, dentro de cada uno, sus casillas.
+        for (ArrayList<Casilla> lado : tablero.getPosiciones()) {
+            for (Casilla c : lado) {
+                // Solo se pueden comprar solares, transportes y servicios.
+                String tipo = c.getTipo();
+                boolean comprable = tipo.equals("Solar") || tipo.equals("Transporte") || tipo.equals("Servicios");
+                // Está en venta si es comprable y todavía es de la banca.
+                if (comprable && c.getDuenho() == banca) {
+                    System.out.println(c.casEnVenta());
+                    hayEnVenta = true;
+                }
+            }
+        }
+        if (!hayEnVenta) {
+            System.out.println("No hay casillas en venta.");
+        }
     }
 
     // Método que realiza las acciones asociadas al comando 'listar jugadores'.
@@ -384,6 +400,20 @@ public class Menu {
 
     // Método que realiza las acciones asociadas al comando 'listar avatares'.
     private void listarAvatares() {
+        // Si no hay avatares, no hay nada que listar.
+        if (avatares.isEmpty()) {
+            System.out.println("No hay avatares en la partida.");
+            return;
+        }
+        // Se recorre la lista de avatares imprimiendo los datos de cada uno.
+        for (Avatar a : avatares) {
+            System.out.println("{");
+            System.out.println("  id: " + a.getId() + ",");
+            System.out.println("  tipo: " + a.getTipo() + ",");
+            System.out.println("  casilla: " + a.getLugar().getNombre() + ",");
+            System.out.println("  jugador: " + a.getJugador().getNombre());
+            System.out.println("}");
+        }
     }
 
     //Método que indica de quién es el turno
