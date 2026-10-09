@@ -339,7 +339,12 @@ public class Menu {
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'salir carcel'. 
     private void salirCarcel() {
-        if(!getJugadorActual().isEnCarcel()){
+        if (!jugadores.isEmpty()) {
+            System.out.println("Aún no hay jugadores en la partida.\n");
+            return;
+        }
+
+        if(!Objects.requireNonNull(getJugadorActual()).isEnCarcel()){
             System.out.println("El jugador actual no está en la cárcel");
             return;
         }
