@@ -70,9 +70,6 @@ public class Avatar {
         this.lugar = casillas.get(lado).get(indice);
         this.lugar.anhadirAvatar(this);
     }
-    public String getIdAvatar(){
-        return this.id;
-    }
 
     /*Método que permite generar un ID para un avatar. Sólo lo usamos en esta clase (por ello es privado).
     * El ID generado será una letra mayúscula. Parámetros:

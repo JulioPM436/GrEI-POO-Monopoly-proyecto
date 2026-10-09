@@ -44,7 +44,6 @@ public class Menu {
     // Método para inciar una partida: crea los jugadores y avatares.
     private void iniciarPartida() {
         Scanner sc = new Scanner(System.in);
-        Tablero tablero = new Tablero(banca);
 
         while (true) {
             System.out.print("Introduce un comando: ");
@@ -112,11 +111,11 @@ public class Menu {
                 break;
 
             case "comprar":
-//                if (partes.length != 2) {
-//                    System.out.println("Comando incorrecto. Formato: comprar <casilla>");
-//                    break;
-//                }
-                //comprarCasilla(partes);
+                if (partes.length != 2) {
+                    System.out.println("Comando incorrecto. Formato: comprar <casilla>");
+                   break;
+               }
+                comprar(partes[1]);
                 break;
 
             case "ver":
@@ -182,7 +181,7 @@ public class Menu {
         }
         // Si existe, se imprimen por pantalla los atributos del jugador.
         System.out.println("nombre: "+ j.getNombre());
-        System.out.println("avatar: "+ j.getAvatar().getIdAvatar());
+        System.out.println("avatar: "+ j.getAvatar().getId());
         System.out.println("fortuna: "+ j.getFortuna());
         System.out.println("propiedades: ");
         // Se itera sobre las propiedades del jugador imprimiendo su nombre.
@@ -222,7 +221,7 @@ public class Menu {
     }
     private Avatar buscarAvatar(String ID){
         for(Avatar avatar: avatares){
-            if(avatar.getIdAvatar().equals(ID)){
+            if(avatar.getId().equals(ID)){
                 return avatar;
             }
         }
@@ -233,11 +232,17 @@ public class Menu {
     * Parámetros: nombre de la casilla a describir.
     */
     private void descCasilla(String nombre) {
+        Casilla c = tablero.encontrar_casilla(nombre);
+        if (c == null) {
+            System.out.println("No existe ninguna casilla con el nombre: " + nombre);
+            return;
+        }
+        System.out.println(c.infoCasilla());
     }
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
     private void lanzarDados(String[] partes) {
-        if (!jugadores.isEmpty()) {
+        if (jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
@@ -254,7 +259,7 @@ public class Menu {
             tirada1 = dado1.hacerTirada();
             tirada2 = dado2.hacerTirada();
         }
-        boolean sonDobles = false;
+        boolean sonDobles;
         int suma = tirada1 + tirada2;
         System.out.println("Tirada: " + tirada1 + " y " + tirada2 + " (Total: " + suma + ")");
         sonDobles = (tirada1 == tirada2);
@@ -265,6 +270,7 @@ public class Menu {
             if (sonDobles) {
                 System.out.println("Son dobles, sales de la cárcel");
                 getJugadorActual().setEnCarcel(false);
+                tirado = true;
 
             } else {
                 getJugadorActual().sumaTiradasCarcel(); //se usa esta función para sumar 1;
@@ -292,13 +298,15 @@ public class Menu {
                 return;
             }
             tirado = false;
+            getJugadorActual().getAvatar().moverAvatar(tablero.getPosiciones(), suma);
+            Casilla casillaActual = getJugadorActual().getAvatar().getLugar();
+            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma);
         } else {
             lanzamientos = 0;
             tirado = true;
             getJugadorActual().getAvatar().moverAvatar(tablero.getPosiciones(), suma);
             Casilla casillaActual = getJugadorActual().getAvatar().getLugar();
             casillaActual.evaluarCasilla(getJugadorActual(), banca, suma);
-            return;
         }
     }
 
@@ -390,8 +398,18 @@ public class Menu {
     }
     // Método que realiza las acciones asociadas al comando 'acabar turno'.
     private void acabarTurno(){
-
-
+        if (jugadores.isEmpty()) {
+            System.out.println("Aún no hay jugadores en la partida.");
+            return;
+        }
+        if(!tirado){
+            System.out.println("Aún tiene que tirar los dados");
+            return;
+        }
+        turno = (turno + 1)% jugadores.size();
+        tirado = false;
+        lanzamientos = 0; //Ya está hecho en lanzarDados() pero bueno
+        System.out.println("Le toca a" + getJugadorActual().getNombre());
     }
 
     // Método que procesa los comandos dentro de un archivo de texto.
