@@ -287,46 +287,43 @@ public class Menu {
         System.out.println("Tirada: " + tirada1 + " y " + tirada2 + " (Total: " + suma + ")");
         sonDobles = (tirada1 == tirada2);
 
+        Jugador actual = getJugadorActual();
+
         //PRIMERA PARTE: SI EL JUGADOR ESTÁ EN LA CÁRCEL
-        if (Objects.requireNonNull(getJugadorActual()).isEnCarcel()) {
+        if (actual.isEnCarcel()) {
             if (sonDobles) {
-                System.out.println("Son dobles, sales de la cárcel");
-                getJugadorActual().setEnCarcel(false);
-                getJugadorActual().setTiradasCarcel(0);
-
-                tirado = true;
-
+                System.out.println("Son dobles, sales de la cárcel.");
+                actual.setEnCarcel(false);
+                actual.setTiradasCarcel(0);
             } else {
-                getJugadorActual().sumaTiradasCarcel(); //se usa esta función para sumar 1;
-                if (getJugadorActual().getTiradasCarcel() == 3) {
-                    System.out.println("Tercer intento sin sacar dobles: pagas");
-
-
-                    if (getJugadorActual().getFortuna() < Valor.CARCEL_SALIR) {
-                        System.out.println(getJugadorActual().getNombre() + " no puede pagar " + (long) Valor.CARCEL_SALIR
-                                + "€ para salir de la cárcel. Debe declararse en bancarrota.");
-                        tirado = true;
-                        return;
-                    }
-                    getJugadorActual().sumarFortuna(-Valor.CARCEL_SALIR);
-                    getJugadorActual().sumarGastos(Valor.CARCEL_SALIR);
-                    getJugadorActual().setEnCarcel(false);
-                    getJugadorActual().setTiradasCarcel(0);
-                    System.out.println("Tercer intento sin dobles: " + getJugadorActual().getNombre() + " paga "
-                            + (long) Valor.CARCEL_SALIR + "€ y sale de la cárcel.");
-
-                    moverYEvaluar(getJugadorActual(), suma);
-
-                } else {
+                actual.sumaTiradasCarcel(); //se usa esta función para sumar 1;
+                // Primer o segundo intento fallido: se queda en la cárcel.
+                if (actual.getTiradasCarcel() < 3) {
                     System.out.println("No son dobles, lamentablemente te quedas en la cárcel");
                     tirado = true;
+                    return;
                 }
+                // Tercer intento fallido: está obligado a pagar para salir.
+                if (actual.getFortuna() < Valor.CARCEL_SALIR) {
+                    System.out.println(actual.getNombre() + " no puede pagar " + (long) Valor.CARCEL_SALIR
+                            + "€ para salir de la cárcel. Debe declararse en bancarrota.");
+                    tirado = true;
+                    return;
+                }
+                actual.sumarFortuna(-Valor.CARCEL_SALIR);
+                actual.sumarGastos(Valor.CARCEL_SALIR);
+                actual.setEnCarcel(false);
+                actual.setTiradasCarcel(0);
+                System.out.println("Tercer intento sin dobles: " + actual.getNombre() + " paga "
+                        + (long) Valor.CARCEL_SALIR + "€ y sale de la cárcel.");
             }
-            moverYEvaluar(getJugadorActual(), suma);
+            // Al salir de la cárcel avanza con esta tirada, pero no vuelve a tirar aunque sean dobles.
+            tirado = true;
+            moverYEvaluar(actual, suma);
             return;
         }
         //SEGUNDA PARTE: TIRO NORMALITO
-        //SEGUNDA PARTE: TIRO NORMALITO
+
         if (sonDobles) {
             lanzamientos++;
             if (lanzamientos == 3) {
