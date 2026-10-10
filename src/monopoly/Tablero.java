@@ -82,15 +82,15 @@ public class Tablero {
         oeste.add(new Casilla("Solar8", "Solar", 15, Valor.SOLAR_PRECIOS[15], this.banca, Valor.SOLAR_ALQUILERES[15]));
         oeste.add(new Casilla("Trans2", "Transporte", 16, Valor.TRANSPORTE_PRECIO, this.banca));
         oeste.add(new Casilla("Solar9", "Solar", 17, Valor.SOLAR_PRECIOS[17], this.banca, Valor.SOLAR_ALQUILERES[17]));
-        oeste.add(new Casilla("Solar10", "Solar", 18, Valor.SOLAR_PRECIOS[18], this.banca, Valor.SOLAR_ALQUILERES[18]));
-        oeste.add(new Casilla("Caja", "Comunidad", 19, this.banca));
+        oeste.add(new Casilla("Caja", "Comunidad", 18, this.banca));
+        oeste.add(new Casilla("Solar10", "Solar", 19, Valor.SOLAR_PRECIOS[19], this.banca, Valor.SOLAR_ALQUILERES[19]));
         oeste.add(new Casilla("Solar11", "Solar", 20, Valor.SOLAR_PRECIOS[20], this.banca, Valor.SOLAR_ALQUILERES[20]));
 
         this.posiciones.add(oeste);
         this.grupos.put("Morado", new Grupo(oeste.get(1), oeste.get(3), oeste.get(4), Valor.PURPLE));
 
         // Grupo 4: Amarillo (Solar9, Solar10 y Solar11)
-        this.grupos.put("Amarillo", new Grupo(oeste.get(6), oeste.get(7), oeste.get(9), Valor.YELLOW));
+        this.grupos.put("Amarillo", new Grupo(oeste.get(6), oeste.get(8), oeste.get(9), Valor.YELLOW));
     }
 
     //Méŧodo que inserta las casillas del lado este.
