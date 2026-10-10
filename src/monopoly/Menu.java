@@ -157,6 +157,10 @@ public class Menu {
         // Se comprueba que el formato del comando sea correcto, esto es, tiene 4 argumentos.
         if (partes.length == 4){
             // Se impide crear más jugadores si ya hay 4.
+            if (!partes[3].equalsIgnoreCase("Coche") &&!partes[3].equalsIgnoreCase("Esfinge") &&!partes[3].equalsIgnoreCase("Sombrero") && !partes[3].equalsIgnoreCase("Pelota")) {
+                System.out.println("ERROR: Tipo de avatar no admitido. Permitidos: Coche, Esfinge, Sombrero, Pelota.");
+                return;
+            }
             if (jugadores.size() < 4) {
                 // Se busca cuál es la casilla de salida, todos los jugadores empiezan ahí.
                 Casilla salida = tablero.encontrar_casilla("Salida");
