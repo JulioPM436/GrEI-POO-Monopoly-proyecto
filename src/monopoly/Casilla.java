@@ -285,12 +285,25 @@ public class Casilla {
             info = new StringBuilder("No se puede describir la casilla " + this.getNombre() + "\n");
             return info.toString();
         }
-        if (this.tipo.equals("impuesto")) {
+        if (this.tipo.equals("Impuesto")) {
             info = new StringBuilder("{\n" + "  tipo: " + this.tipo + "\n" + "  a pagar: " + Valor.IMPUESTOS + "\n" + "}");
             return info.toString();
         }
+        if (this.tipo.equals("Transporte")) {
+            info.append("  alquiler: ").append(Valor.TRANSPORTE_ALQUILER).append("\n");
+            return info.toString();
+        }
         if (this.getNombre().equals("Parking")) {
-            info.append("  bote: ").append(this.valor).append("\n").append("  jugadores: ");
+            info = new StringBuilder(("  bote: " + this.valor + "\n" + "  jugadores: "));
+            StringJoiner nombres = new StringJoiner(",","[","]"); nombres.setEmptyValue("-");
+            for (Avatar av : avatares) {
+                nombres.add(av.getJugador().getNombre());
+            }
+            info.append(nombres).append("\n").append("}");
+            return info.toString();
+        }
+        if (this.getNombre().equals("Salida")) {
+            info = new StringBuilder("  cobro: " + Valor.SUMA_VUELTA + "\n" + "  jugadores: ");
             StringJoiner nombres = new StringJoiner(",","[","]"); nombres.setEmptyValue("-");
             for (Avatar av : avatares) {
                 nombres.add(av.getJugador().getNombre());
@@ -299,8 +312,18 @@ public class Casilla {
             return info.toString();
         }
         if (this.tipo.equals("Servicios")) {
-            info = new StringBuilder("{\n" + "  tipo: " + this.tipo + "\n" + "  propietario: " + this.duenho + "\n" +
+            info = new StringBuilder("{\n" + "  tipo: " + this.tipo + "\n" + "  propietario: " + this.duenho.getNombre() + "\n" +
                     "  valor: " + this.valor + "\n" + "  factor de servicio: " + Valor.FACTOR_SERVICIO + "\n}");
+            return info.toString();
+        }
+        if (this.getNombre().equals("Carcel")) {
+            info = new StringBuilder("  salir: " + Valor.CARCEL_SALIR + "\n" + "  jugadores: ");
+            StringJoiner nombres = new StringJoiner(",","[","]"); nombres.setEmptyValue("-");
+            for (Avatar av : avatares) {
+                Jugador j = av.getJugador();
+                nombres.add("[" + j.getNombre() + "," + j.getTiradasCarcel() + "]");
+            }
+            info.append(nombres).append("\n").append("}");
             return info.toString();
         }
         info.append("  alquiler: ").append(Valor.SOLAR_ALQUILERES[this.posicion]).append("€\n");

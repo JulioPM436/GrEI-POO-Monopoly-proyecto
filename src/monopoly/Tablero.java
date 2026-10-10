@@ -96,8 +96,6 @@ public class Tablero {
     //Méŧodo que inserta las casillas del lado este.
     private void insertarLadoEste() {
         ArrayList<Casilla> este = new ArrayList<>();
-
-
         este.add(new Casilla("IrCarcel", "especial", 31, this.banca));
         este.add(new Casilla("Solar18", "Solar", 32, Valor.SOLAR_PRECIOS[32], this.banca, Valor.SOLAR_ALQUILERES[32]));
         este.add(new Casilla("Solar19", "Solar", 33, Valor.SOLAR_PRECIOS[33], this.banca, Valor.SOLAR_ALQUILERES[33]));
@@ -108,10 +106,8 @@ public class Tablero {
         este.add(new Casilla("Solar21", "Solar", 38, Valor.SOLAR_PRECIOS[38], this.banca, Valor.SOLAR_ALQUILERES[38]));
         este.add(new Casilla("Imp2", 39, Valor.IMPUESTOS, this.banca));
         este.add(new Casilla("Solar22", "Solar", 40, Valor.SOLAR_PRECIOS[40], this.banca, Valor.SOLAR_ALQUILERES[40]));
-
         this.posiciones.add(este);
         this.grupos.put("Verde", new Grupo(este.get(1), este.get(2), este.get(4), Valor.GREEN));
-
         this.grupos.put("Azul", new Grupo(este.get(7), este.get(9), Valor.BLUE));
     }
 
