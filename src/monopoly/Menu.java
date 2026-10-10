@@ -292,43 +292,73 @@ public class Menu {
             if (sonDobles) {
                 System.out.println("Son dobles, sales de la cárcel");
                 getJugadorActual().setEnCarcel(false);
+                getJugadorActual().setTiradasCarcel(0);
+
                 tirado = true;
 
             } else {
                 getJugadorActual().sumaTiradasCarcel(); //se usa esta función para sumar 1;
                 if (getJugadorActual().getTiradasCarcel() == 3) {
                     System.out.println("Tercer intento sin sacar dobles: pagas");
+
+
+                    if (getJugadorActual().getFortuna() < Valor.CARCEL_SALIR) {
+                        System.out.println(getJugadorActual().getNombre() + " no puede pagar " + (long) Valor.CARCEL_SALIR
+                                + "€ para salir de la cárcel. Debe declararse en bancarrota.");
+                        tirado = true;
+                        return;
+                    }
+                    getJugadorActual().sumarFortuna(-Valor.CARCEL_SALIR);
+                    getJugadorActual().sumarGastos(Valor.CARCEL_SALIR);
                     getJugadorActual().setEnCarcel(false);
                     getJugadorActual().setTiradasCarcel(0);
-                    getJugadorActual().getAvatar().moverAvatar(tablero.getPosiciones(), suma);
+                    System.out.println("Tercer intento sin dobles: " + getJugadorActual().getNombre() + " paga "
+                            + (long) Valor.CARCEL_SALIR + "€ y sale de la cárcel.");
+
+                    moverYEvaluar(getJugadorActual(), suma);
+
                 } else {
                     System.out.println("No son dobles, lamentablemente te quedas en la cárcel");
                     tirado = true;
                 }
             }
+            moverYEvaluar(getJugadorActual(), suma);
             return;
         }
+        //SEGUNDA PARTE: TIRO NORMALITO
         //SEGUNDA PARTE: TIRO NORMALITO
         if (sonDobles) {
             lanzamientos++;
             if (lanzamientos == 3) {
                 System.out.println("Vas a la Cárcel.");
                 getJugadorActual().encarcelar(tablero.getPosiciones());
-
                 lanzamientos = 0;
                 tirado = true;
                 return;
             }
             tirado = false;
-            getJugadorActual().getAvatar().moverAvatar(tablero.getPosiciones(), suma);
-            Casilla casillaActual = getJugadorActual().getAvatar().getLugar();
-            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma, tablero.encontrar_casilla("Parking"));
         } else {
             lanzamientos = 0;
             tirado = true;
-            getJugadorActual().getAvatar().moverAvatar(tablero.getPosiciones(), suma);
-            Casilla casillaActual = getJugadorActual().getAvatar().getLugar();
-            casillaActual.evaluarCasilla(getJugadorActual(), banca, suma, tablero.encontrar_casilla("Parking"));
+        }
+        moverYEvaluar(getJugadorActual(), suma);
+
+        // Si ha caído en IrCarcel ya no puede volver a tirar, aunque hubiera sacado dobles.
+        if (getJugadorActual().isEnCarcel()) {
+            tirado = true;
+            lanzamientos = 0;
+        }
+    }
+
+    // Mueve el avatar del jugador y realiza la acción de la casilla en la que cae.
+    private void moverYEvaluar(Jugador actual, int suma) {
+        actual.getAvatar().moverAvatar(tablero.getPosiciones(), suma);
+        Casilla casilla = actual.getAvatar().getLugar();
+        if (casilla.getNombre().equals("IrCarcel")) {
+            System.out.println("Has caído en IrCarcel: el avatar se coloca en la casilla de Cárcel.");
+            actual.encarcelar(tablero.getPosiciones());
+        } else {
+            casilla.evaluarCasilla(actual, banca, suma, tablero.encontrar_casilla("Parking"));
         }
     }
 
