@@ -37,15 +37,15 @@ public class Tablero {
         ArrayList<Casilla> norte = new ArrayList<>();
 
         norte.add(new Casilla("Parking", "especial", 21, this.banca));
-        norte.add(new Casilla("Solar12", "Solar", 22, Valor.SOLAR_PRECIOS[22], this.banca));
+        norte.add(new Casilla("Solar12", "Solar", 22, Valor.SOLAR_PRECIOS[22], this.banca, Valor.SOLAR_ALQUILERES[22]));
         norte.add(new Casilla("Suerte", "Suerte", 23, this.banca));
-        norte.add(new Casilla("Solar13", "Solar", 24, Valor.SOLAR_PRECIOS[24], this.banca));
-        norte.add(new Casilla("Solar14", "Solar", 25, Valor.SOLAR_PRECIOS[25], this.banca));
+        norte.add(new Casilla("Solar13", "Solar", 24, Valor.SOLAR_PRECIOS[24], this.banca, Valor.SOLAR_ALQUILERES[24]));
+        norte.add(new Casilla("Solar14", "Solar", 25, Valor.SOLAR_PRECIOS[25], this.banca, Valor.SOLAR_ALQUILERES[25]));
         norte.add(new Casilla("Trans3", "Transporte", 26, Valor.TRANSPORTE_PRECIO, this.banca));
-        norte.add(new Casilla("Solar15", "Solar", 27, Valor.SOLAR_PRECIOS[27], this.banca));
-        norte.add(new Casilla("Solar16", "Solar", 28, Valor.SOLAR_PRECIOS[28], this.banca));
+        norte.add(new Casilla("Solar15", "Solar", 27, Valor.SOLAR_PRECIOS[27], this.banca, Valor.SOLAR_ALQUILERES[27]));
+        norte.add(new Casilla("Solar16", "Solar", 28, Valor.SOLAR_PRECIOS[28], this.banca, Valor.SOLAR_ALQUILERES[28]));
         norte.add(new Casilla("Serv2", "Servicios", 29, Valor.SERVICIO_PRECIO, this.banca));
-        norte.add(new Casilla("Solar17", "Solar", 30, Valor.SOLAR_PRECIOS[30], this.banca));
+        norte.add(new Casilla("Solar17", "Solar", 30, Valor.SOLAR_PRECIOS[30], this.banca, Valor.SOLAR_ALQUILERES[30]));
 
         this.posiciones.add(norte);
         this.grupos.put("Rojo", new Grupo(norte.get(1), norte.get(3), norte.get(4), Valor.RED));
@@ -58,15 +58,15 @@ public class Tablero {
         ArrayList<Casilla> sur = new ArrayList<>();
 
         sur.add(new Casilla("Salida", "especial", 1, this.banca));
-        sur.add(new Casilla("Solar1", "Solar", 2, Valor.SOLAR_PRECIOS[2], this.banca));
+        sur.add(new Casilla("Solar1", "Solar", 2, Valor.SOLAR_PRECIOS[2], this.banca, Valor.SOLAR_ALQUILERES[2]));
         sur.add(new Casilla("Caja", "Comunidad", 3, this.banca));
-        sur.add(new Casilla("Solar2", "Solar", 4, Valor.SOLAR_PRECIOS[4], this.banca));
+        sur.add(new Casilla("Solar2", "Solar", 4, Valor.SOLAR_PRECIOS[4], this.banca, Valor.SOLAR_ALQUILERES[4]));
         sur.add(new Casilla("Imp1", 5, Valor.IMPUESTOS, this.banca));
         sur.add(new Casilla("Trans1", "Transporte", 6, Valor.TRANSPORTE_PRECIO, this.banca));
-        sur.add(new Casilla("Solar3", "Solar", 7, Valor.SOLAR_PRECIOS[7], this.banca));
+        sur.add(new Casilla("Solar3", "Solar", 7, Valor.SOLAR_PRECIOS[7], this.banca, Valor.SOLAR_ALQUILERES[7]));
         sur.add(new Casilla("Suerte", "Suerte", 8, this.banca));
-        sur.add(new Casilla("Solar4", "Solar", 9, Valor.SOLAR_PRECIOS[9], this.banca));
-        sur.add(new Casilla("Solar5", "Solar", 10, Valor.SOLAR_PRECIOS[10], this.banca));
+        sur.add(new Casilla("Solar4", "Solar", 9, Valor.SOLAR_PRECIOS[9], this.banca, Valor.SOLAR_ALQUILERES[9]));
+        sur.add(new Casilla("Solar5", "Solar", 10, Valor.SOLAR_PRECIOS[10], this.banca, Valor.SOLAR_ALQUILERES[10]));
 
         this.posiciones.add(sur);
 
@@ -79,16 +79,17 @@ public class Tablero {
     private void insertarLadoOeste() {
         ArrayList<Casilla> oeste = new ArrayList<>();
 
+
         oeste.add(new Casilla("Carcel", "especial", 11, this.banca));
-        oeste.add(new Casilla("Solar6", "Solar", 12, Valor.SOLAR_PRECIOS[12], this.banca));
+        oeste.add(new Casilla("Solar6", "Solar", 12, Valor.SOLAR_PRECIOS[12], this.banca, Valor.SOLAR_ALQUILERES[12]));
         oeste.add(new Casilla("Serv1", "Servicios", 13, Valor.SERVICIO_PRECIO, this.banca));
-        oeste.add(new Casilla("Solar7", "Solar", 14, Valor.SOLAR_PRECIOS[14], this.banca));
-        oeste.add(new Casilla("Solar8", "Solar", 15, Valor.SOLAR_PRECIOS[15], this.banca));
+        oeste.add(new Casilla("Solar7", "Solar", 14, Valor.SOLAR_PRECIOS[14], this.banca, Valor.SOLAR_ALQUILERES[14]));
+        oeste.add(new Casilla("Solar8", "Solar", 15, Valor.SOLAR_PRECIOS[15], this.banca, Valor.SOLAR_ALQUILERES[15]));
         oeste.add(new Casilla("Trans2", "Transporte", 16, Valor.TRANSPORTE_PRECIO, this.banca));
-        oeste.add(new Casilla("Solar9", "Solar", 17, Valor.SOLAR_PRECIOS[17], this.banca));
-        oeste.add(new Casilla("Solar10", "Solar", 18, Valor.SOLAR_PRECIOS[18], this.banca));
+        oeste.add(new Casilla("Solar9", "Solar", 17, Valor.SOLAR_PRECIOS[17], this.banca, Valor.SOLAR_ALQUILERES[17]));
+        oeste.add(new Casilla("Solar10", "Solar", 18, Valor.SOLAR_PRECIOS[18], this.banca, Valor.SOLAR_ALQUILERES[18]));
         oeste.add(new Casilla("Caja", "Comunidad", 19, this.banca));
-        oeste.add(new Casilla("Solar11", "Solar", 20, Valor.SOLAR_PRECIOS[20], this.banca));
+        oeste.add(new Casilla("Solar11", "Solar", 20, Valor.SOLAR_PRECIOS[20], this.banca, Valor.SOLAR_ALQUILERES[20]));
 
         this.posiciones.add(oeste);
         this.grupos.put("Morado", new Grupo(oeste.get(1), oeste.get(3), oeste.get(4), Valor.PURPLE));
@@ -101,16 +102,17 @@ public class Tablero {
     private void insertarLadoEste() {
         ArrayList<Casilla> este = new ArrayList<>();
 
+
         este.add(new Casilla("IrCarcel", "especial", 31, this.banca));
-        este.add(new Casilla("Solar18", "Solar", 32, Valor.SOLAR_PRECIOS[32], this.banca));
-        este.add(new Casilla("Solar19", "Solar", 33, Valor.SOLAR_PRECIOS[33], this.banca));
+        este.add(new Casilla("Solar18", "Solar", 32, Valor.SOLAR_PRECIOS[32], this.banca, Valor.SOLAR_ALQUILERES[32]));
+        este.add(new Casilla("Solar19", "Solar", 33, Valor.SOLAR_PRECIOS[33], this.banca, Valor.SOLAR_ALQUILERES[33]));
         este.add(new Casilla("Caja", "Comunidad", 34, this.banca));
-        este.add(new Casilla("Solar20", "Solar", 35, Valor.SOLAR_PRECIOS[35], this.banca));
+        este.add(new Casilla("Solar20", "Solar", 35, Valor.SOLAR_PRECIOS[35], this.banca, Valor.SOLAR_ALQUILERES[35]));
         este.add(new Casilla("Trans4", "Transporte", 36, Valor.TRANSPORTE_PRECIO, this.banca));
         este.add(new Casilla("Suerte", "Suerte", 37, this.banca));
-        este.add(new Casilla("Solar21", "Solar", 38, Valor.SOLAR_PRECIOS[38], this.banca));
+        este.add(new Casilla("Solar21", "Solar", 38, Valor.SOLAR_PRECIOS[38], this.banca, Valor.SOLAR_ALQUILERES[38]));
         este.add(new Casilla("Imp2", 39, Valor.IMPUESTOS, this.banca));
-        este.add(new Casilla("Solar22", "Solar", 40, Valor.SOLAR_PRECIOS[40], this.banca));
+        este.add(new Casilla("Solar22", "Solar", 40, Valor.SOLAR_PRECIOS[40], this.banca, Valor.SOLAR_ALQUILERES[40]));
 
         this.posiciones.add(este);
         this.grupos.put("Verde", new Grupo(este.get(1), este.get(2), este.get(4), Valor.GREEN));
