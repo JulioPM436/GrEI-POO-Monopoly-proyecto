@@ -67,19 +67,14 @@ public class Tablero {
         sur.add(new Casilla("Suerte", "Suerte", 8, this.banca));
         sur.add(new Casilla("Solar4", "Solar", 9, Valor.SOLAR_PRECIOS[9], this.banca, Valor.SOLAR_ALQUILERES[9]));
         sur.add(new Casilla("Solar5", "Solar", 10, Valor.SOLAR_PRECIOS[10], this.banca, Valor.SOLAR_ALQUILERES[10]));
-
         this.posiciones.add(sur);
-
         this.grupos.put("Negro", new Grupo(sur.get(1), sur.get(3), Valor.BLACK));
-
         this.grupos.put("Cian", new Grupo(sur.get(6), sur.get(8), sur.get(9), Valor.CYAN));
     }
 
     //Méŧodo que inserta casillas del lado oeste.
     private void insertarLadoOeste() {
         ArrayList<Casilla> oeste = new ArrayList<>();
-
-
         oeste.add(new Casilla("Carcel", "especial", 11, this.banca));
         oeste.add(new Casilla("Solar6", "Solar", 12, Valor.SOLAR_PRECIOS[12], this.banca, Valor.SOLAR_ALQUILERES[12]));
         oeste.add(new Casilla("Serv1", "Servicios", 13, Valor.SERVICIO_PRECIO, this.banca));
