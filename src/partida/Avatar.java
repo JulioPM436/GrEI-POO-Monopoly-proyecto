@@ -62,6 +62,10 @@ public class Avatar {
         if (this.lugar != null) {
             this.lugar.eliminarAvatar(this);
         }
+        if ((lugar.getPosicion() - 1 + valorTirada) / 40 >= 1) {
+            System.out.println(this.jugador.getNombre() + " pasa por la Salida y cobra " + (long) Valor.SUMA_VUELTA + "€.");
+            this.jugador.sumarFortuna(Valor.SUMA_VUELTA);
+        }
         int posicion = (lugar.getPosicion() - 1 + valorTirada) % 40;
         int lado = posicion / 10;
         int indice = posicion % 10; //aqui se calcula en que lado y numero está
@@ -75,7 +79,7 @@ public class Avatar {
      */
     private void generarId(ArrayList<Avatar> avCreados) {
         // Se inicializa variables auxiliares, un booleano y una string.
-        boolean repetido = false;
+        boolean repetido;
         String id;
         // Creamos un generador de números aleatorios.
         Random r = new Random();
