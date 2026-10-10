@@ -18,6 +18,9 @@ public class Valor {
     public static final String CYAN = "\u001B[36m";
     public static final String WHITE = "\u001B[37m";
 
+    // Se puede asignar el valor de cada solar y casilla usando su posición, porque en cada posición que no hay valor, hay un cero.
+    // Por ejemplo, la casilla de posición 1 es Salida, sin valor, posición 1 en el array. Pero Solar1 es posición 2, así que también
+    //      se le asigna esa posición en el array.
     public static final float[] SOLAR_PRECIOS = {0,0,600000,0,600000,0,0,1000000,0,1000000,1200000,0,1400000,0,1400000,1600000,0,1800000,0,1800000,2200000,0,2200000,0,2200000,2400000,0,2600000,2600000,0,2800000,0,3000000,3000000,0,3200000,0,0,3500000,0,4000000};
     public static final float[] SOLAR_PRECIOS_HIPOTECAS = {0,0,300000,0,300000,0,0,500000,0,500000,600000,0,700000,0,700000,800000,0,900000,0,900000,1000000,0,1100000,0,1100000,1200000,0,1300000,1300000,0,1400000,0,1500000,1500000,0,1600000,0,0,1750000,0,2000000};
     public static final float[] SOLAR_PRECIOS_CASA = {0,0,500000,0,500000,0,0,500000,0,500000,500000,0,1000000,0,1000000,1000000,0,1000000,0,1000000,1000000,0,1500000,0,1500000,1500000,0,1500000,1500000,0,1500000,0,2000000,2000000,0,2000000,0,0,2000000,0,2000000};

@@ -2,6 +2,7 @@ package monopoly;
 
 import partida.*;
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
 
 public class Casilla {
@@ -11,7 +12,7 @@ public class Casilla {
     //Atributos:
     private String nombre; //Nombre de la casilla
     private String tipo; //Tipo de casilla (Solar, Especial, Transporte, Servicios, Comunidad, Suerte y Impuesto).
-    private float valor; //Valor de esa casilla (en la mayoría será valor de compra, en la casilla parking se usará como el bote).
+    private float valor; //Valor de esa casilla (será valor de compra, en la casilla parking se usará como el bote).
     private int posicion; //Posición que ocupa la casilla en el tablero (entero entre 1 y 40).
     private Jugador duenho; //Dueño de la casilla (por defecto sería la banca).
     private Grupo grupo; //Grupo al que pertenece la casilla (si es solar).
@@ -151,19 +152,15 @@ public class Casilla {
     public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada, Casilla parking) {
         float alquiler;
         switch (tipo) {
-
             case "Solar":
-
                 // Sin dueño (es de la banca) o es suya: no paga nada
                 if (duenho == banca || duenho == actual) {
                     return true;
                 }
-
                 alquiler = impuesto;
                 if (grupo.esDuenhoGrupo(duenho)) {
                     alquiler = impuesto * 2;
                 }
-
                 // ¿Puede pagar?
                 if (actual.getFortuna() < alquiler) {
                     System.out.println(actual.getNombre() + " no puede pagar " + (long) alquiler
@@ -177,7 +174,6 @@ public class Casilla {
                 System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a "
                         + duenho.getNombre() + ".");
                 return true;
-
             case "Transporte":
                 if (duenho == banca || duenho == actual) {
                     return true;
@@ -206,8 +202,6 @@ public class Casilla {
                 duenho.sumarFortuna(alquiler);
                 System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a " + duenho.getNombre() + ".");
                 return true;
-
-
             case "Impuesto":
                 if (actual.getFortuna() < impuesto) {
                     System.out.println(actual.getNombre() + " no puede pagar el impuesto. " + "Debe hipotecar alguna propiedad o declararse en bancarrota.");
@@ -225,118 +219,110 @@ public class Casilla {
                     valor = 0;
                 }
                 return true;
-
             default:   // Suerte y Comunidad
                 return true;
         }
     }
 
 
-        /*Método usado para comprar una casilla determinada. Parámetros:
-         * - Jugador que solicita la compra de la casilla.
-         * - Banca del monopoly (es el dueño de las casillas no compradas aún).*/
-        public void comprarCasilla (Jugador solicitante, Jugador banca){
-            if(this.getDuenho() != banca) {
-                System.out.println("No puedes comprar esta casilla porque es de otro jugador");
-                return;
-            }else if(solicitante.getFortuna()<this.getValor()){
-                System.out.println("No puedes comprar esta casilla porque no tienes saldo suficiente. |SALDO ACTUAL:" + solicitante.getFortuna());
-                return;
-            }if (!this.tipo.equals("Solar") && !this.tipo.equals("Servicios") && !this.tipo.equals("Transporte")) {
-                System.out.println("No puedes comprar este tipo de casilla.");
-                return;
-            }
-
-            solicitante.sumarFortuna(-this.valor);
-            solicitante.sumarGastos(this.valor);
-            banca.sumarFortuna(this.valor);
-
-            this.duenho = solicitante;
-            solicitante.anhadirPropiedad(this);
-
-            System.out.println("El jugador " + solicitante.getNombre() + " compra la casilla " + this.nombre + " por " + this.valor + "€.");
-
+    /*Método usado para comprar una casilla determinada. Parámetros:
+     * - Jugador que solicita la compra de la casilla.
+     * - Banca del monopoly (es el dueño de las casillas no compradas aún).*/
+    public void comprarCasilla (Jugador solicitante, Jugador banca){
+        if (this.getDuenho() != banca) {
+            System.out.println("No puedes comprar esta casilla porque es de otro jugador");
+            return;
+        } else if (solicitante.getFortuna()<this.getValor()){
+            System.out.println("No puedes comprar esta casilla porque no tienes saldo suficiente. |SALDO ACTUAL:" + solicitante.getFortuna());
+            return;
+        }
+        if (!this.tipo.equals("Solar") && !this.tipo.equals("Servicios") && !this.tipo.equals("Transporte")) {
+            System.out.println("No puedes comprar este tipo de casilla.");
+            return;
         }
 
-        /*Método para añadir valor a una casilla. Utilidad:
-         * - Sumar valor a la casilla de parking.
-         * - Sumar valor a las casillas de solar al no comprarlas tras cuatro vueltas de todos los jugadores.
-         * Este método toma como argumento la cantidad a añadir del valor de la casilla.*/
-        public void sumarValor ( float suma){
-            this.valor += suma;
-        }
+        solicitante.sumarFortuna(-this.valor);
+        solicitante.sumarGastos(this.valor);
+        banca.sumarFortuna(this.valor);
 
-        /*Método para mostrar información sobre una casilla.
-         * Devuelve una cadena con información específica de cada tipo de casilla.*/
-        public String infoCasilla() {
-            String info = "{\n" + "  nombre: " + this.nombre + "\n" + "  tipo: " + this.tipo + "\n";
+        this.duenho = solicitante;
+        solicitante.anhadirPropiedad(this);
 
-            if (this.duenho != null) {
-                info += "  propietario: " + this.duenho.getNombre() + "\n" +"  valor: " + this.valor + "€\n";
-            }
-            if (this.getNombre().equals("Caja") || this.getNombre().equals("IrCarcel") || this.getNombre().equals("Suerte")) {
-                info = "No se puede describir la casilla " + this.getNombre() + "\n";
-                return info;
-            }
-            if (this.tipo.equals("impuesto")) {
-                info = "{\n" + "  tipo: " + this.tipo + "\n" + "  a pagar: " + Valor.IMPUESTOS + "\n" + "}";
-                return info;
-            }
-
-            if (this.getNombre().equals("Parking")) {
-                info = "{\n" + "  bote: " + this.valor + "\n" + "  jugadores: [" + this.valor + "]\n" + "}";
-                return info;
-            }
-            if (this.tipo.equals("Servicios")) {
-
-            }
-
-            info += "  alquiler: " + Valor.SOLAR_ALQUILERES[this.posicion] + "€\n";
-            info += "  valor hotel: " + Valor.SOLAR_PRECIOS_HOTEL[this.posicion] + "€\n";
-            info += "  valor casa: " + Valor.SOLAR_PRECIOS_CASA[this.posicion] + "€\n";
-            info += "  valor piscina: " + Valor.SOLAR_PRECIOS_PISCINA[this.posicion] + "€\n";
-            info += "  valor pista de deporte: " + Valor.SOLAR_PRECIOS_PISTADEPORTE[this.posicion] + "€\n";
-            info += "  alquiler casa: " + Valor.SOLAR_ALQUILERES_CASA[this.posicion] + "€\n";
-            info += "  alquiler hotel: " + (long)Valor.SOLAR_ALQUILERES_HOTEL[this.posicion] + "€\n";
-            info += "  alquiler piscina: " + Valor.SOLAR_ALQUILERES_PISCINA[this.posicion] + "€\n";
-            info += "  alquiler pista de deporte: " + Valor.SOLAR_ALQUILERES_PISTADEPORTE[this.posicion] + "€\n" + "}";
-
-
-            return info;
-        }
-
-        /* Método para mostrar información de una casilla en venta.
-         * Valor devuelto: texto con esa información.
-         */
-        public String casEnVenta () {
-
-            String info = "{\n";
-            info += "  nombre: " + this.nombre + ",\n";
-            info += "  tipo: " + this.tipo + ",\n";
-            info += "  valor: " + (long) this.valor + "\n";
-            info += "}";
-            return info;
-
-        }
-
-
-        @Override
-        public String toString () {
-            String res = this.nombre;
-            if (this.avatares != null && !this.avatares.isEmpty()) {
-                res += " &";
-                for (Avatar a : this.avatares) {
-                    res += a.getId();
-                }
-            }
-            return res;
-        }
-
-    /*public String nombreSinAvatares() {
-        return nombre;
+        System.out.println("El jugador " + solicitante.getNombre() + " compra la casilla " + this.nombre + " por " + this.valor + "€.");
     }
 
+    /*Método para añadir valor a una casilla. Utilidad:
+     * - Sumar valor a la casilla de parking.
+     * - Sumar valor a las casillas de solar al no comprarlas tras cuatro vueltas de todos los jugadores.
+     * Este método toma como argumento la cantidad a añadir del valor de la casilla.*/
+    public void sumarValor (float suma){
+        this.valor += suma;
+    }
+
+    /*Método para mostrar información sobre una casilla.
+     * Devuelve una cadena con información específica de cada tipo de casilla.*/
+    public String infoCasilla() {
+        StringBuilder info = new StringBuilder("{\n" + "  nombre: " + this.nombre + "\n" + "  tipo: " + this.tipo + "\n");
+        if (this.duenho != null) {
+            info.append("  propietario: ").append(this.duenho.getNombre()).append("\n").append("  valor: ").append(this.valor).
+                    append("€\n");
+        }
+        if (this.getNombre().equals("Caja") || this.getNombre().equals("IrCarcel") || this.getNombre().equals("Suerte")) {
+            info = new StringBuilder("No se puede describir la casilla " + this.getNombre() + "\n");
+            return info.toString();
+        }
+        if (this.tipo.equals("impuesto")) {
+            info = new StringBuilder("{\n" + "  tipo: " + this.tipo + "\n" + "  a pagar: " + Valor.IMPUESTOS + "\n" + "}");
+            return info.toString();
+        }
+        if (this.getNombre().equals("Parking")) {
+            info.append("  bote: ").append(this.valor).append("\n").append("  jugadores: ");
+            StringJoiner nombres = new StringJoiner(",","[","]"); nombres.setEmptyValue("-");
+            for (Avatar av : avatares) {
+                nombres.add(av.getJugador().getNombre());
+            }
+            info.append(nombres).append("\n").append("}");
+            return info.toString();
+        }
+        if (this.tipo.equals("Servicios")) {
+            info = new StringBuilder("{\n" + "  tipo: " + this.tipo + "\n" + "  propietario: " + this.duenho + "\n" +
+                    "  valor: " + this.valor + "\n" + "  factor de servicio: " + Valor.FACTOR_SERVICIO + "\n}");
+            return info.toString();
+        }
+        info.append("  alquiler: ").append(Valor.SOLAR_ALQUILERES[this.posicion]).append("€\n");
+        info.append("  valor hotel: ").append(Valor.SOLAR_PRECIOS_HOTEL[this.posicion]).append("€\n");
+        info.append("  valor casa: ").append(Valor.SOLAR_PRECIOS_CASA[this.posicion]).append("€\n");
+        info.append("  valor piscina: ").append(Valor.SOLAR_PRECIOS_PISCINA[this.posicion]).append("€\n");
+        info.append("  valor pista de deporte: ").append(Valor.SOLAR_PRECIOS_PISTADEPORTE[this.posicion]).append("€\n");
+        info.append("  alquiler casa: ").append(Valor.SOLAR_ALQUILERES_CASA[this.posicion]).append("€\n");
+        info.append("  alquiler hotel: ").append((long) Valor.SOLAR_ALQUILERES_HOTEL[this.posicion]).append("€\n");
+        info.append("  alquiler piscina: ").append(Valor.SOLAR_ALQUILERES_PISCINA[this.posicion]).append("€\n");
+        info.append("  alquiler pista de deporte: ").append(Valor.SOLAR_ALQUILERES_PISTADEPORTE[this.posicion])
+                .append("€\n").append("}");
+        return info.toString();
+    }
+
+    /* Método para mostrar información de una casilla en venta.
+     * Valor devuelto: texto con esa información.
      */
+    public String casEnVenta () {
+        String info = "{\n";
+        info += "  nombre: " + this.nombre + ",\n";
+        info += "  tipo: " + this.tipo + ",\n";
+        info += "  valor: " + (long) this.valor + "\n";
+        info += "}";
+        return info;
     }
 
-
+    @Override
+    public String toString () {
+        StringBuilder res = new StringBuilder(this.nombre);
+        if (this.avatares != null && !this.avatares.isEmpty()) {
+            res.append(" &");
+            for (Avatar a : this.avatares) {
+                res.append(a.getId());
+            }
+        }
+        return res.toString();
+    }
+}
