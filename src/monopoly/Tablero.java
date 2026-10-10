@@ -37,15 +37,16 @@ public class Tablero {
         ArrayList<Casilla> norte = new ArrayList<>();
 
         norte.add(new Casilla("Parking", "especial", 21, this.banca));
-        norte.add(new Casilla("Solar12", "Solar", 22, 2200000f, this.banca));
+        norte.add(new Casilla("Solar12", "Solar", 22, 2200000f, this.banca, Valor.SOLAR_ALQUILERES[22]));
         norte.add(new Casilla("Suerte", "Suerte", 23, this.banca));
-        norte.add(new Casilla("Solar13", "Solar", 24, 2200000f, this.banca));
-        norte.add(new Casilla("Solar14", "Solar", 25, 2400000f, this.banca));
+        norte.add(new Casilla("Solar13", "Solar", 24, 2200000f, this.banca, Valor.SOLAR_ALQUILERES[24]));
+        norte.add(new Casilla("Solar14", "Solar", 25, 2400000f, this.banca, Valor.SOLAR_ALQUILERES[25]));
         norte.add(new Casilla("Trans3", "Transporte", 26, 500000f, this.banca));
-        norte.add(new Casilla("Solar15", "Solar", 27, 2600000f, this.banca));
-        norte.add(new Casilla("Solar16", "Solar", 28, 2600000f, this.banca));
+        norte.add(new Casilla("Solar15", "Solar", 27, 2600000f, this.banca, Valor.SOLAR_ALQUILERES[27]));
+        norte.add(new Casilla("Solar16", "Solar", 28, 2600000f, this.banca, Valor.SOLAR_ALQUILERES[28]));
         norte.add(new Casilla("Serv2", "Servicios", 29, 500000f, this.banca));
-        norte.add(new Casilla("Solar17", "Solar", 30, 2800000f, this.banca));
+        norte.add(new Casilla("Solar17", "Solar", 30, 2800000f, this.banca, Valor.SOLAR_ALQUILERES[30]));
+
 
         this.posiciones.add(norte);
         this.grupos.put("Rojo", new Grupo(norte.get(1), norte.get(3), norte.get(4), Valor.RED));
@@ -58,15 +59,15 @@ public class Tablero {
         ArrayList<Casilla> sur = new ArrayList<>();
 
         sur.add(new Casilla("Salida", "especial", 1, this.banca));
-        sur.add(new Casilla("Solar1", "Solar", 2, 600000f, this.banca));
+        sur.add(new Casilla("Solar1", "Solar", 2, 600000f, this.banca, Valor.SOLAR_ALQUILERES[2]));
         sur.add(new Casilla("Caja", "Comunidad", 3, this.banca));
-        sur.add(new Casilla("Solar2", "Solar", 4, 600000f, this.banca));
+        sur.add(new Casilla("Solar2", "Solar", 4, 600000f, this.banca, Valor.SOLAR_ALQUILERES[4]));
         sur.add(new Casilla("Imp1", 5, 2000000f, this.banca));
         sur.add(new Casilla("Trans1", "Transporte", 6, 500000f, this.banca));
-        sur.add(new Casilla("Solar3", "Solar", 7, 1000000f, this.banca));
+        sur.add(new Casilla("Solar3", "Solar", 7, 1000000f, this.banca, Valor.SOLAR_ALQUILERES[7]));
         sur.add(new Casilla("Suerte", "Suerte", 8, this.banca));
-        sur.add(new Casilla("Solar4", "Solar", 9, 1000000f, this.banca));
-        sur.add(new Casilla("Solar5", "Solar", 10, 1200000f, this.banca));
+        sur.add(new Casilla("Solar4", "Solar", 9, 1000000f, this.banca, Valor.SOLAR_ALQUILERES[9]));
+        sur.add(new Casilla("Solar5", "Solar", 10, 1200000f, this.banca, Valor.SOLAR_ALQUILERES[10]));
 
         this.posiciones.add(sur);
 
@@ -79,16 +80,17 @@ public class Tablero {
     private void insertarLadoOeste() {
         ArrayList<Casilla> oeste = new ArrayList<>();
 
+
         oeste.add(new Casilla("Carcel", "especial", 11, this.banca));
-        oeste.add(new Casilla("Solar6", "Solar", 12, 1400000f, this.banca));
+        oeste.add(new Casilla("Solar6", "Solar", 12, 1400000f, this.banca, Valor.SOLAR_ALQUILERES[12]));
         oeste.add(new Casilla("Serv1", "Servicios", 13, 500000f, this.banca));
-        oeste.add(new Casilla("Solar7", "Solar", 14, 1400000f, this.banca));
-        oeste.add(new Casilla("Solar8", "Solar", 15, 1600000f, this.banca));
+        oeste.add(new Casilla("Solar7", "Solar", 14, 1400000f, this.banca, Valor.SOLAR_ALQUILERES[14]));
+        oeste.add(new Casilla("Solar8", "Solar", 15, 1600000f, this.banca, Valor.SOLAR_ALQUILERES[15]));
         oeste.add(new Casilla("Trans2", "Transporte", 16, 500000f, this.banca));
-        oeste.add(new Casilla("Solar9", "Solar", 17, 1800000f, this.banca));
-        oeste.add(new Casilla("Solar10", "Solar", 18, 1800000f, this.banca));
+        oeste.add(new Casilla("Solar9", "Solar", 17, 1800000f, this.banca, Valor.SOLAR_ALQUILERES[17]));
+        oeste.add(new Casilla("Solar10", "Solar", 18, 1800000f, this.banca, Valor.SOLAR_ALQUILERES[18]));
         oeste.add(new Casilla("Caja", "Comunidad", 19, this.banca));
-        oeste.add(new Casilla("Solar11", "Solar", 20, 2200000f, this.banca));
+        oeste.add(new Casilla("Solar11", "Solar", 20, 2200000f, this.banca, Valor.SOLAR_ALQUILERES[20]));
 
         this.posiciones.add(oeste);
         this.grupos.put("Morado", new Grupo(oeste.get(1), oeste.get(3), oeste.get(4), Valor.PURPLE));
@@ -101,16 +103,17 @@ public class Tablero {
     private void insertarLadoEste() {
         ArrayList<Casilla> este = new ArrayList<>();
 
+
         este.add(new Casilla("IrCarcel", "especial", 31, this.banca));
-        este.add(new Casilla("Solar18", "Solar", 32, 3000000f, this.banca));
-        este.add(new Casilla("Solar19", "Solar", 33, 3000000f, this.banca));
+        este.add(new Casilla("Solar18", "Solar", 32, 3000000f, this.banca, Valor.SOLAR_ALQUILERES[32]));
+        este.add(new Casilla("Solar19", "Solar", 33, 3000000f, this.banca, Valor.SOLAR_ALQUILERES[33]));
         este.add(new Casilla("Caja", "Comunidad", 34, this.banca));
-        este.add(new Casilla("Solar20", "Solar", 35, 3200000f, this.banca));
+        este.add(new Casilla("Solar20", "Solar", 35, 3200000f, this.banca, Valor.SOLAR_ALQUILERES[35]));
         este.add(new Casilla("Trans4", "Transporte", 36, 500000f, this.banca));
         este.add(new Casilla("Suerte", "Suerte", 37, this.banca));
-        este.add(new Casilla("Solar21", "Solar", 38, 3500000f, this.banca));
+        este.add(new Casilla("Solar21", "Solar", 38, 3500000f, this.banca, Valor.SOLAR_ALQUILERES[38]));
         este.add(new Casilla("Imp2", 39, 2000000f, this.banca));
-        este.add(new Casilla("Solar22", "Solar", 40, 4000000f, this.banca));
+        este.add(new Casilla("Solar22", "Solar", 40, 4000000f, this.banca, Valor.SOLAR_ALQUILERES[40]));
 
         this.posiciones.add(este);
         this.grupos.put("Verde", new Grupo(este.get(1), este.get(2), este.get(4), Valor.GREEN));

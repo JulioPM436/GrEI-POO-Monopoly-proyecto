@@ -36,6 +36,20 @@ public class Casilla {
         this.duenho = duenho;
     }
 
+    //Constructor para solar y poder guardar el impuesto
+    public Casilla(String nombre, String tipo, int posicion, float valor, Jugador duenho, float impuesto) {
+        this.nombre = nombre;
+        this.tipo = tipo;
+        this.posicion = posicion;
+        this.valor = valor;
+        this.duenho = duenho;
+        this.impuesto = impuesto;
+
+    }
+
+
+
+
     /*Constructor utilizado para inicializar las casillas de tipo IMPUESTOS.
      * Parámetros: nombre, posición en el tablero, impuesto establecido y dueño.
      */
@@ -215,7 +229,7 @@ public class Casilla {
                 }
                 actual.sumarFortuna(-impuesto);
                 actual.sumarGastos(impuesto);
-                //parking.sumarValor(impuesto);
+                parking.sumarValor(impuesto);
                 System.out.println("El jugador paga " + (long) impuesto + "€ que se depositan en el Parking.");
                 return true;
             case "especial":
