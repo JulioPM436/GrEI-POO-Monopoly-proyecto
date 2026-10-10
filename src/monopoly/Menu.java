@@ -158,10 +158,28 @@ public class Menu {
         if (partes.length == 4){
             // Se impide crear más jugadores si ya hay 4.
             if (jugadores.size() < 4) {
+
+                String nombre = partes[2];
+                String tipo = partes[3];
+
+                if (!tipo.equals("coche") && !tipo.equals("esfinge") && !tipo.equals("sombrero") && !tipo.equals("pelota")) {
+                    System.out.println("ERROR: El avatar debe ser coche, esfinge, sombrero o pelota.");
+                    return;  //comprueba que sea uno de los 4 posibles avatares
+                }
+
+                if (buscarjugador(nombre) != null) {
+                    System.out.println("ERROR: Ya existe un jugador llamado " + nombre + ".");
+                    return;
+                }
+
+
                 // Se busca cuál es la casilla de salida, todos los jugadores empiezan ahí.
                 Casilla salida = tablero.encontrar_casilla("Salida");
                 // Se crea el jugador como tal.
                 Jugador j = new Jugador(partes[2], partes[3], salida, avatares);
+
+                // se colocan los avatares en la casilla de salida
+                salida.anhadirAvatar(j.getAvatar());
                 // Se guardan sus datos y su avatar en un arraylist para no perder su referencia.
                 jugadores.add(j);
                 avatares.add(j.getAvatar());
@@ -269,6 +287,12 @@ public class Menu {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
+
+        if (jugadores.size() < 2) {
+            System.out.println("Se necesitan al menos 2 jugadores para empezar la partida.");
+            return;
+        }
+
         if (tirado) {
             System.out.println("El jugador ya ha tirado los dados");
             return;
