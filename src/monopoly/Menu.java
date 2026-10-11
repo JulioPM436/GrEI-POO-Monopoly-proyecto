@@ -344,6 +344,11 @@ public class Menu {
             // Al salir de la cárcel avanza con esta tirada, pero no vuelve a tirar aunque sean dobles.
             tirado = true;
             moverYEvaluar(actual, suma);
+            Casilla destinoCas = tablero.getCasillaPorPosicion(destinoPos);
+            String nombre2 = destinoCas.getNombre();
+            System.out.println("El avatar " + actual.getAvatar().getId() + " avanza " + suma +  " posiciones, desde " +
+                    nombre + " hasta " + nombre2 + ".");
+            System.out.println(tablero);
             return;
         }
         //SEGUNDA PARTE: TIRO NORMALITO
@@ -369,13 +374,10 @@ public class Menu {
             tirado = true;
             lanzamientos = 0;
         }
-
         Casilla destinoCas = tablero.getCasillaPorPosicion(destinoPos);
         String nombre2 = destinoCas.getNombre();
-
-            System.out.println("El avatar " + actual.getAvatar().getId() + " avanza " + suma +  " posiciones, desde " +
-                    nombre + " hasta " + nombre2 + ".");
-
+        System.out.println("El avatar " + actual.getAvatar().getId() + " avanza " + suma +  " posiciones, desde " +
+                nombre + " hasta " + nombre2 + ".");
         System.out.println(tablero);
     }
 
