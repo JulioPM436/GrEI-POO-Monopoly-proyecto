@@ -158,21 +158,17 @@ public class Menu {
         if (partes.length == 4){
             // Se impide crear más jugadores si ya hay 4.
             if (jugadores.size() < 4) {
-
+                // Se trocea el comando para tomar cada argumento
                 String nombre = partes[2];
                 String tipo = partes[3];
-
                 if (!tipo.equals("coche") && !tipo.equals("esfinge") && !tipo.equals("sombrero") && !tipo.equals("pelota")) {
                     System.out.println("ERROR: El avatar debe ser coche, esfinge, sombrero o pelota.");
                     return;  //comprueba que sea uno de los 4 posibles avatares
                 }
-
                 if (buscarjugador(nombre) != null) {
                     System.out.println("ERROR: Ya existe un jugador llamado " + nombre + ".");
                     return;
                 }
-
-
                 // Se busca cuál es la casilla de salida, todos los jugadores empiezan ahí.
                 Casilla salida = tablero.encontrar_casilla("Salida");
                 // Se crea el jugador como tal.
@@ -183,6 +179,11 @@ public class Menu {
                 // Se guardan sus datos y su avatar en un arraylist para no perder su referencia.
                 jugadores.add(j);
                 avatares.add(j.getAvatar());
+                System.out.println("{");
+                System.out.println("  nombre: " + j.getNombre() + ",");
+                System.out.println("  avatar: " + j.getAvatar().getId());
+                System.out.println("}");
+
             } else {
                 System.out.println("ERROR: No se pueden crear más de 4 jugadores.");
             }
@@ -281,6 +282,7 @@ public class Menu {
     // Ya incluye el modo de tirada fija.
 
     /// TODO:       Debería decir en texto las casillas que se mueve y a cuál va a parar, igual que en el guión?
+    /// Correcto
 
     private void lanzarDados(String[] partes) {
         if (jugadores.isEmpty()) {
