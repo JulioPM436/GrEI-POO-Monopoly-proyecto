@@ -183,7 +183,7 @@ public class Menu {
                 System.out.println("  nombre: " + j.getNombre() + ",");
                 System.out.println("  avatar: " + j.getAvatar().getId());
                 System.out.println("}");
-
+                System.out.println(tablero);
             } else {
                 System.out.println("ERROR: No se pueden crear más de 4 jugadores.");
             }
@@ -280,21 +280,15 @@ public class Menu {
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
     // Ya incluye el modo de tirada fija.
-
-    /// TODO:       Debería decir en texto las casillas que se mueve y a cuál va a parar, igual que en el guión?
-    /// Correcto
-
     private void lanzarDados(String[] partes) {
         if (jugadores.isEmpty()) {
             System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
-
         if (jugadores.size() < 2) {
             System.out.println("Se necesitan al menos 2 jugadores para empezar la partida.");
             return;
         }
-
         if (tirado) {
             System.out.println("El jugador ya ha tirado los dados");
             return;
@@ -314,6 +308,10 @@ public class Menu {
         sonDobles = (tirada1 == tirada2);
 
         Jugador actual = getJugadorActual();
+        assert actual != null;
+        String nombre = actual.getAvatar().getLugar().getNombre();
+        int actualPos = actual.getAvatar().getLugar().getPosicion();
+        int destinoPos = (actualPos - 1 + suma) % 40 + 1;
 
         //PRIMERA PARTE: SI EL JUGADOR ESTÁ EN LA CÁRCEL
         if (actual.isEnCarcel()) {
@@ -371,12 +369,21 @@ public class Menu {
             tirado = true;
             lanzamientos = 0;
         }
+
+        Casilla destinoCas = tablero.getCasillaPorPosicion(destinoPos);
+        String nombre2 = destinoCas.getNombre();
+
+            System.out.println("El avatar " + actual.getAvatar().getId() + " avanza " + suma +  " posiciones, desde " +
+                    nombre + " hasta " + nombre2 + ".");
+
+        System.out.println(tablero);
     }
 
     // Mueve el avatar del jugador y realiza la acción de la casilla en la que cae.
     private void moverYEvaluar(Jugador actual, int suma) {
         actual.getAvatar().moverAvatar(tablero.getPosiciones(), suma);
         Casilla casilla = actual.getAvatar().getLugar();
+
         if (casilla.getNombre().equals("IrCarcel")) {
             System.out.println("Has caído en IrCarcel: el avatar se coloca en la casilla de Cárcel.");
             actual.encarcelar(tablero.getPosiciones());
@@ -401,8 +408,7 @@ public class Menu {
         }
 
         getJugadorActual().getAvatar().getLugar().comprarCasilla(getJugadorActual(),banca);
-
-
+        System.out.println("Su fortuna actual es de " + (long)getJugadorActual().getFortuna() + "€.");
     }
 
     //Método que ejecuta todas las acciones relacionadas con el comando 'salir carcel'. 
