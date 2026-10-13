@@ -583,25 +583,53 @@ public class Menu {
     private void edificar(String[] partes) {
         switch (partes[1]) {
             case "casa":
-                int cantidad;
+                // Se guardará como INT la cantidad de casas a comprar.
+                int cantidad = 0;
+                // Si se introdujeron 3 argumentos en el comando,
                 if (partes.length == 3) {
+                    // el tercero será el número de casas. Con un catch se prepara el mensaje de error por si no
+                    //      se introdujo un número. Con parseInt se convierte de String a Int.
                     try {
                         cantidad = Integer.parseInt(partes[2]);
                     } catch (NumberFormatException e) {
                         System.out.println("La cantidad debe ser un número entero entre 1 y 4.");
                     }
+                    // Si no se especifica cantidad, se asume que se compra una sola casa.
                 } else if (partes.length == 2) {
                     cantidad = 1;
                 }
-
-
-
-
+                // Se revisa el número introducido
                 if (partes.length == 3) {
-
                     if (cantidad >= 4 || cantidad <= 0) {
                         System.out.println("ERROR: No puedes construir más de 4 casas en una casilla.");
                     } else {
+                        // Para poder comprar casas, debe tener todas las casillas del grupo.
+                        Jugador actual = getJugadorActual();
+                        assert actual != null;
+                        int actualCasillaPos = actual.getAvatar().getLugar().getPosicion();
+                        Casilla actualCasilla = actual.getAvatar().getLugar();
+                        Grupo actualGrupo = actual.getAvatar().getLugar().getGrupo();
+                        float precio = (cantidad * Valor.SOLAR_PRECIOS_CASA[actualCasillaPos]);
+                        // Si es dueño de todas las casillas del grupo, puede construir casas.
+                        if (actualGrupo.esDuenhoGrupo(actual)) {
+                            // Pero primero debe poder pagarlas.
+                            if (actual.getFortuna() >= precio) {
+                                // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
+                                actual.sumarFortuna(-precio);
+                                // Se actualiza el número de casas.
+                                actualCasilla.setCasa(cantidad);
+                                if (cantidad == 1) {
+                                    System.out.println("Se ha edificado una casa en " + actualCasilla.getNombre() + ". La " +
+                                            "fortuna de " + actual.getNombre() + "se reduce en " + precio + "€.");
+                                } else {
+
+                                }
+                            } else {
+                                System.out.println("ERROR: Dinero insuficiente.");
+                            }
+                        } else {
+                            System.out.println("ERROR: Debes ser dueño de todo el grupo para poder construir.");
+                        }
 
                     }
                 }
