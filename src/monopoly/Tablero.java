@@ -194,4 +194,16 @@ public class Tablero {
         }
         return null;
     }
+
+    // Método que devuelve una casilla según su posición.
+    public Casilla getCasillaPorPosicion(int posicion) {
+        for (ArrayList<Casilla> lado : posiciones) {
+            for (Casilla c : lado) {
+                if (c.getPosicion() == posicion) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
 }
