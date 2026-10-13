@@ -6,10 +6,6 @@ import java.util.StringJoiner;
 
 
 public class Casilla {
-
-    //IR HACIENDO GETTERS Y SETTERS DE LOS ATRIBUTOS PARA EMPEZAR
-
-    //Atributos:
     private String nombre; //Nombre de la casilla
     private String tipo; //Tipo de casilla (Solar, Especial, Transporte, Servicios, Comunidad, Suerte y Impuesto).
     private float valor; //Valor de esa casilla (será valor de compra, en la casilla parking se usará como el bote).
@@ -17,14 +13,13 @@ public class Casilla {
     private Jugador duenho; //Dueño de la casilla (por defecto sería la banca).
     private Grupo grupo; //Grupo al que pertenece la casilla (si es solar).
     private float impuesto; //Cantidad a pagar por caer en la casilla: el alquiler en solares/servicios/transportes o impuestos.
-    private float hipoteca; //Valor otorgado por hipotecar una casilla
-    private ArrayList<Avatar> avatares = new ArrayList<>();//Avatares que están situados en la casilla.
+    private float hipoteca; //Valor otorgado por hipotecar una casilla.
+    private ArrayList<Avatar> avatares = new ArrayList<>(); //Avatares que están situados en la casilla.
+    private int casas, hotel, piscina, pistadeporte; // Número de edificaciones dentro de cada casilla.
 
-
-    //Constructores:
+    //Constructor vacío (por defecto).
     public Casilla() {
-    }//Parámetros vacíos
-
+    }
 
     /*Constructor para casillas tipo Solar, Servicios o Transporte:
      * Parámetros: nombre casilla, tipo (debe ser solar, serv. o transporte), posición en el tablero, valor y dueño.
@@ -47,9 +42,6 @@ public class Casilla {
         this.impuesto = impuesto;
 
     }
-
-
-
 
     /*Constructor utilizado para inicializar las casillas de tipo IMPUESTOS.
      * Parámetros: nombre, posición en el tablero, impuesto establecido y dueño.
@@ -146,6 +138,42 @@ public class Casilla {
     public void setAvatares(ArrayList<Avatar> avatares) {
         this.avatares = avatares;
     }
+
+    public void setCasa(int numCasas) {
+        this.casas = numCasas;
+    }
+
+    public int getCasas() {
+        return this.casas;
+    }
+
+    public void setHotel() {
+        this.casas = 0;  // Se cambian las 4 casas por el hotel.
+        this.hotel = 1;
+    }
+
+    public int getHotel() {
+        return this.casas;
+    }
+
+    public void setPiscina() {
+        this.piscina = 1;
+    }
+
+    public int getPiscina() {
+        return this.casas;
+    }
+
+    public void setPistadeporte() {
+        this.casas = 1;
+    }
+
+    public int getPistadeporte() {
+        return this.casas;
+    }
+
+
+
 
     //Método utilizado para añadir un avatar al array de avatares en casilla.
     public void anhadirAvatar(Avatar av) {

@@ -152,6 +152,15 @@ public class Menu {
             case "ver":
                 System.out.println(tablero);
                 break;
+
+            case "edificar":
+                if (partes.length < 2 || partes.length > 3) {
+                    System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                    break;
+                }
+                edificar(partes);
+                break;
+
             case "comandos":
                 procesarComandos(partes);
                 break;
@@ -172,7 +181,7 @@ public class Menu {
 
 
 
-    /*Método que realiza las acciones asociadas al comando 'crear jugador'.
+    /* Método que realiza las acciones asociadas al comando 'crear jugador'.
      * Formato: crear jugador <nombre> <avatar>
      */
     private void crearJugador(String[] partes) {
@@ -217,8 +226,8 @@ public class Menu {
     }
 
     /*Método que realiza las acciones asociadas al comando 'describir jugador'.
-    * Parámetro: comando introducido
-    * Formato: describir jugador <nombre>
+     * Parámetro: comando introducido
+     * Formato: describir jugador <nombre>
      */
     private void descJugador(String[] partes) {
         // Si la cantidad de parámetros introducidos es menor que 2, el comando no se introdujo correctamente.
@@ -262,10 +271,10 @@ public class Menu {
         return null;
     }
 
-    /*Método que realiza las acciones asociadas al comando 'describir avatar'.
-    * Parámetro: id del avatar a describir.
-    * Formato:
-    */
+    /* Método que realiza las acciones asociadas al comando 'describir avatar'.
+     * Parámetro: id del avatar a describir.
+     * Formato:
+     */
     private void descAvatar(String ID) {
         Avatar a = buscarAvatar(ID);
         if (a == null) {
@@ -289,8 +298,8 @@ public class Menu {
     }
 
     /* Método que realiza las acciones asociadas al comando 'describir nombre_casilla'.
-    * Parámetros: nombre de la casilla a describir.
-    */
+     * Parámetros: nombre de la casilla a describir.
+     */
     private void descCasilla(String nombre) {
         Casilla c = tablero.encontrar_casilla(nombre);
         if (c == null) {
@@ -300,7 +309,7 @@ public class Menu {
         System.out.println(c.infoCasilla());
     }
 
-    //Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
+    // Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
     // Ya incluye el modo de tirada fija.
     private void lanzarDados(String[] partes) {
         if (jugadores.isEmpty()) {
@@ -420,6 +429,7 @@ public class Menu {
         }
     }
 
+<<<<<<< HEAD
     //metodo para seleccionar la carta
     private void sacarCarta(Jugador j, String tipo){
 
@@ -470,6 +480,10 @@ public class Menu {
 
     /*Método que ejecuta todas las acciones realizadas con el comando 'comprar nombre_casilla'.
     * Parámetro: cadena de caracteres con el nombre de la casilla.
+=======
+    /* Método que ejecuta todas las acciones realizadas con el comando 'comprar nombre_casilla'.
+     * Parámetro: cadena de caracteres con el nombre de la casilla.
+>>>>>>> ad9f5eb6ea95ebee2472fb01b3db00fbf2cc881e
      */
     private void comprar(String nombre) {
 
@@ -641,6 +655,48 @@ public class Menu {
             //   Imprime un mensaje de error.
         } catch (IOException e) {
             System.out.println("ERROR: No se pudo leer el archivo: " + partes[1]);
+        }
+    }
+
+    // Método para construir los edificios en una casilla.
+    private void edificar(String[] partes) {
+        switch (partes[1]) {
+            case "casa":
+                int cantidad;
+                if (partes.length == 3) {
+                    try {
+                        cantidad = Integer.parseInt(partes[2]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("La cantidad debe ser un número entero entre 1 y 4.");
+                    }
+                } else if (partes.length == 2) {
+                    cantidad = 1;
+                }
+
+
+
+
+                if (partes.length == 3) {
+
+                    if (cantidad >= 4 || cantidad <= 0) {
+                        System.out.println("ERROR: No puedes construir más de 4 casas en una casilla.");
+                    } else {
+
+                    }
+                }
+                break;
+            case "hotel":
+
+                break;
+            case "piscina":
+
+                break;
+            case "pistadeporte":
+
+                break;
+            default:
+                System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                break;
         }
     }
 }
