@@ -429,7 +429,7 @@ public class Menu {
         }
     }
 
-<<<<<<< HEAD
+
     //metodo para seleccionar la carta
     private void sacarCarta(Jugador j, String tipo){
 
@@ -480,10 +480,6 @@ public class Menu {
 
     /*Método que ejecuta todas las acciones realizadas con el comando 'comprar nombre_casilla'.
     * Parámetro: cadena de caracteres con el nombre de la casilla.
-=======
-    /* Método que ejecuta todas las acciones realizadas con el comando 'comprar nombre_casilla'.
-     * Parámetro: cadena de caracteres con el nombre de la casilla.
->>>>>>> ad9f5eb6ea95ebee2472fb01b3db00fbf2cc881e
      */
     private void comprar(String nombre) {
 
