@@ -103,4 +103,13 @@ public class Avatar {
         // Si sale del bucle, es que el ID no está repetido. Se asigna el atributo.
         this.id = id;
     }
+
+    // Coloca el avatar directamente en la casilla indicada, sin recorrer el tablero (no cobra la Salida).
+    public void colocarEn(Casilla destino) {
+        this.lugar.eliminarAvatar(this);
+        this.lugar = destino;
+        destino.anhadirAvatar(this);
+    }
 }
+
+

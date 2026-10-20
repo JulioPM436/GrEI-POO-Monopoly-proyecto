@@ -22,6 +22,28 @@ public class Menu {
     private boolean tirado; //Booleano para comprobar si el jugador que tiene el turno ha tirado o no.
     private boolean solvente; //Booleano para comprobar si el jugador que tiene el turno ha pagado sus deudas.
 
+    private int numCartaSuerte = 0; //Última carta de Suerte que ha salido (0 = ninguna todavía).
+    private int numCartaComunidad = 0; //Última carta de Caja de Comunidad que ha salido.
+
+    // Textos de las cartas (Apéndice A). La carta 1 está en la posición 0 del array.
+    private static final String[] CARTAS_SUERTE = {
+            "Decides hacer un viaje de placer. Avanza hasta Solar19. Si pasas por la casilla de Salida, cobra 2.000.000€.",
+            "Los acreedores te persiguen por impago. Ve a la Cárcel. Ve directamente sin pasar por la casilla de Salida y sin cobrar los 2.000.000€.",
+            "¡Has ganado el bote de la lotería! Recibe 1.000.000€.",
+            "Has sido elegido presidente de la junta directiva. Paga a cada jugador 250.000€.",
+            "¡Hora punta de tráfico! Retrocede tres casillas.",
+            "Te multan por usar el móvil mientras conduces. Paga 150.000€.",
+            "Avanza hasta la casilla de transporte más cercana. Si no tiene dueño, puedes comprarla. Si tiene dueño, paga al dueño el doble de la operación indicada."
+    };
+    private static final String[] CARTAS_COMUNIDAD = {
+            "Paga 500.000€ por un fin de semana en un balneario de 5 estrellas.",
+            "Te investigan por fraude de identidad. Ve a la Cárcel. Ve directamente sin pasar por la casilla de Salida y sin cobrar los 2.000.000€.",
+            "Colócate en la casilla de Salida. Cobra 2.000.000€.",
+            "Devolución de Hacienda. Cobra 500.000€.",
+            "Retrocede hasta Solar1 para comprar antigüedades exóticas.",
+            "Ve a Solar20 para disfrutar del San Fermín. Si pasas por la casilla de Salida, cobra 2.000.000€."
+    };
+
     //contructor
     public Menu(){
         this.banca = new Jugador();
@@ -130,6 +152,15 @@ public class Menu {
             case "ver":
                 System.out.println(tablero);
                 break;
+
+            case "edificar":
+                if (partes.length < 2 || partes.length > 3) {
+                    System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                    break;
+                }
+                edificar(partes);
+                break;
+
             case "comandos":
                 procesarComandos(partes);
                 break;
@@ -150,7 +181,7 @@ public class Menu {
 
 
 
-    /*Método que realiza las acciones asociadas al comando 'crear jugador'.
+    /* Método que realiza las acciones asociadas al comando 'crear jugador'.
      * Formato: crear jugador <nombre> <avatar>
      */
     private void crearJugador(String[] partes) {
@@ -199,8 +230,8 @@ public class Menu {
     }
 
     /*Método que realiza las acciones asociadas al comando 'describir jugador'.
-    * Parámetro: comando introducido
-    * Formato: describir jugador <nombre>
+     * Parámetro: comando introducido
+     * Formato: describir jugador <nombre>
      */
     private void descJugador(String[] partes) {
         // Si la cantidad de parámetros introducidos es menor que 2, el comando no se introdujo correctamente.
@@ -244,10 +275,10 @@ public class Menu {
         return null;
     }
 
-    /*Método que realiza las acciones asociadas al comando 'describir avatar'.
-    * Parámetro: id del avatar a describir.
-    * Formato:
-    */
+    /* Método que realiza las acciones asociadas al comando 'describir avatar'.
+     * Parámetro: id del avatar a describir.
+     * Formato:
+     */
     private void descAvatar(String ID) {
         Avatar a = buscarAvatar(ID);
         if (a == null) {
@@ -271,8 +302,8 @@ public class Menu {
     }
 
     /* Método que realiza las acciones asociadas al comando 'describir nombre_casilla'.
-    * Parámetros: nombre de la casilla a describir.
-    */
+     * Parámetros: nombre de la casilla a describir.
+     */
     private void descCasilla(String nombre) {
         Casilla c = tablero.encontrar_casilla(nombre);
         if (c == null) {
@@ -282,7 +313,7 @@ public class Menu {
         System.out.println(c.infoCasilla());
     }
 
-    //Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
+    // Método que ejecuta todas las acciones relacionadas con el comando 'lanzar dados'.
     // Ya incluye el modo de tirada fija.
     private void lanzarDados(String[] partes) {
         if (jugadores.isEmpty()) {
@@ -393,9 +424,62 @@ public class Menu {
         if (casilla.getNombre().equals("IrCarcel")) {
             System.out.println("Has caído en IrCarcel: el avatar se coloca en la casilla de Cárcel.");
             actual.encarcelar(tablero.getPosiciones());
-        } else {
+        } else if (casilla.getTipo().equals("Suerte") || casilla.getTipo().equals("Comunidad")) {
+            //sacarCarta(actual, casilla.getTipo());
+        }
+
+        else {
             casilla.evaluarCasilla(actual, banca, suma, tablero.encontrar_casilla("Parking"));
         }
+    }
+
+
+    //metodo para seleccionar la carta
+    private void sacarCarta(Jugador j, String tipo){
+
+    }
+
+    //metodos para las acciones de las diferentes cartas
+
+
+
+
+
+   // metodos auxiliares para casillas suerte y comunidad
+
+    // Avanza el avatar del jugador hasta la casilla destino. Si pasa por la Salida, cobra (lo hace moverAvatar).
+    private void moverHasta(Jugador actual, Casilla destino) {
+        int pasos = (destino.getPosicion() - actual.getAvatar().getLugar().getPosicion() + 40) % 40;
+        actual.getAvatar().moverAvatar(tablero.getPosiciones(), pasos);
+    }
+
+    // Devuelve la casilla que ocupa el índice indicado (de 0 a 39) en el tablero.
+    private Casilla casillaEnIndice(int indice) {
+        return tablero.getPosiciones().get(indice / 10).get(indice % 10);
+    }
+
+    // Busca, avanzando desde la casilla dada, la primera casilla de transporte.
+    private Casilla transporteMasCercano(Casilla desde) {
+        int indice = desde.getPosicion() - 1;
+        for (int i = 1; i <= 40; i++) {
+            Casilla c = casillaEnIndice((indice + i) % 40);
+            if (c.getTipo().equals("Transporte")) {
+                return c;
+            }
+        }
+        return desde;
+    }
+
+    // Intenta cobrar una cantidad al jugador. Si no tiene suficiente dinero, le avisa y no paga.
+    private boolean pagar(Jugador actual, float cantidad) {
+        if (actual.getFortuna() < cantidad) {
+            System.out.println(actual.getNombre() + " no puede pagar " + (long) cantidad
+                    + "€. Debe hipotecar alguna propiedad o declararse en bancarrota.");
+            return false;
+        }
+        actual.sumarFortuna(-cantidad);
+        actual.sumarGastos(cantidad);
+        return true;
     }
 
     /*Método que ejecuta todas las acciones realizadas con el comando 'comprar nombre_casilla'.
@@ -571,6 +655,76 @@ public class Menu {
             //   Imprime un mensaje de error.
         } catch (IOException e) {
             System.out.println("ERROR: No se pudo leer el archivo: " + partes[1]);
+        }
+    }
+
+    // Método para construir los edificios en una casilla.
+    private void edificar(String[] partes) {
+        switch (partes[1]) {
+            case "casa":
+                // Se guardará como INT la cantidad de casas a comprar.
+                int cantidad = 0;
+                // Si se introdujeron 3 argumentos en el comando,
+                if (partes.length == 3) {
+                    // el tercero será el número de casas. Con un catch se prepara el mensaje de error por si no
+                    //      se introdujo un número. Con parseInt se convierte de String a Int.
+                    try {
+                        cantidad = Integer.parseInt(partes[2]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("La cantidad debe ser un número entero entre 1 y 4.");
+                    }
+                    // Si no se especifica cantidad, se asume que se compra una sola casa.
+                } else if (partes.length == 2) {
+                    cantidad = 1;
+                }
+                // Se revisa el número introducido
+                if (partes.length == 3) {
+                    if (cantidad >= 4 || cantidad <= 0) {
+                        System.out.println("ERROR: No puedes construir más de 4 casas en una casilla.");
+                    } else {
+                        // Para poder comprar casas, debe tener todas las casillas del grupo.
+                        Jugador actual = getJugadorActual();
+                        assert actual != null;
+                        int actualCasillaPos = actual.getAvatar().getLugar().getPosicion();
+                        Casilla actualCasilla = actual.getAvatar().getLugar();
+                        Grupo actualGrupo = actual.getAvatar().getLugar().getGrupo();
+                        float precio = (cantidad * Valor.SOLAR_PRECIOS_CASA[actualCasillaPos]);
+                        // Si es dueño de todas las casillas del grupo, puede construir casas.
+                        if (actualGrupo.esDuenhoGrupo(actual)) {
+                            // Pero primero debe poder pagarlas.
+                            if (actual.getFortuna() >= precio) {
+                                // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
+                                actual.sumarFortuna(-precio);
+                                // Se actualiza el número de casas.
+                                actualCasilla.setCasa(cantidad);
+                                if (cantidad == 1) {
+                                    System.out.println("Se ha edificado una casa en " + actualCasilla.getNombre() + ". La " +
+                                            "fortuna de " + actual.getNombre() + "se reduce en " + precio + "€.");
+                                } else {
+
+                                }
+                            } else {
+                                System.out.println("ERROR: Dinero insuficiente.");
+                            }
+                        } else {
+                            System.out.println("ERROR: Debes ser dueño de todo el grupo para poder construir.");
+                        }
+
+                    }
+                }
+                break;
+            case "hotel":
+
+                break;
+            case "piscina":
+
+                break;
+            case "pistadeporte":
+
+                break;
+            default:
+                System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                break;
         }
     }
 }
