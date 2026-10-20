@@ -28,16 +28,19 @@ public class Menu {
     // Textos de las cartas (Apéndice A). La carta 1 está en la posición 0 del array.
     private static final String[] CARTAS_SUERTE = {
             "Decides hacer un viaje de placer. Avanza hasta Solar19. Si pasas por la casilla de Salida, cobra 2.000.000€.",
-            "Los acreedores te persiguen por impago. Ve a la Cárcel. Ve directamente sin pasar por la casilla de Salida y sin cobrar los 2.000.000€.",
+            "Los acreedores te persiguen por impago. Ve a la Cárcel. Ve directamente sin pasar por la casilla de Salida y sin" +
+                    " cobrar los 2.000.000€.",
             "¡Has ganado el bote de la lotería! Recibe 1.000.000€.",
             "Has sido elegido presidente de la junta directiva. Paga a cada jugador 250.000€.",
             "¡Hora punta de tráfico! Retrocede tres casillas.",
             "Te multan por usar el móvil mientras conduces. Paga 150.000€.",
-            "Avanza hasta la casilla de transporte más cercana. Si no tiene dueño, puedes comprarla. Si tiene dueño, paga al dueño el doble de la operación indicada."
+            "Avanza hasta la casilla de transporte más cercana. Si no tiene dueño, puedes comprarla. Si tiene dueño, paga al" +
+                    " dueño el doble de la operación indicada."
     };
     private static final String[] CARTAS_COMUNIDAD = {
             "Paga 500.000€ por un fin de semana en un balneario de 5 estrellas.",
-            "Te investigan por fraude de identidad. Ve a la Cárcel. Ve directamente sin pasar por la casilla de Salida y sin cobrar los 2.000.000€.",
+            "Te investigan por fraude de identidad. Ve a la Cárcel. Ve directamente sin pasar por la casilla de Salida y" +
+                    " sin cobrar los 2.000.000€.",
             "Colócate en la casilla de Salida. Cobra 2.000.000€.",
             "Devolución de Hacienda. Cobra 500.000€.",
             "Retrocede hasta Solar1 para comprar antigüedades exóticas.",
@@ -656,72 +659,179 @@ public class Menu {
 
     // Método para construir los edificios en una casilla.
     private void edificar(String[] partes) {
-        switch (partes[1]) {
-            case "casa":
-                // Se guardará como INT la cantidad de casas a comprar.
-                int cantidad = 0;
-                // Si se introdujeron 3 argumentos en el comando,
-                if (partes.length == 3) {
-                    // el tercero será el número de casas. Con un catch se prepara el mensaje de error por si no
-                    //      se introdujo un número. Con parseInt se convierte de String a Int.
-                    try {
-                        cantidad = Integer.parseInt(partes[2]);
-                    } catch (NumberFormatException e) {
-                        System.out.println("La cantidad debe ser un número entero entre 1 y 4.");
+        // Obtenemos los datos del jugador,casilla en la que está y el grupo.
+        Jugador actual = getJugadorActual();
+        assert actual != null;
+        int actualCasillaPos = actual.getAvatar().getLugar().getPosicion();
+        Casilla actualCasilla = actual.getAvatar().getLugar();
+        Grupo actualGrupo = actual.getAvatar().getLugar().getGrupo();
+        String actualCasillaTipo = actualCasilla.getTipo();
+        int numeroCasas = actualCasilla.getCasas();
+        int hayHotel = actualCasilla.getHotel();
+        int hayPiscina = actualCasilla.getPiscina();
+        int hayPistadeporte = actualCasilla.getPistadeporte();
+        float precio;
+        // Sólo se puede edificar en los solares.
+        if (!actualCasillaTipo.equals("Solar")){
+            System.out.println("ERROR: Sólo se puede edificar en los solares.");
+            return;
+        }
+        // Si es dueño de todas las casillas del grupo, puede edificar.
+        if (actualGrupo.esDuenhoGrupo(actual)) {
+            // Si es dueño del grupo, puede empezar a construir.
+            switch (partes[1]) {
+                case "casa":
+                    // Si hay 4 casas edificadas o si hay un hotel, no se pueden construir más casas.
+                    if (numeroCasas >= 4){
+                        System.out.println("Ya hay 4 casas construidas.");
+                        return;
                     }
-                    // Si no se especifica cantidad, se asume que se compra una sola casa.
-                } else if (partes.length == 2) {
-                    cantidad = 1;
-                }
-                // Se revisa el número introducido
-                if (partes.length == 3) {
-                    if (cantidad >= 4 || cantidad <= 0) {
-                        System.out.println("ERROR: No puedes construir más de 4 casas en una casilla.");
-                    } else {
-                        // Para poder comprar casas, debe tener todas las casillas del grupo.
-                        Jugador actual = getJugadorActual();
-                        assert actual != null;
-                        int actualCasillaPos = actual.getAvatar().getLugar().getPosicion();
-                        Casilla actualCasilla = actual.getAvatar().getLugar();
-                        Grupo actualGrupo = actual.getAvatar().getLugar().getGrupo();
-                        float precio = (cantidad * Valor.SOLAR_PRECIOS_CASA[actualCasillaPos]);
-                        // Si es dueño de todas las casillas del grupo, puede construir casas.
-                        if (actualGrupo.esDuenhoGrupo(actual)) {
-                            // Pero primero debe poder pagarlas.
-                            if (actual.getFortuna() >= precio) {
-                                // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
-                                actual.sumarFortuna(-precio);
-                                // Se actualiza el número de casas.
-                                actualCasilla.setCasa(cantidad);
-                                if (cantidad == 1) {
-                                    System.out.println("Se ha edificado una casa en " + actualCasilla.getNombre() + ". La " +
-                                            "fortuna de " + actual.getNombre() + "se reduce en " + precio + "€.");
-                                } else {
-                                    System.out.println("Se han edificado " + cantidad + " casas en " + actualCasilla.getNombre() + ". La " +
-                                            "fortuna de " + actual.getNombre() + "se reduce en " + precio + "€.");
-                                }
-                            } else {
-                                System.out.println("ERROR: Dinero insuficiente.");
-                            }
-                        } else {
-                            System.out.println("ERROR: Debes ser dueño de todo el grupo para poder construir.");
+                    if (hayHotel == 1) {
+                        System.out.println("No se pueden edificar más casas si ya hay un hotel.");
+                        return;
+                    }
+                    // Se guardará como INT la cantidad de casas a comprar.
+                    int cantidad = 0;
+                    // Si se introdujeron 3 argumentos en el comando,
+                    if (partes.length == 3) {
+                        // El tercero será el número de casas. Con un catch se prepara el mensaje de error por si no
+                        //      se introdujo un número. Con parseInt se convierte de String a Int.
+                        try {
+                            cantidad = Integer.parseInt(partes[2]);
+                        } catch (NumberFormatException e) {
+                            System.out.println("La cantidad debe ser un número entero entre 1 y 4.");
                         }
-
+                    // Si no se especifica cantidad, se asume que se compra una sola casa.
+                    } else if (partes.length == 2) {
+                        cantidad = 1;
                     }
-                }
-                break;
-            case "hotel":
-
-                break;
-            case "piscina":
-
-                break;
-            case "pistadeporte":
-
-                break;
-            default:
-                System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
-                break;
+                    // Se revisa el número introducido. No pueden construirse más de 4 casas o pasar un número negativo.
+                    if (partes.length == 3 || cantidad == 1) {
+                        if (cantidad > 4 || cantidad <= 0) {
+                            System.out.println("ERROR: No puedes construir más de 4 casas en una casilla.");
+                        } else {
+                            int disponibles = 4-numeroCasas;
+                            if (disponibles<cantidad) {
+                                System.out.println("No puedes construir más de 4 casas en una casilla. Quedan " + disponibles +
+                                        " espacios para construir casas en este solar.");
+                            } else {
+                                // El precio de las casas es el precio de la casa por la cantidad que compre.
+                                precio = (cantidad * Valor.SOLAR_PRECIOS_CASA[actualCasillaPos]);
+                                // Pero primero debe poder pagarlas.
+                                if (actual.getFortuna() >= precio) {
+                                    // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
+                                    actual.sumarFortuna(-precio);
+                                    // Se actualiza el número de casas.
+                                    actualCasilla.setCasa(cantidad);
+                                    // Por cosmética, se imprime un mensaje dependiendo de si se compra una casa o varias.
+                                    if (cantidad == 1) {
+                                        System.out.println("Se ha edificado una casa en " + actualCasilla.getNombre() + ". La " +
+                                                "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
+                                    } else {
+                                        System.out.println("Se han edificado " + cantidad + " casas en " + actualCasilla.getNombre() +
+                                                ". La fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
+                                    }
+                                } else {
+                                    System.out.println("ERROR: Dinero insuficiente.");
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case "hotel":
+                    // Aquí no puede admitir una cantidad (no serviría de nada).
+                    if (partes.length > 2){
+                        System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                        return;
+                    }
+                    // Si ya hay hotel, o si no hay 4 casas, no se puede construir un hotel.
+                    if (hayHotel == 1){
+                        System.out.println("Ya se ha construido un hotel en esta casilla.");
+                        return;
+                    }
+                    if (numeroCasas != 4){
+                       System.out.println("Debes tener 4 casas para construir un hotel.");
+                       return;
+                    }
+                    // El precio de las casas es el precio de la casa por la cantidad que compre.
+                    precio = (Valor.SOLAR_PRECIOS_HOTEL[actualCasillaPos]);
+                    // Pero primero debe poder pagarlas.
+                    if (actual.getFortuna() >= precio) {
+                        // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
+                        actual.sumarFortuna(-precio);
+                        // Se actualiza el número de casas.
+                        actualCasilla.setHotel();
+                        // Se imprime el aviso de la compra.
+                            System.out.println("Se ha edificado un hotel en " + actualCasilla.getNombre() + ". La " +
+                                    "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
+                    } else {
+                        System.out.println("ERROR: Dinero insuficiente.");
+                    }
+                    break;
+                case "piscina":
+                    // Aquí no puede admitir una cantidad (no serviría de nada).
+                    if (partes.length > 2) {
+                        System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                        return;
+                    }
+                    if (hayHotel == 0) {
+                            System.out.println("No se puede edificar una piscina, ya que no se dispone de un hotel.");
+                            return;
+                    }
+                    if (hayPiscina == 1) {
+                        System.out.println("Ya se dispone de una piscina.");
+                        return;
+                    }
+                    // El precio de las casas es el precio de la casa por la cantidad que compre.
+                    precio = (Valor.SOLAR_PRECIOS_PISCINA[actualCasillaPos]);
+                    // Pero primero debe poder pagarlas.
+                    if (actual.getFortuna() >= precio) {
+                        // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
+                        actual.sumarFortuna(-precio);
+                        // Se actualiza el número de casas.
+                        actualCasilla.setPiscina();
+                        // Se imprime el aviso de la compra.
+                        System.out.println("Se ha edificado una piscina en " + actualCasilla.getNombre() + ". La " +
+                                "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
+                    }
+                    break;
+                case "pistadeporte":
+                    // Aquí no puede admitir una cantidad (no serviría de nada).
+                    if (partes.length > 2) {
+                        System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                        return;
+                    }
+                    if (hayHotel == 0) {
+                        System.out.println("No se puede edificar una pista de deporte, ya que no se dispone de un hotel.");
+                        return;
+                    }
+                    if (hayPiscina == 0) {
+                        System.out.println("No se puede edificar una pista de deporte, ya que no se dispone de una piscina.");
+                        return;
+                    }
+                    if (hayPistadeporte == 1) {
+                        System.out.println("Ya se dispone de una pista de deporte.");
+                        return;
+                    }
+                    // El precio de las casas es el precio de la casa por la cantidad que compre.
+                    precio = (Valor.SOLAR_PRECIOS_PISTADEPORTE[actualCasillaPos]);
+                    // Pero primero debe poder pagarlas.
+                    if (actual.getFortuna() >= precio) {
+                        // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
+                        actual.sumarFortuna(-precio);
+                        // Se actualiza el número de casas.
+                        actualCasilla.setPistadeporte();
+                        // Se imprime el aviso de la compra.
+                        System.out.println("Se ha edificado una pista de deporte en " + actualCasilla.getNombre() + ". La " +
+                                "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
+                    }
+                    break;
+                default:
+                    System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                    break;
+            }
+        } else {
+            System.out.println("ERROR: Debes ser dueño de todo el grupo para poder construir.");
         }
     }
 }

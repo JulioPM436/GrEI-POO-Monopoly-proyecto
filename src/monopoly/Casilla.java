@@ -140,7 +140,7 @@ public class Casilla {
     }
 
     public void setCasa(int numCasas) {
-        this.casas = numCasas;
+        this.casas += numCasas;
     }
 
     public int getCasas() {
@@ -153,7 +153,7 @@ public class Casilla {
     }
 
     public int getHotel() {
-        return this.casas;
+        return this.hotel;
     }
 
     public void setPiscina() {
@@ -161,15 +161,15 @@ public class Casilla {
     }
 
     public int getPiscina() {
-        return this.casas;
+        return this.piscina;
     }
 
     public void setPistadeporte() {
-        this.casas = 1;
+        this.pistadeporte = 1;
     }
 
     public int getPistadeporte() {
-        return this.casas;
+        return this.pistadeporte;
     }
 
 
