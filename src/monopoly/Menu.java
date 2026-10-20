@@ -163,6 +163,13 @@ public class Menu {
                 }
                 edificar(partes);
                 break;
+            case "hipotecar":
+                if (partes.length > 1) {
+                    hipotecarPropiedad(partes[1], getJugadorActual());
+                } else {
+                    System.out.println("Uso incorrecto. Debe ser: hipotecar <nombre_casilla>");
+                }
+                break;
 
             case "comandos":
                 procesarComandos(partes);
@@ -191,6 +198,10 @@ public class Menu {
         // Se comprueba que el formato del comando sea correcto, esto es, tiene 4 argumentos.
         if (partes.length == 4){
             // Se impide crear más jugadores si ya hay 4.
+            if (!partes[3].equalsIgnoreCase("Coche") &&!partes[3].equalsIgnoreCase("Esfinge") &&!partes[3].equalsIgnoreCase("Sombrero") && !partes[3].equalsIgnoreCase("Pelota")) {
+                System.out.println("ERROR: Tipo de avatar no admitido. Permitidos: Coche, Esfinge, Sombrero, Pelota.");
+                return;
+            }
             if (jugadores.size() < 4) {
                 // Se trocea el comando para tomar cada argumento
                 String nombre = partes[2];
@@ -435,7 +446,86 @@ public class Menu {
 
     //metodo para seleccionar la carta
     private void sacarCarta(Jugador j, String tipo){
+        if (tipo.equals("Suerte")){
+            numCartaSuerte ++;
+            switch (numCartaSuerte) {
+                case 1:
+                    System.out.println(CARTAS_SUERTE[0]);
 
+                    break;
+
+                case 2:
+                    System.out.println(CARTAS_SUERTE[1]);
+                    break;
+
+                case 3:
+                    System.out.println(CARTAS_SUERTE[2]);
+                    getJugadorActual().sumarFortuna(1000000);
+                    break;
+
+                case 4:
+                    System.out.println(CARTAS_SUERTE[3]);
+                    int numJugadores = jugadores.size();
+                    pagar(Objects.requireNonNull(getJugadorActual()),250000 * numJugadores);
+                    for(int i = 0; i < numJugadores; i++){
+                        Jugador jey = jugadores.get(i);
+                        if(jey != getJugadorActual()){
+                            jey.sumarFortuna(250000);
+                        }
+                    }
+                    break;
+
+                case 5:
+                    System.out.println(CARTAS_SUERTE[4]);
+                    break;
+
+                case 6:
+                    System.out.println(CARTAS_SUERTE[5]);
+                    pagar(Objects.requireNonNull(getJugadorActual()),150000);
+                    break;
+
+                case 7:
+                    System.out.println(CARTAS_SUERTE[6]);
+                    break;
+                default:
+                    System.out.println("ERROR, esto no es una posicion de carta valida, esto nunca lo deberia leer el ususario");
+                    break;
+            }
+        }
+        else{
+            switch (numCartaComunidad) {
+                case 1:
+                    System.out.println(CARTAS_COMUNIDAD[0]);
+                    pagar(Objects.requireNonNull(getJugadorActual()),150000);
+                    break;
+
+                case 2:
+                    System.out.println(CARTAS_COMUNIDAD[1]);
+                    break;
+
+                case 3:
+                    System.out.println(CARTAS_COMUNIDAD[2]);
+                    break;
+
+                case 4:
+                    System.out.println(CARTAS_COMUNIDAD[3]);
+                    getJugadorActual().sumarFortuna(500000);
+                    break;
+
+                case 5:
+                    System.out.println(CARTAS_COMUNIDAD[4]);
+                    break;
+
+                case 6:
+                    System.out.println(CARTAS_COMUNIDAD[5]);
+                    break;
+
+                default:
+                    System.out.println("ERROR, esto no es una posicion de carta valida, esto nunca lo deberia leer el ususario");
+                    break;
+            }
+
+        }
     }
 
     //metodos para las acciones de las diferentes cartas
@@ -834,4 +924,68 @@ public class Menu {
             System.out.println("ERROR: Debes ser dueño de todo el grupo para poder construir.");
         }
     }
+
+
+    private void hipotecarPropiedad(String nombrecasilla, Jugador jugadoractual){
+        Casilla casilla = this.tablero.encontrar_casilla(nombrecasilla);
+
+        if(casilla == null) {
+            System.out.println("No existe dicha casilla1");
+            return;
+        }
+
+        if(casilla.getDuenho() != jugadoractual){
+            System.out.println(jugadoractual.getNombre() + "no puede hipotecar" + casilla.getNombre() + "Esta casilla no pertenece al jugador actual");
+            return;
+        }
+
+        if(casilla.isHipotecada()){
+            System.out.println("Esta casilla ya está hipotecada");
+            return;
+        }
+
+        if (casilla.getTipo().equalsIgnoreCase("Solar") && casilla.tieneEdificios()) {
+            System.out.println(jugadoractual.getNombre() + " no puede hipotecar " + casilla.getNombre() + ". Se deben vender todos los edificios antes.");
+            return;
+        }
+
+        casilla.setHipotecada(true);
+        float sumaHipoteca = casilla.getValorHipoteca();
+        jugadoractual.sumarFortuna(sumaHipoteca);
+
+        String grupo = casilla.getGrupo().getColorGrupo();
+
+        System.out.println("El jugador" + jugadoractual.getNombre() + "recibe" + sumaHipoteca + "por hipotecar" + casilla.getNombre() + "No puede edificar ni cobrar alquilerers en el grupo" + grupo);
+
+    }
+
+    private void deshipotecar(String nombrecasilla, Jugador jugadorActual){
+        Casilla casilla = this.tablero.encontrar_casilla(nombrecasilla);
+        if (casilla == null) {
+            System.out.println("No existe ninguna casilla con el nombre: " + nombrecasilla);
+            return;
+        }
+
+        if (casilla.getDuenho() == null || casilla.getDuenho() != jugadorActual) {
+            System.out.println(jugadorActual.getNombre() + " no puede deshipotecar " + casilla.getNombre() + ". No es una propiedad que le pertenece.");
+            return;
+        }
+        if (!casilla.isHipotecada()) {
+            System.out.println(jugadorActual.getNombre() + " no puede deshipotecar " + casilla.getNombre() + ". No está hipotecada.");
+            return;
+        }
+        float sumaHipoteca = casilla.getValorHipoteca();
+        if(jugadorActual.getFortuna() < sumaHipoteca){
+            System.out.println("No puede deshipotecar porque no tiene saldo suficiente");
+            return;
+        }
+
+        jugadorActual.sumarFortuna(-sumaHipoteca);
+        casilla.setHipotecada(false);
+        String grupo = casilla.getGrupo().getColorGrupo();
+        System.out.println(jugadorActual.getNombre() + "paga" + sumaHipoteca + "para deshipotecar " +casilla.getNombre() + ". Ahora puede cobrar alquileres y edificar en el grupo " + grupo);
+
+    }
+
+
 }
