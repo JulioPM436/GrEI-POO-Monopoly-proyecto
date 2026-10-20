@@ -443,7 +443,86 @@ public class Menu {
 
     //metodo para seleccionar la carta
     private void sacarCarta(Jugador j, String tipo){
+        if (tipo.equals("Suerte")){
+            numCartaSuerte ++;
+            switch (numCartaSuerte) {
+                case 1:
+                    System.out.println(CARTAS_SUERTE[0]);
 
+                    break;
+
+                case 2:
+                    System.out.println(CARTAS_SUERTE[1]);
+                    break;
+
+                case 3:
+                    System.out.println(CARTAS_SUERTE[2]);
+                    getJugadorActual().sumarFortuna(1000000);
+                    break;
+
+                case 4:
+                    System.out.println(CARTAS_SUERTE[3]);
+                    int numJugadores = jugadores.size();
+                    pagar(Objects.requireNonNull(getJugadorActual()),250000 * numJugadores);
+                    for(int i = 0; i < numJugadores; i++){
+                        Jugador jey = jugadores.get(i);
+                        if(jey != getJugadorActual()){
+                            jey.sumarFortuna(250000);
+                        }
+                    }
+                    break;
+
+                case 5:
+                    System.out.println(CARTAS_SUERTE[4]);
+                    break;
+
+                case 6:
+                    System.out.println(CARTAS_SUERTE[5]);
+                    pagar(Objects.requireNonNull(getJugadorActual()),150000);
+                    break;
+
+                case 7:
+                    System.out.println(CARTAS_SUERTE[6]);
+                    break;
+                default:
+                    System.out.println("ERROR, esto no es una posicion de carta valida, esto nunca lo deberia leer el ususario");
+                    break;
+            }
+        }
+        else{
+            switch (numCartaComunidad) {
+                case 1:
+                    System.out.println(CARTAS_COMUNIDAD[0]);
+                    pagar(Objects.requireNonNull(getJugadorActual()),150000);
+                    break;
+
+                case 2:
+                    System.out.println(CARTAS_COMUNIDAD[1]);
+                    break;
+
+                case 3:
+                    System.out.println(CARTAS_COMUNIDAD[2]);
+                    break;
+
+                case 4:
+                    System.out.println(CARTAS_COMUNIDAD[3]);
+                    getJugadorActual().sumarFortuna(500000);
+                    break;
+
+                case 5:
+                    System.out.println(CARTAS_COMUNIDAD[4]);
+                    break;
+
+                case 6:
+                    System.out.println(CARTAS_COMUNIDAD[5]);
+                    break;
+
+                default:
+                    System.out.println("ERROR, esto no es una posicion de carta valida, esto nunca lo deberia leer el ususario");
+                    break;
+            }
+
+        }
     }
 
     //metodos para las acciones de las diferentes cartas
@@ -708,7 +787,8 @@ public class Menu {
                                     System.out.println("Se ha edificado una casa en " + actualCasilla.getNombre() + ". La " +
                                             "fortuna de " + actual.getNombre() + "se reduce en " + precio + "€.");
                                 } else {
-
+                                    System.out.println("Se han edificado " + cantidad + " casas en " + actualCasilla.getNombre() + ". La " +
+                                            "fortuna de " + actual.getNombre() + "se reduce en " + precio + "€.");
                                 }
                             } else {
                                 System.out.println("ERROR: Dinero insuficiente.");
