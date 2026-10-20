@@ -16,6 +16,9 @@ public class Casilla {
     private float hipoteca; //Valor otorgado por hipotecar una casilla.
     private ArrayList<Avatar> avatares = new ArrayList<>(); //Avatares que están situados en la casilla.
     private int casas, hotel, piscina, pistadeporte; // Número de edificaciones dentro de cada casilla.
+    private boolean hipotecada;
+
+
 
     //Constructor vacío (por defecto).
     public Casilla() {
@@ -172,6 +175,26 @@ public class Casilla {
         return this.casas;
     }
 
+    public boolean isHipotecada() {
+        return this.hipotecada;
+    }
+
+    public void setHipotecada(boolean hipotecada) {
+        this.hipotecada = hipotecada;
+    }
+
+    public int getNumEdificios() {
+        return this.casas + this.hotel + this.piscina + this.pistadeporte;
+    }
+
+    // Valor que recibe el jugador por hipotecarla
+    public float getValorHipoteca() {
+        return this.valor / 2.0f;
+    }
+
+    public boolean tieneEdificios() {
+        return getNumEdificios() > 0;
+    }
 
 
 
@@ -195,8 +218,8 @@ public class Casilla {
         float alquiler;
         switch (tipo) {
             case "Solar":
-                // Sin dueño (es de la banca) o es suya: no paga nada
-                if (duenho == banca || duenho == actual) {
+                // Sin dueño (es de la banca) o es suya: no paga nada; o está hipotecada
+                if (duenho == banca || duenho == actual || this.isHipotecada() == true) {
                     return true;
                 }
                 alquiler = impuesto;
@@ -217,7 +240,7 @@ public class Casilla {
                         + duenho.getNombre() + ".");
                 return true;
             case "Transporte":
-                if (duenho == banca || duenho == actual) {
+                if (duenho == banca || duenho == actual || this.isHipotecada() == true) {
                     return true;
                 }
                 alquiler = 250000;
@@ -231,7 +254,7 @@ public class Casilla {
                 System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a " + duenho.getNombre() + ".");
                 return true;
             case "Servicios":
-                if (duenho == banca || duenho == actual) {
+                if (duenho == banca || duenho == actual || this.isHipotecada() == true) {
                     return true;
                 }
                 alquiler = 4 * tirada * 50000;

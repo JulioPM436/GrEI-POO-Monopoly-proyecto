@@ -160,6 +160,13 @@ public class Menu {
                 }
                 edificar(partes);
                 break;
+            case "hipotecar":
+                if (partes.length > 1) {
+                    hipotecarPropiedad(partes[1], getJugadorActual());
+                } else {
+                    System.out.println("Uso incorrecto. Debe ser: hipotecar <nombre_casilla>");
+                }
+                break;
 
             case "comandos":
                 procesarComandos(partes);
@@ -727,4 +734,68 @@ public class Menu {
                 break;
         }
     }
+
+
+    private void hipotecarPropiedad(String nombrecasilla, Jugador jugadoractual){
+        Casilla casilla = this.tablero.encontrar_casilla(nombrecasilla);
+
+        if(casilla == null) {
+            System.out.println("No existe dicha casilla1");
+            return;
+        }
+
+        if(casilla.getDuenho() != jugadoractual){
+            System.out.println(jugadoractual.getNombre() + "no puede hipotecar" + casilla.getNombre() + "Esta casilla no pertenece al jugador actual");
+            return;
+        }
+
+        if(casilla.isHipotecada()){
+            System.out.println("Esta casilla ya está hipotecada");
+            return;
+        }
+
+        if (casilla.getTipo().equalsIgnoreCase("Solar") && casilla.tieneEdificios()) {
+            System.out.println(jugadoractual.getNombre() + " no puede hipotecar " + casilla.getNombre() + ". Se deben vender todos los edificios antes.");
+            return;
+        }
+
+        casilla.setHipotecada(true);
+        float sumaHipoteca = casilla.getValorHipoteca();
+        jugadoractual.sumarFortuna(sumaHipoteca);
+
+        String grupo = casilla.getGrupo().getColorGrupo();
+
+        System.out.println("El jugador" + jugadoractual.getNombre() + "recibe" + sumaHipoteca + "por hipotecar" + casilla.getNombre() + "No puede edificar ni cobrar alquilerers en el grupo" + grupo);
+
+    }
+
+    private void deshipotecar(String nombrecasilla, Jugador jugadorActual){
+        Casilla casilla = this.tablero.encontrar_casilla(nombrecasilla);
+        if (casilla == null) {
+            System.out.println("No existe ninguna casilla con el nombre: " + nombrecasilla);
+            return;
+        }
+
+        if (casilla.getDuenho() == null || casilla.getDuenho() != jugadorActual) {
+            System.out.println(jugadorActual.getNombre() + " no puede deshipotecar " + casilla.getNombre() + ". No es una propiedad que le pertenece.");
+            return;
+        }
+        if (!casilla.isHipotecada()) {
+            System.out.println(jugadorActual.getNombre() + " no puede deshipotecar " + casilla.getNombre() + ". No está hipotecada.");
+            return;
+        }
+        float sumaHipoteca = casilla.getValorHipoteca();
+        if(jugadorActual.getFortuna() < sumaHipoteca){
+            System.out.println("No puede deshipotecar porque no tiene saldo suficiente");
+            return;
+        }
+
+        jugadorActual.sumarFortuna(-sumaHipoteca);
+        casilla.setHipotecada(false);
+        String grupo = casilla.getGrupo().getColorGrupo();
+        System.out.println(jugadorActual.getNombre() + "paga" + sumaHipoteca + "para deshipotecar " +casilla.getNombre() + ". Ahora puede cobrar alquileres y edificar en el grupo " + grupo);
+
+    }
+
+
 }
