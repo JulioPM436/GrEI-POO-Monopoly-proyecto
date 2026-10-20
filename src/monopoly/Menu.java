@@ -776,7 +776,8 @@ public class Menu {
                                     System.out.println("Se ha edificado una casa en " + actualCasilla.getNombre() + ". La " +
                                             "fortuna de " + actual.getNombre() + "se reduce en " + precio + "€.");
                                 } else {
-
+                                    System.out.println("Se han edificado " + cantidad + " casas en " + actualCasilla.getNombre() + ". La " +
+                                            "fortuna de " + actual.getNombre() + "se reduce en " + precio + "€.");
                                 }
                             } else {
                                 System.out.println("ERROR: Dinero insuficiente.");
