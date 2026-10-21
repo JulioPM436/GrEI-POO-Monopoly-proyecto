@@ -800,8 +800,10 @@ public class Menu {
                         if (cantidad > 4 || cantidad <= 0) {
                             System.out.println("ERROR: No puedes construir más de 4 casas en una casilla.");
                         } else {
+                            // Se calculan la cantidad de casas disponibles para construir restando las casas que pretendemos
+                            //      construir al máximo de cuatro. No podemos edificar más casas de las que hay disponibles.
                             int disponibles = 4-numeroCasas;
-                            if (disponibles<cantidad) {
+                            if (disponibles < cantidad) {
                                 System.out.println("No puedes construir más de 4 casas en una casilla. Quedan " + disponibles +
                                         " espacios para construir casas en este solar.");
                             } else {
