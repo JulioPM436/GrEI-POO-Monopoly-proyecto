@@ -4,35 +4,54 @@ import partida.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+/**
+ * Tablero del Monopoly.
+ * Contiene las 40 casillas organizadas por lados, los grupos de solares por
+ * color y la banca. Se encarga de crear las casillas, de buscarlas y de dibujar
+ * el tablero en modo texto.
+ */
 public class Tablero {
     //Atributos.
     private ArrayList<ArrayList<Casilla>> posiciones; //Posiciones del tablero: se define como un arraylist de arraylists de casillas (uno por cada lado del tablero).
     private HashMap<String, Grupo> grupos; //Grupos del tablero, almacenados como un HashMap con clave String (será el color del grupo).
     private Jugador banca; //Un jugador que será la banca.
 
-    //Constructor: únicamente le pasamos el jugador banca (que sel creará desde el menú).
-    public Tablero(Jugador banca)
-    {
+    /**
+     * Crea el tablero con todas sus casillas, que tienen a la banca como dueña
+     * inicial.
+     *
+     * @param banca Jugador que hace de banca, creado desde el menú.
+     */
+    public Tablero(Jugador banca) {
         this.banca = banca;
         this.posiciones = new ArrayList<>();
         this.grupos = new HashMap<>();
-        this.generarCasillas();;
+        this.generarCasillas();
     }
 
+    /**
+     * Devuelve las casillas del tablero, organizadas en una lista por cada lado.
+     *
+     * @return Lista con las cuatro listas de casillas, una por lado.
+     */
     public ArrayList<ArrayList<Casilla>> getPosiciones() {
         return posiciones;
     }
 
-    //Méŧodo para crear todas las casillas del tablero. Formado a su vez por cuatro métodos (1/lado).
+    /**
+     * Crea todas las casillas del tablero y las guarda en {@code posiciones}, un
+     * lado cada vez, mediante los cuatro métodos {@code insertarLado...}.
+     */
     private void generarCasillas() {
         this.insertarLadoSur();
         this.insertarLadoOeste();
         this.insertarLadoNorte();
         this.insertarLadoEste();
     }
-    
-    //Méŧodo para insertar las casillas del lado norte.
+
+    /**
+     * Crea las casillas del lado norte del tablero (la fila de arriba).
+     */
     private void insertarLadoNorte() {
         ArrayList<Casilla> norte = new ArrayList<>();
 
@@ -53,7 +72,9 @@ public class Tablero {
 
     }
 
-    //Méŧodo para insertar las casillas del lado sur.
+    /**
+     * Crea las casillas del lado sur del tablero (la fila de abajo).
+     */
     private void insertarLadoSur() {
         ArrayList<Casilla> sur = new ArrayList<>();
 
@@ -72,7 +93,9 @@ public class Tablero {
         this.grupos.put("Cian", new Grupo(sur.get(6), sur.get(8), sur.get(9), Valor.CYAN));
     }
 
-    //Méŧodo que inserta casillas del lado oeste.
+    /**
+     * Crea las casillas del lado oeste del tablero (la columna de la izquierda).
+     */
     private void insertarLadoOeste() {
         ArrayList<Casilla> oeste = new ArrayList<>();
         oeste.add(new Casilla("Carcel", "especial", 11, this.banca));
@@ -93,7 +116,9 @@ public class Tablero {
         this.grupos.put("Amarillo", new Grupo(oeste.get(6), oeste.get(8), oeste.get(9), Valor.YELLOW));
     }
 
-    //Méŧodo que inserta las casillas del lado este.
+    /**
+     * Crea las casillas del lado este del tablero (la columna de la derecha).
+     */
     private void insertarLadoEste() {
         ArrayList<Casilla> este = new ArrayList<>();
         este.add(new Casilla("IrCarcel", "especial", 31, this.banca));
@@ -111,7 +136,12 @@ public class Tablero {
         this.grupos.put("Azul", new Grupo(este.get(7), este.get(9), Valor.BLUE));
     }
 
-    //Para imprimir el tablero, modificamos el méŧodo toString().
+    /**
+     * Devuelve el dibujo del tablero en modo texto, con cada grupo de solares en su
+     * color y los avatares en la casilla en la que están.
+     *
+     * @return Texto con el tablero listo para imprimir.
+     */
     @Override
     public String toString() {
         String taboleiro = "";
@@ -165,7 +195,14 @@ public class Tablero {
         return taboleiro;
     }
 
-    // Método auxiliar para que todas las casillas ocupen exactamente 10 caracteres
+    /**
+     * Devuelve el texto de una celda del tablero (el nombre de la casilla y los
+     * avatares que hay en ella) rellenado con espacios hasta ocupar 10 caracteres,
+     * para que todas las celdas tengan el mismo ancho.
+     *
+     * @param c Casilla que se va a dibujar.
+     * @return Texto de la celda con el ancho fijo.
+     */
     private String casillaespacio (Casilla c) {
         String texto = c.toString();
         while (texto.length() < 10) {
@@ -177,8 +214,14 @@ public class Tablero {
         return texto;
 
     }
-    
-    //Méŧodo usado para buscar la casilla con el nombre pasado como argumento:
+
+    /**
+     * Busca una casilla del tablero por su nombre. Si hay varias con el mismo
+     * nombre, como las de Suerte o Caja, devuelve la primera.
+     *
+     * @param nombre Nombre de la casilla.
+     * @return La casilla con ese nombre, o {@code null} si no existe.
+     */
     public Casilla encontrar_casilla(String nombre){
 
         // Para encontrar la casilla buscada, iteramos primero sobre cada lado (posición): norte, sur, este y oeste.
@@ -195,7 +238,12 @@ public class Tablero {
         return null;
     }
 
-    // Método que devuelve una casilla según su posición.
+    /**
+     * Busca una casilla del tablero por su posición.
+     *
+     * @param posicion Posición de la casilla, entre 1 y 40.
+     * @return La casilla que ocupa esa posición, o {@code null} si no hay ninguna.
+     */
     public Casilla getCasillaPorPosicion(int posicion) {
         for (ArrayList<Casilla> lado : posiciones) {
             for (Casilla c : lado) {

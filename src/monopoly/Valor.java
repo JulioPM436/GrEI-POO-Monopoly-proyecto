@@ -1,13 +1,19 @@
 package monopoly;
 
-
+/**
+ * Contiene los precios de venta, alquiler e hipotecas de solares, cantidades de fortuna, y otros datos económicos que se usan
+ * a lo largo del programa, así como los colores que se usan al imprimir tablero y algunos mensajes.
+ * Todos los demás valores a los que se puede hacer referencia
+ */
 public class Valor {
     //Se incluyen una serie de constantes útiles para no repetir valores.
     public static final float FORTUNA_BANCA = 1000000000; // Cantidad que tiene inicialmente la Banca
     public static final float FORTUNA_INICIAL = 15000000; // Cantidad que recibe cada jugador al comenzar la partida
     public static final float SUMA_VUELTA = 2000000; // Cantidad que recibe un jugador al pasar pos la Salida
-    
-    //Colores del texto:
+
+    /**
+     * RESET hace que se vuelva a escribir con el color de fuente original.
+     */
     public static final String RESET = "\u001B[0m";
     public static final String BLACK = "\u001B[30m";
     public static final String RED = "\u001B[31m";
@@ -18,13 +24,20 @@ public class Valor {
     public static final String CYAN = "\u001B[36m";
     public static final String WHITE = "\u001B[37m";
 
-    // Para los mensajes de error:
+    /**
+     * Pone "ERROR:" en rojo delante de algunos mensajes de error.
+     */
     public static final String ERROR = RED + "ERROR:" + RESET + " ";
+    /**
+     * Pone "ERROR: Uso:" en rojo delante de algunos mensajes de error al haber error de sintaxis en un comando.
+     */
     public static final String ERROR_USO = ERROR + "Uso: ";
 
-    // Se puede asignar el valor de cada solar y casilla usando su posición, porque en cada posición que no hay valor, hay un cero.
-    // Por ejemplo, la casilla de posición 1 es Salida, sin valor, posición 1 en el array. Pero Solar1 es posición 2, así que también
-    //      se le asigna esa posición en el array.
+    /**
+     * Se puede asignar el valor de cada solar y casilla usando su posición, porque en cada posición que no hay valor, hay un cero.
+     * Por ejemplo, la casilla de posición 1 es Salida, sin valor, posición 1 en el array. Pero Solar1 es posición 2, así que también
+     * se le asigna esa posición en el array. EL MISMO FUNCIONAMIENTO EN EL RESTO DE ARRAYS DE PRECIOS.
+     */
     public static final float[] SOLAR_PRECIOS = {0,0,600000,0,600000,0,0,1000000,0,1000000,1200000,0,1400000,0,1400000,1600000,0,1800000,0,1800000,2200000,0,2200000,0,2200000,2400000,0,2600000,2600000,0,2800000,0,3000000,3000000,0,3200000,0,0,3500000,0,4000000};
     public static final float[] SOLAR_PRECIOS_HIPOTECAS = {0,0,300000,0,300000,0,0,500000,0,500000,600000,0,700000,0,700000,800000,0,900000,0,900000,1000000,0,1100000,0,1100000,1200000,0,1300000,1300000,0,1400000,0,1500000,1500000,0,1600000,0,0,1750000,0,2000000};
     public static final float[] SOLAR_PRECIOS_CASA = {0,0,500000,0,500000,0,0,500000,0,500000,500000,0,1000000,0,1000000,1000000,0,1000000,0,1000000,1000000,0,1500000,0,1500000,1500000,0,1500000,1500000,0,1500000,0,2000000,2000000,0,2000000,0,0,2000000,0,2000000};
