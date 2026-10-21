@@ -62,8 +62,18 @@ public class Menu {
         iniciarPartida();
     }
 
+    /*
+     * ÍNDICE:
+     *  - PARTIDA Y COMANDOS
+     *  - JUGADORES Y TURNOS
+     *  - DADOS Y MOVIMIENTO
+     *  - PROPIEDADES Y DINERO
+     *  - CARTAS
+     *  - LISTADOS Y DESCRIPCIONES
+     *  - BÚSQUEDAS AUXILIARES
+     */
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////// MÉTODOS PRINCIPALES ///////////////////////////////////////////////////
+    //////////////////////////////////////////// PARTIDA Y COMANDOS ////////////////////////////////////////////////////
     // Aquí se colocan los métodos más importantes o que por facilidades al escribir código deben estar arriba del todo.
 
     /**
@@ -214,8 +224,52 @@ public class Menu {
         }
     }
 
+    /**
+     * Ejecuta el comando {@code comandos <fichero>}: lee el fichero línea a línea y
+     * ejecuta cada una como un comando, mostrándola antes precedida de
+     * {@code $>}. Se saltan las líneas vacías y las que empiezan por {@code #}.
+     *
+     * @param partes Comando troceado por espacios: {@code partes[1]} es la ruta del
+     *               fichero.
+     */
+    private void procesarComandos(String[] partes){
+        if (partes.length != 2) {
+            System.out.println("Comando erróneo. Formato: comandos <ruta>\n");
+            return;
+        }
+        // En un try-catch, la parte try es un bloque de código que puede fallar, como por ejemplo abrir
+        //      un archivo y leerlo. "partes[1]" es la ruta al archivo. "new FileReader" abre ese archivo y crea
+        //      un objeto que puede leerlo. "new BufferedReader" recibe ese objeto y lo envuelve, añadiendo un búfer
+        //      para agilizar las lecturas, y el método readLine(), que junta caracteres hasta encontrar un cambio
+        //      de línea, entonces devuelve la línea entera.
+        // "BufferedReader lector" es la variable en la que se guarda el resultado, y así se puede usar "lector" para no
+        //      interactuar con FileReader directamente.
+        try (BufferedReader lector = new BufferedReader(new FileReader(partes[1]))) {
+            String linea;
+            // Mientras que lea líneas (no haya llegado al final del archivo),
+            while ((linea = lector.readLine()) != null) {
+                // a cada línea le saca los espacios en blanco que hayan al principio y al final,
+                //      dejando los del medio.
+                linea = linea.trim();
+                // Si es una línea vacía, empieza por # o por //, la salta, porque o la línea no tiene nada o
+                //      son comentarios.
+                if (linea.isEmpty() || linea.startsWith("#") || linea.startsWith("//")) {
+                    continue;
+                }
+                // Si es un posible comando, lo imprime en pantalla para saber de qué es la salida.
+                System.out.println("$> " + linea);
+                // Llamada recursiva a analizarComando() para intentar ejecutar la línea.
+                analizarComando(linea);
+            } // Como se asume que lo de try puede fallar, se tiene el catch; un código que se lanza cuando falle
+            //      el try. Si el archivo no pudiera leerse, saltaría esa excepción y dejaría de ejecutar más código.
+            //   Imprime un mensaje de error.
+        } catch (IOException e) {
+            System.out.println("ERROR: No se pudo leer el archivo: " + partes[1]);
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////// MÉTODOS SECUNDARIOS ///////////////////////////////////////////////////
+    //////////////////////////////////////////// JUGADORES Y TURNOS ////////////////////////////////////////////////////
 
     /**
      * Ejecuta el comando {@code acabar turno}: pasa el turno al siguiente jugador,
@@ -234,75 +288,6 @@ public class Menu {
         tirado = false;
         lanzamientos = 0; //Ya está hecho en lanzarDados() pero bueno
         System.out.println("Le toca a " + Objects.requireNonNull(getJugadorActual()).getNombre());
-    }
-
-    /**
-     * Busca un avatar de la partida a partir de su identificador.
-     *
-     * @param ID Letra que identifica al avatar.
-     * @return El avatar con ese identificador, o {@code null} si no existe.
-     */
-    private Avatar buscarAvatar(String ID) {
-        for(Avatar avatar: avatares){
-            if(avatar.getId().equals(ID)){
-                return avatar;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Busca un jugador de la partida a partir de su nombre.
-     *
-     * @param nombre_jugador Nombre del jugador, tal como se dio de alta.
-     * @return El jugador con ese nombre, o {@code null} si no existe.
-     */
-    private Jugador buscarjugador(String nombre_jugador) {
-        // Se itera sobre la lista de jugadores.
-        for(Jugador jugador: jugadores){
-            // Si la string coincide con el nombre de alguno, devuelve ese objeto.
-            if(jugador.getNombre().equals(nombre_jugador)){
-                return jugador;
-            }
-        }
-        // Si no hay jugador con ese nombre, devuelve NULL.
-        return null;
-    }
-
-    /**
-     * Devuelve la casilla que ocupa un índice del tablero.
-     * El índice empieza en 0, así que equivale a la posición de la casilla menos 1:
-     * la Salida es el 0 y Solar22 el 39. Supone que cada lado del tablero está
-     * guardado en orden de juego, empezando por su esquina.
-     *
-     * @param indice Índice de la casilla, entre 0 y 39.
-     * @return La casilla que ocupa ese índice.
-     */
-    private Casilla casillaEnIndice(int indice) {
-        return tablero.getPosiciones().get(indice / 10).get(indice % 10);
-    }
-
-    /**
-     * Ejecuta el comando {@code comprar <casilla>}: el jugador con el turno compra
-     * la casilla indicada. Solo es posible si su avatar está en ella, si todavía
-     * pertenece a la banca y si el jugador tiene dinero suficiente.
-     *
-     * @param nombre Nombre de la casilla que se quiere comprar.
-     */
-    private void comprar(String nombre) {
-
-        if (jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
-            return;
-        }
-
-        if (!Objects.requireNonNull(getJugadorActual()).getAvatar().getLugar().getNombre().equalsIgnoreCase(nombre)) {
-            System.out.println("No se puede comprar está casilla");
-            return;
-        }
-
-        getJugadorActual().getAvatar().getLugar().comprarCasilla(getJugadorActual(),banca);
-        System.out.println("Su fortuna actual es de " + (long)getJugadorActual().getFortuna() + "€.");
     }
 
     /**
@@ -360,73 +345,238 @@ public class Menu {
     }
 
     /**
-     * Ejecuta el comando {@code describir avatar <ID>}: muestra el identificador,
-     * el tipo, la casilla en la que está y el jugador al que pertenece el avatar.
+     * Devuelve el jugador que tiene el turno.
      *
-     * @param ID Letra que identifica al avatar.
+     * @return El jugador al que le toca jugar, o {@code null} si todavía no hay
+     *         jugadores en la partida.
      */
-    private void descAvatar(String ID) {
-        Avatar a = buscarAvatar(ID);
-        if (a == null) {
-            System.out.println("No existe el avatar\n");
-            return;
+    private Jugador getJugadorActual() {
+        if (jugadores == null || jugadores.isEmpty()) {
+            return null;
         }
-        System.out.println("tipo: "+ a.getTipo());
-        System.out.println("lugar: "+ a.getLugar().getNombre());
-        System.out.println("jugador: "+ a.getJugador().getNombre());
-
+        return jugadores.get(turno);
     }
 
     /**
-     * Ejecuta el comando {@code describir <casilla>}: muestra la información de la
-     * casilla, con un formato distinto según su tipo. Las casillas de Suerte, Caja
-     * de Comunidad e IrCarcel no se pueden describir.
-     *
-     * @param nombre Nombre de la casilla que se quiere describir.
+     * Ejecuta el comando {@code jugador}: muestra el nombre y el avatar del jugador
+     * que tiene el turno.
      */
-    private void descCasilla(String nombre) {
-        Casilla c = tablero.encontrar_casilla(nombre);
-        if (c == null) {
-            System.out.println("No existe ninguna casilla con el nombre: " + nombre);
+    private void turnoActual() {
+        if (this.jugadores.isEmpty()) {
+            System.out.println("Aún no hay jugadores en la partida.\n");
             return;
         }
-        System.out.println(c.infoCasilla());
-    }
-
-    /**
-     * Ejecuta el comando {@code describir jugador <nombre>}: muestra el nombre, el
-     * avatar, la fortuna, las propiedades, las hipotecas y los edificios del jugador.
-     *
-     * @param partes Comando troceado por espacios: {@code partes[2]} es el nombre
-     *               del jugador.
-     */
-    private void descJugador(String[] partes) {
-        // Si la cantidad de parámetros introducidos es menor que 2, el comando no se introdujo correctamente.
-        if (partes.length <= 2){
-            System.out.println("No ha introducido el nombre del jugador\n");
-            return;
-        }
-        // De otro modo, se busca al jugador que tenga ese nombre.
-        Jugador j = buscarjugador(partes[2]);
-        // Si la función devuelve nulo, no hay jugador con ese nombre.
-        if (j == null) {
-            System.out.println("No existe el jugador\n");
-            return;
-        }
-        // Si existe, se imprimen por pantalla los atributos del jugador.
         System.out.println("{");
-        System.out.println("  nombre: " + j.getNombre() + ",");
-        System.out.println("  avatar: " + j.getAvatar().getId() + ",");
-        System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
-        //System.out.println("propiedades: " + j.getPropiedades());
-        System.out.print("  propiedades: [");
-        for (Casilla c : j.getPropiedades()) {
-            System.out.print(c.getNombre() + " ");
-        }
-        System.out.println("  ]");
-        System.out.println("  hipotecas: -");
-        System.out.println("  edificios: -");
+        System.out.println("  nombre: " + jugadores.get(turno).getNombre() + ",");
+        System.out.println("  avatar: " + jugadores.get(turno).getAvatar().getId());
         System.out.println("}");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////// DADOS Y MOVIMIENTO ////////////////////////////////////////////////////
+
+    /**
+     * Ejecuta el comando {@code lanzar dados}, con valores aleatorios, o
+     * {@code lanzar dados X+Y}, con los valores forzados. Mueve el avatar, aplica la
+     * acción de la casilla de destino y gestiona los dobles (los terceros seguidos
+     * mandan a la Cárcel) y los intentos de salir de la Cárcel.
+     *
+     * @param partes Comando troceado por espacios. Si tiene tres elementos,
+     *               {@code partes[2]} contiene los valores forzados con el formato
+     *               {@code X+Y}.
+     */
+    private void lanzarDados(String[] partes) {
+        if (jugadores.isEmpty()) {
+            System.out.println("Aún no hay jugadores en la partida.\n");
+            return;
+        }
+        if (jugadores.size() < 2) {
+            System.out.println("Se necesitan al menos 2 jugadores para empezar la partida.");
+            return;
+        }
+        if (tirado) {
+            System.out.println("El jugador ya ha tirado los dados");
+            return;
+        }
+        int tirada1;
+        int tirada2;
+        if (partes.length==3) {
+            tirada1 = partes[2].charAt(0) - '0';
+            tirada2 = partes[2].charAt(2) - '0';
+        } else {
+            tirada1 = dado1.hacerTirada();
+            tirada2 = dado2.hacerTirada();
+        }
+        boolean sonDobles;
+        int suma = tirada1 + tirada2;
+        System.out.println("Tirada: " + tirada1 + " y " + tirada2 + " (Total: " + suma + ")");
+        sonDobles = (tirada1 == tirada2);
+
+        Jugador actual = getJugadorActual();
+        assert actual != null;
+        String nombre = actual.getAvatar().getLugar().getNombre();
+        int actualPos = actual.getAvatar().getLugar().getPosicion();
+        int destinoPos = (actualPos - 1 + suma) % 40 + 1;
+
+        //PRIMERA PARTE: SI EL JUGADOR ESTÁ EN LA CÁRCEL
+        if (actual.isEnCarcel()) {
+            if (sonDobles) {
+                System.out.println("Son dobles, sales de la cárcel.");
+                actual.setEnCarcel(false);
+                actual.setTiradasCarcel(0);
+            } else {
+                actual.sumaTiradasCarcel(); //se usa esta función para sumar 1;
+                // Primer o segundo intento fallido: se queda en la cárcel.
+                if (actual.getTiradasCarcel() < 3) {
+                    System.out.println("No son dobles, lamentablemente te quedas en la cárcel");
+                    tirado = true;
+                    return;
+                }
+                // Tercer intento fallido: está obligado a pagar para salir.
+                if (actual.getFortuna() < Valor.CARCEL_SALIR) {
+                    System.out.println(actual.getNombre() + " no puede pagar " + (long) Valor.CARCEL_SALIR
+                            + "€ para salir de la cárcel. Debe declararse en bancarrota.");
+                    tirado = true;
+                    return;
+                }
+                actual.sumarFortuna(-Valor.CARCEL_SALIR);
+                actual.sumarGastos(Valor.CARCEL_SALIR);
+                actual.setEnCarcel(false);
+                actual.setTiradasCarcel(0);
+                System.out.println("Tercer intento sin dobles: " + actual.getNombre() + " paga "
+                        + (long) Valor.CARCEL_SALIR + "€ y sale de la cárcel.");
+            }
+            // Al salir de la cárcel avanza con esta tirada, pero no vuelve a tirar aunque sean dobles.
+            tirado = true;
+            moverYEvaluar(actual, suma);
+            Casilla destinoCas = tablero.getCasillaPorPosicion(destinoPos);
+            String nombre2 = destinoCas.getNombre();
+            System.out.println("El avatar " + actual.getAvatar().getId() + " avanza " + suma +  " posiciones, desde " +
+                    nombre + " hasta " + nombre2 + ".");
+            System.out.println(tablero);
+            return;
+        }
+        //SEGUNDA PARTE: TIRO NORMALITO
+
+        if (sonDobles) {
+            lanzamientos++;
+            if (lanzamientos == 3) {
+                System.out.println("Vas a la Cárcel.");
+                getJugadorActual().encarcelar(tablero.getPosiciones());
+                lanzamientos = 0;
+                tirado = true;
+                return;
+            }
+            tirado = false;
+        } else {
+            lanzamientos = 0;
+            tirado = true;
+        }
+        moverYEvaluar(getJugadorActual(), suma);
+
+        // Si ha caído en IrCarcel ya no puede volver a tirar, aunque hubiera sacado dobles.
+        if (getJugadorActual().isEnCarcel()) {
+            tirado = true;
+            lanzamientos = 0;
+        }
+        Casilla destinoCas = tablero.getCasillaPorPosicion(destinoPos);
+        String nombre2 = destinoCas.getNombre();
+        System.out.println("El avatar " + actual.getAvatar().getId() + " avanza " + suma +  " posiciones, desde " +
+                nombre + " hasta " + nombre2 + ".");
+        System.out.println(tablero);
+    }
+
+    /**
+     * Lleva el avatar del jugador hasta una casilla concreta, avanzando por el
+     * tablero. Si por el camino pasa por la Salida, cobra lo que le corresponde
+     * (de eso se encarga {@code moverAvatar}). Pensado para las cartas que mandan
+     * a una casilla determinada.
+     *
+     * @param actual  Jugador cuyo avatar se mueve.
+     * @param destino Casilla a la que tiene que llegar.
+     */
+    private void moverHasta(Jugador actual, Casilla destino) {
+        int pasos = (destino.getPosicion() - actual.getAvatar().getLugar().getPosicion() + 40) % 40;
+        actual.getAvatar().moverAvatar(tablero.getPosiciones(), pasos);
+    }
+
+    /**
+     * Mueve el avatar del jugador las casillas indicadas y aplica la acción de la
+     * casilla en la que cae: alquiler, impuesto, Parking, IrCarcel, cartas...
+     * Muestra el movimiento por pantalla y repinta el tablero.
+     *
+     * @param actual Jugador cuyo avatar se mueve.
+     * @param suma   Número de casillas que avanza (la suma de los dados).
+     */
+    private void moverYEvaluar(Jugador actual, int suma) {
+        actual.getAvatar().moverAvatar(tablero.getPosiciones(), suma);
+        Casilla casilla = actual.getAvatar().getLugar();
+
+        if (casilla.getNombre().equals("IrCarcel")) {
+            System.out.println("Has caído en IrCarcel: el avatar se coloca en la casilla de Cárcel.");
+            actual.encarcelar(tablero.getPosiciones());
+        } else if (casilla.getTipo().equals("Suerte") || casilla.getTipo().equals("Comunidad")) {
+            //sacarCarta(actual, casilla.getTipo());
+        }
+
+        else {
+            casilla.evaluarCasilla(actual, banca, suma, tablero.encontrar_casilla("Parking"));
+        }
+    }
+
+    /**
+     * Ejecuta el comando {@code salir carcel}: el jugador con el turno paga la
+     * fianza (500.000€) y sale de la Cárcel, tras lo cual puede lanzar los dados.
+     * Solo es posible si está en la Cárcel y tiene dinero suficiente.
+     */
+    private void salirCarcel() {
+        if (jugadores.isEmpty()) {
+            System.out.println("Aún no hay jugadores en la partida.\n");
+            return;
+        }
+
+        if (!Objects.requireNonNull(getJugadorActual()).isEnCarcel()) {
+            System.out.println("El jugador actual no está en la cárcel");
+            return;
+        }
+        float fianza = 500000f;
+        if (getJugadorActual().getFortuna() < fianza) {
+            System.out.println("El jugador no tiene dinero suficiente para salir de la cárcel");
+            return;
+        }
+        getJugadorActual().sumarFortuna(-fianza);
+        getJugadorActual().sumarGastos(fianza);
+
+        getJugadorActual().setEnCarcel(false);
+        getJugadorActual().setTiradasCarcel(0);
+
+        System.out.println(getJugadorActual().getNombre() + " paga " + fianza + "€ y sale de la cárcel. Ya puede lanzar los dados.");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////// PROPIEDADES Y DINERO ///////////////////////////////////////////////////
+
+    /**
+     * Ejecuta el comando {@code comprar <casilla>}: el jugador con el turno compra
+     * la casilla indicada. Solo es posible si su avatar está en ella, si todavía
+     * pertenece a la banca y si el jugador tiene dinero suficiente.
+     *
+     * @param nombre Nombre de la casilla que se quiere comprar.
+     */
+    private void comprar(String nombre) {
+
+        if (jugadores.isEmpty()) {
+            System.out.println("Aún no hay jugadores en la partida.\n");
+            return;
+        }
+
+        if (!Objects.requireNonNull(getJugadorActual()).getAvatar().getLugar().getNombre().equalsIgnoreCase(nombre)) {
+            System.out.println("No se puede comprar está casilla");
+            return;
+        }
+
+        getJugadorActual().getAvatar().getLugar().comprarCasilla(getJugadorActual(),banca);
+        System.out.println("Su fortuna actual es de " + (long)getJugadorActual().getFortuna() + "€.");
     }
 
     /**
@@ -661,19 +811,6 @@ public class Menu {
     }
 
     /**
-     * Devuelve el jugador que tiene el turno.
-     *
-     * @return El jugador al que le toca jugar, o {@code null} si todavía no hay
-     *         jugadores en la partida.
-     */
-    private Jugador getJugadorActual() {
-        if (jugadores == null || jugadores.isEmpty()) {
-            return null;
-        }
-        return jugadores.get(turno);
-    }
-
-    /**
      * Ejecuta el comando {@code hipotecar <casilla>}: el jugador recibe el valor de
      * hipoteca de la propiedad, que deja de cobrar alquileres y bloquea la
      * edificación en su grupo hasta que se deshipoteque. Solo es posible si la
@@ -717,232 +854,6 @@ public class Menu {
     }
 
     /**
-     * Ejecuta el comando {@code lanzar dados}, con valores aleatorios, o
-     * {@code lanzar dados X+Y}, con los valores forzados. Mueve el avatar, aplica la
-     * acción de la casilla de destino y gestiona los dobles (los terceros seguidos
-     * mandan a la Cárcel) y los intentos de salir de la Cárcel.
-     *
-     * @param partes Comando troceado por espacios. Si tiene tres elementos,
-     *               {@code partes[2]} contiene los valores forzados con el formato
-     *               {@code X+Y}.
-     */
-    private void lanzarDados(String[] partes) {
-        if (jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
-            return;
-        }
-        if (jugadores.size() < 2) {
-            System.out.println("Se necesitan al menos 2 jugadores para empezar la partida.");
-            return;
-        }
-        if (tirado) {
-            System.out.println("El jugador ya ha tirado los dados");
-            return;
-        }
-        int tirada1;
-        int tirada2;
-        if (partes.length==3) {
-            tirada1 = partes[2].charAt(0) - '0';
-            tirada2 = partes[2].charAt(2) - '0';
-        } else {
-            tirada1 = dado1.hacerTirada();
-            tirada2 = dado2.hacerTirada();
-        }
-        boolean sonDobles;
-        int suma = tirada1 + tirada2;
-        System.out.println("Tirada: " + tirada1 + " y " + tirada2 + " (Total: " + suma + ")");
-        sonDobles = (tirada1 == tirada2);
-
-        Jugador actual = getJugadorActual();
-        assert actual != null;
-        String nombre = actual.getAvatar().getLugar().getNombre();
-        int actualPos = actual.getAvatar().getLugar().getPosicion();
-        int destinoPos = (actualPos - 1 + suma) % 40 + 1;
-
-        //PRIMERA PARTE: SI EL JUGADOR ESTÁ EN LA CÁRCEL
-        if (actual.isEnCarcel()) {
-            if (sonDobles) {
-                System.out.println("Son dobles, sales de la cárcel.");
-                actual.setEnCarcel(false);
-                actual.setTiradasCarcel(0);
-            } else {
-                actual.sumaTiradasCarcel(); //se usa esta función para sumar 1;
-                // Primer o segundo intento fallido: se queda en la cárcel.
-                if (actual.getTiradasCarcel() < 3) {
-                    System.out.println("No son dobles, lamentablemente te quedas en la cárcel");
-                    tirado = true;
-                    return;
-                }
-                // Tercer intento fallido: está obligado a pagar para salir.
-                if (actual.getFortuna() < Valor.CARCEL_SALIR) {
-                    System.out.println(actual.getNombre() + " no puede pagar " + (long) Valor.CARCEL_SALIR
-                            + "€ para salir de la cárcel. Debe declararse en bancarrota.");
-                    tirado = true;
-                    return;
-                }
-                actual.sumarFortuna(-Valor.CARCEL_SALIR);
-                actual.sumarGastos(Valor.CARCEL_SALIR);
-                actual.setEnCarcel(false);
-                actual.setTiradasCarcel(0);
-                System.out.println("Tercer intento sin dobles: " + actual.getNombre() + " paga "
-                        + (long) Valor.CARCEL_SALIR + "€ y sale de la cárcel.");
-            }
-            // Al salir de la cárcel avanza con esta tirada, pero no vuelve a tirar aunque sean dobles.
-            tirado = true;
-            moverYEvaluar(actual, suma);
-            Casilla destinoCas = tablero.getCasillaPorPosicion(destinoPos);
-            String nombre2 = destinoCas.getNombre();
-            System.out.println("El avatar " + actual.getAvatar().getId() + " avanza " + suma +  " posiciones, desde " +
-                    nombre + " hasta " + nombre2 + ".");
-            System.out.println(tablero);
-            return;
-        }
-        //SEGUNDA PARTE: TIRO NORMALITO
-
-        if (sonDobles) {
-            lanzamientos++;
-            if (lanzamientos == 3) {
-                System.out.println("Vas a la Cárcel.");
-                getJugadorActual().encarcelar(tablero.getPosiciones());
-                lanzamientos = 0;
-                tirado = true;
-                return;
-            }
-            tirado = false;
-        } else {
-            lanzamientos = 0;
-            tirado = true;
-        }
-        moverYEvaluar(getJugadorActual(), suma);
-
-        // Si ha caído en IrCarcel ya no puede volver a tirar, aunque hubiera sacado dobles.
-        if (getJugadorActual().isEnCarcel()) {
-            tirado = true;
-            lanzamientos = 0;
-        }
-        Casilla destinoCas = tablero.getCasillaPorPosicion(destinoPos);
-        String nombre2 = destinoCas.getNombre();
-        System.out.println("El avatar " + actual.getAvatar().getId() + " avanza " + suma +  " posiciones, desde " +
-                nombre + " hasta " + nombre2 + ".");
-        System.out.println(tablero);
-    }
-
-    /**
-     * Ejecuta el comando {@code listar avatares}: muestra el identificador, el tipo,
-     * la casilla y el jugador de cada avatar de la partida.
-     */
-    private void listarAvatares() {
-        // Si no hay avatares, no hay nada que listar.
-        if (avatares.isEmpty()) {
-            System.out.println("No hay avatares en la partida.");
-            return;
-        }
-        // Se recorre la lista de avatares imprimiendo los datos de cada uno.
-        for (Avatar a : avatares) {
-            System.out.println("{");
-            System.out.println("  id: " + a.getId() + ",");
-            System.out.println("  tipo: " + a.getTipo() + ",");
-            System.out.println("  casilla: " + a.getLugar().getNombre() + ",");
-            System.out.println("  jugador: " + a.getJugador().getNombre());
-            System.out.println("}");
-        }
-    }
-
-    /**
-     * Ejecuta el comando {@code listar jugadores}: muestra, para cada jugador, su
-     * nombre, avatar, fortuna, propiedades, hipotecas y edificios.
-     */
-    private void listarJugadores() {
-        if (jugadores.isEmpty()){
-            System.out.println("No hay jugadores en la partida.");
-            return;
-        }
-        for (int i = 0; i < jugadores.size(); i++){
-            Jugador j = jugadores.get(i);
-            System.out.println("{");
-            System.out.println("  nombre: " + j.getNombre() + ",");
-            System.out.println("  avatar: " + j.getAvatar().getId() + ",");
-            System.out.println("  fortuna: " + (long) j.getFortuna() + "€,");
-            //System.out.println("propiedades: " + j.getPropiedades());
-            System.out.print("  propiedades: [");
-            for (Casilla c : j.getPropiedades()) {
-                System.out.print(c.getNombre() + " ");
-            }
-            System.out.println("  ]");
-            System.out.println("  hipotecas: -");
-            System.out.println("  edificios: -");
-            if (jugadores.size()-1 == i){
-                System.out.println("}");
-            } else {
-                System.out.println("},");
-            }
-
-        }
-    }
-
-    /**
-     * Ejecuta el comando {@code listar enventa}: muestra los solares, transportes y
-     * servicios que todavía pertenecen a la banca.
-     */
-    private void listarVenta() {
-        boolean hayEnVenta = false;
-        // Se recorren los cuatro lados del tablero y, dentro de cada uno, sus casillas.
-        for (ArrayList<Casilla> lado : tablero.getPosiciones()) {
-            for (Casilla c : lado) {
-                // Solo se pueden comprar solares, transportes y servicios.
-                String tipo = c.getTipo();
-                boolean comprable = tipo.equals("Solar") || tipo.equals("Transporte") || tipo.equals("Servicios");
-                // Está en venta si es comprable y todavía es de la banca.
-                if (comprable && c.getDuenho() == banca) {
-                    System.out.println(c.casEnVenta());
-                    hayEnVenta = true;
-                }
-            }
-        }
-        if (!hayEnVenta) {
-            System.out.println("No hay casillas en venta.");
-        }
-    }
-
-    /**
-     * Lleva el avatar del jugador hasta una casilla concreta, avanzando por el
-     * tablero. Si por el camino pasa por la Salida, cobra lo que le corresponde
-     * (de eso se encarga {@code moverAvatar}). Pensado para las cartas que mandan
-     * a una casilla determinada.
-     *
-     * @param actual  Jugador cuyo avatar se mueve.
-     * @param destino Casilla a la que tiene que llegar.
-     */
-    private void moverHasta(Jugador actual, Casilla destino) {
-        int pasos = (destino.getPosicion() - actual.getAvatar().getLugar().getPosicion() + 40) % 40;
-        actual.getAvatar().moverAvatar(tablero.getPosiciones(), pasos);
-    }
-
-    /**
-     * Mueve el avatar del jugador las casillas indicadas y aplica la acción de la
-     * casilla en la que cae: alquiler, impuesto, Parking, IrCarcel, cartas...
-     * Muestra el movimiento por pantalla y repinta el tablero.
-     *
-     * @param actual Jugador cuyo avatar se mueve.
-     * @param suma   Número de casillas que avanza (la suma de los dados).
-     */
-    private void moverYEvaluar(Jugador actual, int suma) {
-        actual.getAvatar().moverAvatar(tablero.getPosiciones(), suma);
-        Casilla casilla = actual.getAvatar().getLugar();
-
-        if (casilla.getNombre().equals("IrCarcel")) {
-            System.out.println("Has caído en IrCarcel: el avatar se coloca en la casilla de Cárcel.");
-            actual.encarcelar(tablero.getPosiciones());
-        } else if (casilla.getTipo().equals("Suerte") || casilla.getTipo().equals("Comunidad")) {
-            //sacarCarta(actual, casilla.getTipo());
-        }
-
-        else {
-            casilla.evaluarCasilla(actual, banca, suma, tablero.encontrar_casilla("Parking"));
-        }
-    }
-
-    /**
      * Intenta cobrar una cantidad al jugador. Si no tiene dinero suficiente, se lo
      * indica y no le cobra nada.
      *
@@ -962,49 +873,8 @@ public class Menu {
         return true;
     }
 
-    /**
-     * Ejecuta el comando {@code comandos <fichero>}: lee el fichero línea a línea y
-     * ejecuta cada una como un comando, mostrándola antes precedida de
-     * {@code $>}. Se saltan las líneas vacías y las que empiezan por {@code #}.
-     *
-     * @param partes Comando troceado por espacios: {@code partes[1]} es la ruta del
-     *               fichero.
-     */
-    private void procesarComandos(String[] partes){
-        if (partes.length != 2) {
-            System.out.println("Comando erróneo. Formato: comandos <ruta>\n");
-            return;
-        }
-        // En un try-catch, la parte try es un bloque de código que puede fallar, como por ejemplo abrir
-        //      un archivo y leerlo. "partes[1]" es la ruta al archivo. "new FileReader" abre ese archivo y crea
-        //      un objeto que puede leerlo. "new BufferedReader" recibe ese objeto y lo envuelve, añadiendo un búfer
-        //      para agilizar las lecturas, y el método readLine(), que junta caracteres hasta encontrar un cambio
-        //      de línea, entonces devuelve la línea entera.
-        // "BufferedReader lector" es la variable en la que se guarda el resultado, y así se puede usar "lector" para no
-        //      interactuar con FileReader directamente.
-        try (BufferedReader lector = new BufferedReader(new FileReader(partes[1]))) {
-            String linea;
-            // Mientras que lea líneas (no haya llegado al final del archivo),
-            while ((linea = lector.readLine()) != null) {
-                // a cada línea le saca los espacios en blanco que hayan al principio y al final,
-                //      dejando los del medio.
-                linea = linea.trim();
-                // Si es una línea vacía, empieza por # o por //, la salta, porque o la línea no tiene nada o
-                //      son comentarios.
-                if (linea.isEmpty() || linea.startsWith("#") || linea.startsWith("//")) {
-                    continue;
-                }
-                // Si es un posible comando, lo imprime en pantalla para saber de qué es la salida.
-                System.out.println("$> " + linea);
-                // Llamada recursiva a analizarComando() para intentar ejecutar la línea.
-                analizarComando(linea);
-            } // Como se asume que lo de try puede fallar, se tiene el catch; un código que se lanza cuando falle
-            //      el try. Si el archivo no pudiera leerse, saltaría esa excepción y dejaría de ejecutar más código.
-            //   Imprime un mensaje de error.
-        } catch (IOException e) {
-            System.out.println("ERROR: No se pudo leer el archivo: " + partes[1]);
-        }
-    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////// CARTAS //////////////////////////////////////////////////////////
 
     /**
      * Saca la siguiente carta de Suerte o de Caja de Comunidad, muestra su
@@ -1099,35 +969,6 @@ public class Menu {
     }
 
     /**
-     * Ejecuta el comando {@code salir carcel}: el jugador con el turno paga la
-     * fianza (500.000€) y sale de la Cárcel, tras lo cual puede lanzar los dados.
-     * Solo es posible si está en la Cárcel y tiene dinero suficiente.
-     */
-    private void salirCarcel() {
-        if (jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
-            return;
-        }
-
-        if (!Objects.requireNonNull(getJugadorActual()).isEnCarcel()) {
-            System.out.println("El jugador actual no está en la cárcel");
-            return;
-        }
-        float fianza = 500000f;
-        if (getJugadorActual().getFortuna() < fianza) {
-            System.out.println("El jugador no tiene dinero suficiente para salir de la cárcel");
-            return;
-        }
-        getJugadorActual().sumarFortuna(-fianza);
-        getJugadorActual().sumarGastos(fianza);
-
-        getJugadorActual().setEnCarcel(false);
-        getJugadorActual().setTiradasCarcel(0);
-
-        System.out.println(getJugadorActual().getNombre() + " paga " + fianza + "€ y sale de la cárcel. Ya puede lanzar los dados.");
-    }
-
-    /**
      * Busca la primera casilla de transporte avanzando desde una casilla dada, y
      * da la vuelta al tablero si hace falta. Se usa en la carta de Suerte que manda
      * al transporte más cercano.
@@ -1146,18 +987,204 @@ public class Menu {
         return desde;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////// LISTADOS Y DESCRIPCIONES ////////////////////////////////////////////////
+
     /**
-     * Ejecuta el comando {@code jugador}: muestra el nombre y el avatar del jugador
-     * que tiene el turno.
+     * Ejecuta el comando {@code describir avatar <ID>}: muestra el identificador,
+     * el tipo, la casilla en la que está y el jugador al que pertenece el avatar.
+     *
+     * @param ID Letra que identifica al avatar.
      */
-    private void turnoActual() {
-        if (this.jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
+    private void descAvatar(String ID) {
+        Avatar a = buscarAvatar(ID);
+        if (a == null) {
+            System.out.println("No existe el avatar\n");
             return;
         }
+        System.out.println("tipo: "+ a.getTipo());
+        System.out.println("lugar: "+ a.getLugar().getNombre());
+        System.out.println("jugador: "+ a.getJugador().getNombre());
+
+    }
+
+    /**
+     * Ejecuta el comando {@code describir <casilla>}: muestra la información de la
+     * casilla, con un formato distinto según su tipo. Las casillas de Suerte, Caja
+     * de Comunidad e IrCarcel no se pueden describir.
+     *
+     * @param nombre Nombre de la casilla que se quiere describir.
+     */
+    private void descCasilla(String nombre) {
+        Casilla c = tablero.encontrar_casilla(nombre);
+        if (c == null) {
+            System.out.println("No existe ninguna casilla con el nombre: " + nombre);
+            return;
+        }
+        System.out.println(c.infoCasilla());
+    }
+
+    /**
+     * Ejecuta el comando {@code describir jugador <nombre>}: muestra el nombre, el
+     * avatar, la fortuna, las propiedades, las hipotecas y los edificios del jugador.
+     *
+     * @param partes Comando troceado por espacios: {@code partes[2]} es el nombre
+     *               del jugador.
+     */
+    private void descJugador(String[] partes) {
+        // Si la cantidad de parámetros introducidos es menor que 2, el comando no se introdujo correctamente.
+        if (partes.length <= 2){
+            System.out.println("No ha introducido el nombre del jugador\n");
+            return;
+        }
+        // De otro modo, se busca al jugador que tenga ese nombre.
+        Jugador j = buscarjugador(partes[2]);
+        // Si la función devuelve nulo, no hay jugador con ese nombre.
+        if (j == null) {
+            System.out.println("No existe el jugador\n");
+            return;
+        }
+        // Si existe, se imprimen por pantalla los atributos del jugador.
         System.out.println("{");
-        System.out.println("  nombre: " + jugadores.get(turno).getNombre() + ",");
-        System.out.println("  avatar: " + jugadores.get(turno).getAvatar().getId());
+        System.out.println("  nombre: " + j.getNombre() + ",");
+        System.out.println("  avatar: " + j.getAvatar().getId() + ",");
+        System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
+        //System.out.println("propiedades: " + j.getPropiedades());
+        System.out.print("  propiedades: [");
+        for (Casilla c : j.getPropiedades()) {
+            System.out.print(c.getNombre() + " ");
+        }
+        System.out.println("  ]");
+        System.out.println("  hipotecas: -");
+        System.out.println("  edificios: -");
         System.out.println("}");
     }
+
+    /**
+     * Ejecuta el comando {@code listar avatares}: muestra el identificador, el tipo,
+     * la casilla y el jugador de cada avatar de la partida.
+     */
+    private void listarAvatares() {
+        // Si no hay avatares, no hay nada que listar.
+        if (avatares.isEmpty()) {
+            System.out.println("No hay avatares en la partida.");
+            return;
+        }
+        // Se recorre la lista de avatares imprimiendo los datos de cada uno.
+        for (Avatar a : avatares) {
+            System.out.println("{");
+            System.out.println("  id: " + a.getId() + ",");
+            System.out.println("  tipo: " + a.getTipo() + ",");
+            System.out.println("  casilla: " + a.getLugar().getNombre() + ",");
+            System.out.println("  jugador: " + a.getJugador().getNombre());
+            System.out.println("}");
+        }
+    }
+
+    /**
+     * Ejecuta el comando {@code listar jugadores}: muestra, para cada jugador, su
+     * nombre, avatar, fortuna, propiedades, hipotecas y edificios.
+     */
+    private void listarJugadores() {
+        if (jugadores.isEmpty()){
+            System.out.println("No hay jugadores en la partida.");
+            return;
+        }
+        for (int i = 0; i < jugadores.size(); i++){
+            Jugador j = jugadores.get(i);
+            System.out.println("{");
+            System.out.println("  nombre: " + j.getNombre() + ",");
+            System.out.println("  avatar: " + j.getAvatar().getId() + ",");
+            System.out.println("  fortuna: " + (long) j.getFortuna() + "€,");
+            //System.out.println("propiedades: " + j.getPropiedades());
+            System.out.print("  propiedades: [");
+            for (Casilla c : j.getPropiedades()) {
+                System.out.print(c.getNombre() + " ");
+            }
+            System.out.println("  ]");
+            System.out.println("  hipotecas: -");
+            System.out.println("  edificios: -");
+            if (jugadores.size()-1 == i){
+                System.out.println("}");
+            } else {
+                System.out.println("},");
+            }
+
+        }
+    }
+
+    /**
+     * Ejecuta el comando {@code listar enventa}: muestra los solares, transportes y
+     * servicios que todavía pertenecen a la banca.
+     */
+    private void listarVenta() {
+        boolean hayEnVenta = false;
+        // Se recorren los cuatro lados del tablero y, dentro de cada uno, sus casillas.
+        for (ArrayList<Casilla> lado : tablero.getPosiciones()) {
+            for (Casilla c : lado) {
+                // Solo se pueden comprar solares, transportes y servicios.
+                String tipo = c.getTipo();
+                boolean comprable = tipo.equals("Solar") || tipo.equals("Transporte") || tipo.equals("Servicios");
+                // Está en venta si es comprable y todavía es de la banca.
+                if (comprable && c.getDuenho() == banca) {
+                    System.out.println(c.casEnVenta());
+                    hayEnVenta = true;
+                }
+            }
+        }
+        if (!hayEnVenta) {
+            System.out.println("No hay casillas en venta.");
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////// BÚSQUEDAS AUXILIARES //////////////////////////////////////////////////
+
+    /**
+     * Busca un avatar de la partida a partir de su identificador.
+     *
+     * @param ID Letra que identifica al avatar.
+     * @return El avatar con ese identificador, o {@code null} si no existe.
+     */
+    private Avatar buscarAvatar(String ID) {
+        for(Avatar avatar: avatares){
+            if(avatar.getId().equals(ID)){
+                return avatar;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Busca un jugador de la partida a partir de su nombre.
+     *
+     * @param nombre_jugador Nombre del jugador, tal como se dio de alta.
+     * @return El jugador con ese nombre, o {@code null} si no existe.
+     */
+    private Jugador buscarjugador(String nombre_jugador) {
+        // Se itera sobre la lista de jugadores.
+        for(Jugador jugador: jugadores){
+            // Si la string coincide con el nombre de alguno, devuelve ese objeto.
+            if(jugador.getNombre().equals(nombre_jugador)){
+                return jugador;
+            }
+        }
+        // Si no hay jugador con ese nombre, devuelve NULL.
+        return null;
+    }
+
+    /**
+     * Devuelve la casilla que ocupa un índice del tablero.
+     * El índice empieza en 0, así que equivale a la posición de la casilla menos 1:
+     * la Salida es el 0 y Solar22 el 39. Supone que cada lado del tablero está
+     * guardado en orden de juego, empezando por su esquina.
+     *
+     * @param indice Índice de la casilla, entre 0 y 39.
+     * @return La casilla que ocupa ese índice.
+     */
+    private Casilla casillaEnIndice(int indice) {
+        return tablero.getPosiciones().get(indice / 10).get(indice % 10);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
