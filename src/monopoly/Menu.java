@@ -98,7 +98,7 @@ public class Menu {
 
             case "comprar":
                 if (partes.length != 2) {
-                    System.out.println("Comando incorrecto. Formato: comprar <casilla>");
+                    System.out.println(Valor.ERROR_USO + "comprar <casilla>");
                     break;
                 }
                 comprar(partes[1]);
@@ -110,7 +110,7 @@ public class Menu {
 
             case "describir":
                 if (partes.length == 1) {
-                    System.out.println("ERROR: describir jugador <nombre>|avatar <id>");
+                    System.out.println(Valor.ERROR_USO + "describir <casilla> | describir jugador <nombre> | describir avatar <ID>");
                     break;
                 }
                 switch (partes[1]) {
@@ -128,7 +128,7 @@ public class Menu {
 
             case "edificar":
                 if (partes.length < 2 || partes.length > 3) {
-                    System.out.println(Valor.ERROR_USO + "edificar casa|hotel|piscina|pista_deporte");
+                    System.out.println(Valor.ERROR_USO + "edificar casa|hotel|piscina|pistadeporte");
                     break;
                 }
                 edificar(partes);
@@ -186,7 +186,7 @@ public class Menu {
                 System.out.println("\tcrear jugador <nombre> <coche|esfinge|sombrero|pelota>");
                 System.out.println("\tdescribir <casilla> | describir jugador <nombre> | describir avatar <ID>");
                 System.out.println("\tdeshipotecar <casilla>");
-                System.out.println("\tedificar casa|hotel|piscina|pista_deporte");
+                System.out.println("\tedificar casa|hotel|piscina|pistadeporte");
                 System.out.println("\testadisticas [<jugador>]");
                 System.out.println("\thipotecar <casilla>");
                 System.out.println("\tjugador");
@@ -205,7 +205,7 @@ public class Menu {
                 break;
             // Opción por defecto, es decir, comando mal introducido.
             default:
-                System.out.println(Valor.ERROR + "Comando desconocido: " + comando);
+                System.out.println(Valor.ERROR + "Comando desconocido: " + comando + ". Escriba 'help' para ver opciones de comandos.");
         }
     }
 
@@ -233,7 +233,7 @@ public class Menu {
      */
     private void procesarComandos(String[] partes){
         if (partes.length != 2) {
-            System.out.println("Comando erróneo. Formato: comandos <ruta>\n");
+            System.out.println(Valor.ERROR_USO + "comandos <fichero>");
             return;
         }
         // En un try-catch, la parte try es un bloque de código que puede fallar, como por ejemplo abrir
@@ -263,7 +263,7 @@ public class Menu {
             //      el try. Si el archivo no pudiera leerse, saltaría esa excepción y dejaría de ejecutar más código.
             //   Imprime un mensaje de error.
         } catch (IOException e) {
-            System.out.println("ERROR: No se pudo leer el archivo: " + partes[1]);
+            System.out.println(Valor.ERROR + "No se pudo leer el archivo: " + partes[1]);
         }
     }
 
@@ -276,11 +276,11 @@ public class Menu {
      */
     private void acabarTurno() {
         if (jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.");
+            System.out.println(Valor.YELLOW + "Aún no hay jugadores en la partida." + Valor.RESET);
             return;
         }
         if(!tirado){
-            System.out.println("Aún tiene que tirar los dados.");
+            System.out.println(Valor.YELLOW + "Aún tiene que tirar los dados." + Valor.RESET);
             return;
         }
         turno = (turno + 1)% jugadores.size();
@@ -302,8 +302,10 @@ public class Menu {
         // Se comprueba que el formato del comando sea correcto, esto es, tiene 4 argumentos.
         if (partes.length == 4){
             // Se impide crear más jugadores si ya hay 4.
-            if (!partes[3].equalsIgnoreCase("Coche") &&!partes[3].equalsIgnoreCase("Esfinge") &&!partes[3].equalsIgnoreCase("Sombrero") && !partes[3].equalsIgnoreCase("Pelota")) {
-                System.out.println("ERROR: Tipo de avatar no admitido. Permitidos: Coche, Esfinge, Sombrero, Pelota.");
+            if (!partes[3].equalsIgnoreCase("Coche") &&!partes[3].equalsIgnoreCase("Esfinge")
+                    &&!partes[3].equalsIgnoreCase("Sombrero") && !partes[3].equalsIgnoreCase("Pelota")) {
+                System.out.println(Valor.YELLOW + "Tipo de avatar no admitido. Permitidos: Coche, Esfinge, Sombrero, Pelota." +
+                        Valor.RESET);
                 return;
             }
             if (jugadores.size() < 4) {
@@ -311,11 +313,11 @@ public class Menu {
                 String nombre = partes[2];
                 String tipo = partes[3];
                 if (!tipo.equals("coche") && !tipo.equals("esfinge") && !tipo.equals("sombrero") && !tipo.equals("pelota")) {
-                    System.out.println("ERROR: El avatar debe ser coche, esfinge, sombrero o pelota.");
+                    System.out.println(Valor.YELLOW + "El avatar debe ser coche, esfinge, sombrero o pelota." + Valor.RESET);
                     return;  //comprueba que sea uno de los 4 posibles avatares
                 }
                 if (buscarjugador(nombre) != null) {
-                    System.out.println("ERROR: Ya existe un jugador llamado " + nombre + ".");
+                    System.out.println(Valor.YELLOW + "Ya existe un jugador llamado " + nombre + "." + Valor.RESET);
                     return;
                 }
                 // Se busca cuál es la casilla de salida, todos los jugadores empiezan ahí.
@@ -334,7 +336,7 @@ public class Menu {
                 System.out.println("}");
                 System.out.println(tablero);
             } else {
-                System.out.println("ERROR: No se pueden crear más de 4 jugadores.");
+                System.out.println(Valor.YELLOW + "No se pueden crear más de 4 jugadores." + Valor.RESET);
             }
         }
         else {
@@ -362,7 +364,7 @@ public class Menu {
      */
     private void turnoActual() {
         if (this.jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
+            System.out.println(Valor.YELLOW + "Aún no hay jugadores en la partida." + Valor.RESET);
             return;
         }
         System.out.println("{");
@@ -386,15 +388,15 @@ public class Menu {
      */
     private void lanzarDados(String[] partes) {
         if (jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
+            System.out.println(Valor.YELLOW + "Aún no hay jugadores en la partida." + Valor.RESET);
             return;
         }
         if (jugadores.size() < 2) {
-            System.out.println("Se necesitan al menos 2 jugadores para empezar la partida.");
+            System.out.println(Valor.YELLOW + "Se necesitan al menos 2 jugadores para empezar la partida." + Valor.RESET);
             return;
         }
         if (tirado) {
-            System.out.println("El jugador ya ha tirado los dados");
+            System.out.println(Valor.YELLOW + "El jugador ya ha tirado los dados" + Valor.RESET);
             return;
         }
         int tirada1;
@@ -530,17 +532,17 @@ public class Menu {
      */
     private void salirCarcel() {
         if (jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
+            System.out.println(Valor.YELLOW + "Aún no hay jugadores en la partida." + Valor.RESET);
             return;
         }
 
         if (!Objects.requireNonNull(getJugadorActual()).isEnCarcel()) {
-            System.out.println("El jugador actual no está en la cárcel");
+            System.out.println(Valor.YELLOW + "El jugador actual no está en la cárcel" + Valor.RESET);
             return;
         }
         float fianza = 500000f;
         if (getJugadorActual().getFortuna() < fianza) {
-            System.out.println("El jugador no tiene dinero suficiente para salir de la cárcel");
+            System.out.println(Valor.YELLOW + "El jugador no tiene dinero suficiente para salir de la cárcel" + Valor.RESET);
             return;
         }
         getJugadorActual().sumarFortuna(-fianza);
@@ -565,12 +567,12 @@ public class Menu {
     private void comprar(String nombre) {
 
         if (jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
+            System.out.println(Valor.YELLOW + "Aún no hay jugadores en la partida." + Valor.RESET);
             return;
         }
 
         if (!Objects.requireNonNull(getJugadorActual()).getAvatar().getLugar().getNombre().equalsIgnoreCase(nombre)) {
-            System.out.println("No se puede comprar está casilla");
+            System.out.println(Valor.YELLOW + "No se puede comprar está casilla" + Valor.RESET);
             return;
         }
 
@@ -590,29 +592,31 @@ public class Menu {
     private void deshipotecar(String nombrecasilla, Jugador jugadorActual){
         Casilla casilla = this.tablero.encontrar_casilla(nombrecasilla);
         if (casilla == null) {
-            System.out.println("No existe ninguna casilla con el nombre: " + nombrecasilla);
+            System.out.println(Valor.YELLOW + "No existe ninguna casilla con el nombre: " + nombrecasilla + Valor.RESET);
             return;
         }
 
         if (casilla.getDuenho() == null || casilla.getDuenho() != jugadorActual) {
-            System.out.println(jugadorActual.getNombre() + " no puede deshipotecar " + casilla.getNombre() + ". No es una propiedad que le pertenece.");
+            System.out.println(Valor.YELLOW + jugadorActual.getNombre() + " no puede deshipotecar " + casilla.getNombre() +
+                    ". No es una propiedad que le pertenece." + Valor.RESET);
             return;
         }
         if (!casilla.isHipotecada()) {
-            System.out.println(jugadorActual.getNombre() + " no puede deshipotecar " + casilla.getNombre() + ". No está hipotecada.");
+            System.out.println(Valor.YELLOW + jugadorActual.getNombre() + " no puede deshipotecar " + casilla.getNombre() +
+                    ". No está hipotecada." + Valor.RESET);
             return;
         }
         float sumaHipoteca = casilla.getValorHipoteca();
         if(jugadorActual.getFortuna() < sumaHipoteca){
-            System.out.println("No puede deshipotecar porque no tiene saldo suficiente");
+            System.out.println(Valor.YELLOW + "No puede deshipotecar porque no tiene saldo suficiente" + Valor.RESET);
             return;
         }
 
         jugadorActual.sumarFortuna(-sumaHipoteca);
         casilla.setHipotecada(false);
         String grupo = casilla.getGrupo().getColorGrupo();
-        System.out.println(jugadorActual.getNombre() + "paga" + sumaHipoteca + "para deshipotecar " +casilla.getNombre() + ". Ahora puede cobrar alquileres y edificar en el grupo " + grupo);
-
+        System.out.println(jugadorActual.getNombre() + "paga" + sumaHipoteca + "para deshipotecar " +casilla.getNombre() +
+                ". Ahora puede cobrar alquileres y edificar en el grupo " + grupo);
     }
 
     /**
@@ -628,7 +632,7 @@ public class Menu {
     private void edificar(String[] partes) {
         // Lógicamente deben haber dos jugadores para empezar la partida.
         if (this.jugadores.isEmpty()) {
-            System.out.println("Aún no hay jugadores en la partida.\n");
+            System.out.println(Valor.YELLOW + "Aún no hay jugadores en la partida." + Valor.RESET);
             return;
         }
         // Obtenemos los datos del jugador,casilla en la que está y el grupo.
@@ -645,7 +649,7 @@ public class Menu {
         float precio;
         // Sólo se puede edificar en los solares.
         if (!actualCasillaTipo.equals("Solar")){
-            System.out.println("ERROR: Sólo se puede edificar en los solares.");
+            System.out.println(Valor.YELLOW + "Sólo se puede edificar en los solares." + Valor.RESET);
             return;
         }
         // Si es dueño de todas las casillas del grupo, puede edificar.
@@ -655,11 +659,11 @@ public class Menu {
                 case "casa":
                     // Si hay 4 casas edificadas o si hay un hotel, no se pueden construir más casas.
                     if (numeroCasas >= 4){
-                        System.out.println("Ya hay 4 casas construidas.");
+                        System.out.println(Valor.YELLOW + "Ya hay 4 casas construidas." + Valor.RESET);
                         return;
                     }
                     if (hayHotel == 1) {
-                        System.out.println("No se pueden edificar más casas si ya hay un hotel.");
+                        System.out.println(Valor.YELLOW + "No se pueden edificar más casas si ya hay un hotel." + Valor.RESET);
                         return;
                     }
                     // Se guardará como INT la cantidad de casas a comprar.
@@ -671,7 +675,7 @@ public class Menu {
                         try {
                             cantidad = Integer.parseInt(partes[2]);
                         } catch (NumberFormatException e) {
-                            System.out.println("La cantidad debe ser un número entero entre 1 y 4.");
+                            System.out.println(Valor.YELLOW + "La cantidad debe ser un número entero entre 1 y 4." + Valor.RESET);
                         }
                         // Si no se especifica cantidad, se asume que se compra una sola casa.
                     } else if (partes.length == 2) {
@@ -680,14 +684,14 @@ public class Menu {
                     // Se revisa el número introducido. No pueden construirse más de 4 casas o pasar un número negativo.
                     if (partes.length == 3 || cantidad == 1) {
                         if (cantidad > 4 || cantidad <= 0) {
-                            System.out.println("ERROR: No puedes construir más de 4 casas en una casilla.");
+                            System.out.println(Valor.YELLOW + "No puedes construir más de 4 casas en una casilla." + Valor.RESET);
                         } else {
                             // Se calculan la cantidad de casas disponibles para construir restando las casas que pretendemos
                             //      construir al máximo de cuatro. No podemos edificar más casas de las que hay disponibles.
                             int disponibles = 4-numeroCasas;
                             if (disponibles < cantidad) {
-                                System.out.println("No puedes construir más de 4 casas en una casilla. Quedan " + disponibles +
-                                        " espacios para construir casas en este solar.");
+                                System.out.println(Valor.YELLOW + "No puedes construir más de 4 casas en una casilla. Quedan " +
+                                        disponibles + " espacios para construir casas en este solar." + Valor.RESET);
                             } else {
                                 // El precio de las casas es el precio de la casa por la cantidad que compre.
                                 precio = (cantidad * Valor.SOLAR_PRECIOS_CASA[actualCasillaPos]);
@@ -706,7 +710,7 @@ public class Menu {
                                                 ". La fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
                                     }
                                 } else {
-                                    System.out.println("ERROR: Dinero insuficiente.");
+                                    System.out.println(Valor.YELLOW + "Dinero insuficiente." + Valor.RESET);
                                 }
                             }
                         }
@@ -715,16 +719,16 @@ public class Menu {
                 case "hotel":
                     // Aquí no puede admitir una cantidad (no serviría de nada).
                     if (partes.length > 2){
-                        System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                        System.out.println(Valor.ERROR_USO + "edificar casa [<cantidad>]|hotel|piscina|pistadeporte");
                         return;
                     }
                     // Si ya hay hotel, o si no hay 4 casas, no se puede construir un hotel.
                     if (hayHotel == 1){
-                        System.out.println("Ya se ha construido un hotel en esta casilla.");
+                        System.out.println(Valor.YELLOW + "Ya se ha construido un hotel en esta casilla." + Valor.RESET);
                         return;
                     }
                     if (numeroCasas != 4){
-                        System.out.println("Debes tener 4 casas para construir un hotel.");
+                        System.out.println(Valor.YELLOW + "Debes tener 4 casas para construir un hotel." + Valor.RESET);
                         return;
                     }
                     // El precio de las casas es el precio de la casa por la cantidad que compre.
@@ -739,21 +743,22 @@ public class Menu {
                         System.out.println("Se ha edificado un hotel en " + actualCasilla.getNombre() + ". La " +
                                 "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
                     } else {
-                        System.out.println("ERROR: Dinero insuficiente.");
+                        System.out.println(Valor.YELLOW + "Dinero insuficiente." + Valor.RESET);
                     }
                     break;
                 case "piscina":
                     // Aquí no puede admitir una cantidad (no serviría de nada).
                     if (partes.length > 2) {
-                        System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                        System.out.println(Valor.ERROR_USO + "edificar casa [<cantidad>]|hotel|piscina|pistadeporte");
                         return;
                     }
                     if (hayHotel == 0) {
-                        System.out.println("No se puede edificar una piscina, ya que no se dispone de un hotel.");
+                        System.out.println(Valor.YELLOW + "No se puede edificar una piscina, ya que no se dispone de un hotel."
+                                + Valor.RESET);
                         return;
                     }
                     if (hayPiscina == 1) {
-                        System.out.println("Ya se dispone de una piscina.");
+                        System.out.println(Valor.YELLOW + "Ya se dispone de una piscina." + Valor.RESET);
                         return;
                     }
                     // El precio de las casas es el precio de la casa por la cantidad que compre.
@@ -772,19 +777,21 @@ public class Menu {
                 case "pistadeporte":
                     // Aquí no puede admitir una cantidad (no serviría de nada).
                     if (partes.length > 2) {
-                        System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                        System.out.println(Valor.ERROR_USO + "edificar casa [<cantidad>]|hotel|piscina|pistadeporte");
                         return;
                     }
                     if (hayHotel == 0) {
-                        System.out.println("No se puede edificar una pista de deporte, ya que no se dispone de un hotel.");
+                        System.out.println(Valor.YELLOW + "No se puede edificar una pista de deporte, ya que no se dispone de un hotel."
+                                + Valor.RESET);
                         return;
                     }
                     if (hayPiscina == 0) {
-                        System.out.println("No se puede edificar una pista de deporte, ya que no se dispone de una piscina.");
+                        System.out.println(Valor.YELLOW + "No se puede edificar una pista de deporte, ya que no " +
+                                "se dispone de una piscina." + Valor.RESET);
                         return;
                     }
                     if (hayPistadeporte == 1) {
-                        System.out.println("Ya se dispone de una pista de deporte.");
+                        System.out.println(Valor.YELLOW + "Ya se dispone de una pista de deporte." + Valor.RESET);
                         return;
                     }
                     // El precio de las casas es el precio de la casa por la cantidad que compre.
@@ -801,11 +808,11 @@ public class Menu {
                     }
                     break;
                 default:
-                    System.out.println("ERROR: edificar casa <cantidad>|hotel|piscina|pistadeporte");
+                    System.out.println(Valor.ERROR_USO + "edificar casa [<cantidad>]|hotel|piscina|pistadeporte");
                     break;
             }
         } else {
-            System.out.println("ERROR: Debes ser dueño de todo el grupo para poder construir.");
+            System.out.println(Valor.YELLOW + "Debes ser dueño de todo el grupo para poder construir." + Valor.RESET);
         }
     }
 
@@ -828,17 +835,19 @@ public class Menu {
         }
 
         if(casilla.getDuenho() != jugadoractual){
-            System.out.println(jugadoractual.getNombre() + "no puede hipotecar" + casilla.getNombre() + "Esta casilla no pertenece al jugador actual");
+            System.out.println(Valor.YELLOW + jugadoractual.getNombre() + "no puede hipotecar" + casilla.getNombre() +
+                    "Esta casilla no pertenece al jugador actual" + Valor.RESET);
             return;
         }
 
         if(casilla.isHipotecada()){
-            System.out.println("Esta casilla ya está hipotecada");
+            System.out.println(Valor.YELLOW + "Esta casilla ya está hipotecada" + Valor.RESET);
             return;
         }
 
         if (casilla.getTipo().equalsIgnoreCase("Solar") && casilla.tieneEdificios()) {
-            System.out.println(jugadoractual.getNombre() + " no puede hipotecar " + casilla.getNombre() + ". Se deben vender todos los edificios antes.");
+            System.out.println(Valor.YELLOW + jugadoractual.getNombre() + " no puede hipotecar " + casilla.getNombre() +
+                    ". Se deben vender todos los edificios antes." + Valor.RESET);
             return;
         }
 
@@ -998,7 +1007,7 @@ public class Menu {
     private void descAvatar(String ID) {
         Avatar a = buscarAvatar(ID);
         if (a == null) {
-            System.out.println("No existe el avatar\n");
+            System.out.println(Valor.YELLOW + "No existe el avatar." + Valor.RESET);
             return;
         }
         System.out.println("tipo: "+ a.getTipo());
@@ -1017,7 +1026,7 @@ public class Menu {
     private void descCasilla(String nombre) {
         Casilla c = tablero.encontrar_casilla(nombre);
         if (c == null) {
-            System.out.println("No existe ninguna casilla con el nombre: " + nombre);
+            System.out.println(Valor.YELLOW + "No existe ninguna casilla con el nombre: " + nombre + Valor.RESET);
             return;
         }
         System.out.println(c.infoCasilla());
@@ -1033,14 +1042,14 @@ public class Menu {
     private void descJugador(String[] partes) {
         // Si la cantidad de parámetros introducidos es menor que 2, el comando no se introdujo correctamente.
         if (partes.length <= 2){
-            System.out.println("No ha introducido el nombre del jugador\n");
+            System.out.println(Valor.YELLOW + "No ha introducido el nombre del jugador." + Valor.RESET);
             return;
         }
         // De otro modo, se busca al jugador que tenga ese nombre.
         Jugador j = buscarjugador(partes[2]);
         // Si la función devuelve nulo, no hay jugador con ese nombre.
         if (j == null) {
-            System.out.println("No existe el jugador\n");
+            System.out.println(Valor.YELLOW + "No existe el jugador." + Valor.RESET);
             return;
         }
         // Si existe, se imprimen por pantalla los atributos del jugador.
@@ -1066,7 +1075,7 @@ public class Menu {
     private void listarAvatares() {
         // Si no hay avatares, no hay nada que listar.
         if (avatares.isEmpty()) {
-            System.out.println("No hay avatares en la partida.");
+            System.out.println(Valor.YELLOW + "No hay avatares en la partida." + Valor.RESET);
             return;
         }
         // Se recorre la lista de avatares imprimiendo los datos de cada uno.
@@ -1086,7 +1095,7 @@ public class Menu {
      */
     private void listarJugadores() {
         if (jugadores.isEmpty()){
-            System.out.println("No hay jugadores en la partida.");
+            System.out.println(Valor.YELLOW + "No hay jugadores en la partida." + Valor.RESET);
             return;
         }
         for (int i = 0; i < jugadores.size(); i++){
@@ -1132,7 +1141,7 @@ public class Menu {
             }
         }
         if (!hayEnVenta) {
-            System.out.println("No hay casillas en venta.");
+            System.out.println(Valor.YELLOW + "No hay casillas en venta." + Valor.RESET);
         }
     }
 

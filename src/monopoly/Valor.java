@@ -19,7 +19,7 @@ public class Valor {
     public static final String WHITE = "\u001B[37m";
 
     // Para los mensajes de error:
-    public static final String ERROR = RED + "ERROR." + RESET + " ";
+    public static final String ERROR = RED + "ERROR:" + RESET + " ";
     public static final String ERROR_USO = ERROR + "Uso: ";
 
     // Se puede asignar el valor de cada solar y casilla usando su posición, porque en cada posición que no hay valor, hay un cero.
