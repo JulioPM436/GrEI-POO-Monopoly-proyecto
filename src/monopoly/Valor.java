@@ -18,6 +18,10 @@ public class Valor {
     public static final String CYAN = "\u001B[36m";
     public static final String WHITE = "\u001B[37m";
 
+    // Para los mensajes de error:
+    public static final String ERROR = RED + "ERROR." + RESET + " ";
+    public static final String ERROR_USO = ERROR + "Uso: ";
+
     // Se puede asignar el valor de cada solar y casilla usando su posición, porque en cada posición que no hay valor, hay un cero.
     // Por ejemplo, la casilla de posición 1 es Salida, sin valor, posición 1 en el array. Pero Solar1 es posición 2, así que también
     //      se le asigna esa posición en el array.
