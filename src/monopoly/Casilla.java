@@ -4,7 +4,12 @@ import partida.*;
 import java.util.ArrayList;
 import java.util.StringJoiner;
 
-
+/**
+ * Casilla del tablero del Monopoly.
+ * Guarda su nombre, tipo, posición y dueño y, según el tipo, su valor, alquiler,
+ * hipoteca, grupo y edificios, además de los avatares que hay en ella. La casilla
+ * del Parking usa su valor como bote.
+ */
 public class Casilla {
     private String nombre; //Nombre de la casilla
     private String tipo; //Tipo de casilla (Solar, Especial, Transporte, Servicios, Comunidad, Suerte y Impuesto).
@@ -18,14 +23,20 @@ public class Casilla {
     private int casas, hotel, piscina, pistadeporte; // Número de edificaciones dentro de cada casilla.
     private boolean hipotecada;
 
-
-
-    //Constructor vacío (por defecto).
+    /**
+     * Crea una casilla sin datos.
+     */
     public Casilla() {
     }
 
-    /*Constructor para casillas tipo Solar, Servicios o Transporte:
-     * Parámetros: nombre casilla, tipo (debe ser solar, serv. o transporte), posición en el tablero, valor y dueño.
+    /**
+     * Crea una casilla que se puede comprar: un solar, un servicio o un transporte.
+     *
+     * @param nombre   Nombre de la casilla.
+     * @param tipo     Tipo de la casilla: Solar, Servicios o Transporte.
+     * @param posicion Posición en el tablero, entre 1 y 40.
+     * @param valor    Precio de compra.
+     * @param duenho   Dueño inicial (la banca).
      */
     public Casilla(String nombre, String tipo, int posicion, float valor, Jugador duenho) {
         this.nombre = nombre;
@@ -35,7 +46,17 @@ public class Casilla {
         this.duenho = duenho;
     }
 
-    //Constructor para solar y poder guardar el impuesto
+    /**
+     * Crea una casilla que se puede comprar guardando además su alquiler.
+     * Se usa para los solares.
+     *
+     * @param nombre   Nombre de la casilla.
+     * @param tipo     Tipo de la casilla (Solar).
+     * @param posicion Posición en el tablero, entre 1 y 40.
+     * @param valor    Precio de compra.
+     * @param duenho   Dueño inicial (la banca).
+     * @param impuesto Alquiler que paga quien cae en la casilla.
+     */
     public Casilla(String nombre, String tipo, int posicion, float valor, Jugador duenho, float impuesto) {
         this.nombre = nombre;
         this.tipo = tipo;
@@ -46,8 +67,13 @@ public class Casilla {
 
     }
 
-    /*Constructor utilizado para inicializar las casillas de tipo IMPUESTOS.
-     * Parámetros: nombre, posición en el tablero, impuesto establecido y dueño.
+    /**
+     * Crea una casilla de impuesto. Su tipo queda fijado como Impuesto.
+     *
+     * @param nombre   Nombre de la casilla.
+     * @param posicion Posición en el tablero, entre 1 y 40.
+     * @param impuesto Cantidad que paga quien cae en la casilla.
+     * @param duenho   Dueño de la casilla (la banca).
      */
     public Casilla(String nombre, int posicion, float impuesto, Jugador duenho) {
         this.nombre = nombre;
@@ -57,8 +83,14 @@ public class Casilla {
         this.tipo = "Impuesto";
     }
 
-    /*Constructor utilizado para crear las otras casillas (Suerte, Caja de comunidad y Especiales):
-     * Parámetros: nombre, tipo de la casilla (será uno de los que queda), posición en el tablero y dueño.
+    /**
+     * Crea una casilla que no se puede comprar ni cobra impuesto: Suerte, Caja de
+     * Comunidad y las especiales (Salida, Cárcel, Parking e IrCarcel).
+     *
+     * @param nombre   Nombre de la casilla.
+     * @param tipo     Tipo de la casilla: Suerte, Comunidad o Especial.
+     * @param posicion Posición en el tablero, entre 1 y 40.
+     * @param duenho   Dueño de la casilla (la banca).
      */
     public Casilla(String nombre, String tipo, int posicion, Jugador duenho) {
         this.nombre = nombre;
@@ -196,24 +228,40 @@ public class Casilla {
         return getNumEdificios() > 0;
     }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////// MÉTODOS //////////////////////////////////////////////////////////
 
-
-    //Método utilizado para añadir un avatar al array de avatares en casilla.
+    /**
+     * Añade un avatar a la lista de avatares situados en la casilla.
+     *
+     * @param av Avatar que llega a la casilla.
+     */
     public void anhadirAvatar(Avatar av) {
         avatares.add(av);
     }
 
-    //Método utilizado para eliminar un avatar del array de avatares en casilla.
+    /**
+     * Quita un avatar de la lista de avatares situados en la casilla.
+     *
+     * @param av Avatar que sale de la casilla.
+     */
     public void eliminarAvatar(Avatar av) {
         avatares.remove(av);
     }
 
-    /*Método para evaluar qué hacer en una casilla concreta. Parámetros:
-     * - Jugador cuyo avatar está en esa casilla.
-     * - La banca (para ciertas comprobaciones).
-     * - El valor de la tirada: para determinar impuesto a pagar en casillas de servicios.
-     * Valor devuelto: true en caso de ser solvente (es decir, de cumplir las deudas), y false
-     * en caso de no cumplirlas.*/
+    /**
+     * Aplica la acción de la casilla al jugador que ha caído en ella: pagar el
+     * alquiler si es una propiedad de otro jugador, pagar el impuesto al bote del
+     * Parking, cobrar el bote, ir a la Cárcel...
+     *
+     * @param actual  Jugador cuyo avatar ha caído en la casilla.
+     * @param banca   La banca, para ciertas comprobaciones.
+     * @param tirada  Valor de la tirada, para calcular el alquiler de los servicios.
+     * @param parking Casilla del Parking, donde se deposita lo que se paga en
+     *                impuestos.
+     * @return {@code true} si el jugador es solvente (ha podido pagar sus deudas);
+     *         {@code false} si no.
+     */
     public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada, Casilla parking) {
         float alquiler;
         switch (tipo) {
@@ -290,9 +338,14 @@ public class Casilla {
     }
 
 
-    /*Método usado para comprar una casilla determinada. Parámetros:
-     * - Jugador que solicita la compra de la casilla.
-     * - Banca del monopoly (es el dueño de las casillas no compradas aún).*/
+    /**
+     * Vende la casilla al jugador que la solicita: le cobra su valor, la casilla
+     * pasa a ser suya y se añade a sus propiedades. La casilla tiene que pertenecer
+     * todavía a la banca.
+     *
+     * @param solicitante Jugador que compra la casilla.
+     * @param banca       La banca, dueña de las casillas que aún no se han comprado.
+     */
     public void comprarCasilla (Jugador solicitante, Jugador banca){
         if (this.getDuenho() != banca) {
             System.out.println("No puedes comprar esta casilla porque es de otro jugador");
@@ -316,16 +369,24 @@ public class Casilla {
         System.out.println("El jugador " + solicitante.getNombre() + " compra la casilla " + this.nombre + " por " + this.valor + "€.");
     }
 
-    /*Método para añadir valor a una casilla. Utilidad:
-     * - Sumar valor a la casilla de parking.
-     * - Sumar valor a las casillas de solar al no comprarlas tras cuatro vueltas de todos los jugadores.
-     * Este método toma como argumento la cantidad a añadir del valor de la casilla.*/
+    /**
+     * Suma una cantidad al valor de la casilla. Sirve para acumular el bote en el
+     * Parking y para revalorizar los solares que no se compran tras cuatro vueltas
+     * de todos los jugadores.
+     *
+     * @param suma Cantidad que se añade al valor de la casilla.
+     */
     public void sumarValor (float suma){
         this.valor += suma;
     }
 
-    /*Método para mostrar información sobre una casilla.
-     * Devuelve una cadena con información específica de cada tipo de casilla.*/
+    /**
+     * Devuelve la descripción de la casilla para el comando {@code describir}, con
+     * un formato distinto según su tipo. Para Suerte, Caja de Comunidad e IrCarcel
+     * devuelve un aviso de que no se pueden describir.
+     *
+     * @return Texto con la información de la casilla.
+     */
     public String infoCasilla() {
         StringBuilder info = new StringBuilder("{\n" + "  nombre: " + this.nombre + "\n" + "  tipo: " + this.tipo + "\n");
         if (this.duenho != null) {
@@ -390,8 +451,11 @@ public class Casilla {
         return info.toString();
     }
 
-    /* Método para mostrar información de una casilla en venta.
-     * Valor devuelto: texto con esa información.
+    /**
+     * Devuelve la información de la casilla para el comando {@code listar enventa}:
+     * su nombre, su tipo y su valor.
+     *
+     * @return Texto con la información de la casilla en venta.
      */
     public String casEnVenta () {
         String info = "{\n";
@@ -402,6 +466,11 @@ public class Casilla {
         return info;
     }
 
+    /**
+     * Devuelve la representación de la casilla como texto.
+     *
+     * @return Texto que representa la casilla.
+     */
     @Override
     public String toString () {
         StringBuilder res = new StringBuilder(this.nombre);
