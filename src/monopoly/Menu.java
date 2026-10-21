@@ -830,18 +830,18 @@ public class Menu {
         Casilla casilla = this.tablero.encontrar_casilla(nombrecasilla);
 
         if(casilla == null) {
-            System.out.println("No existe dicha casilla1");
+            System.out.println(Valor.YELLOW + "No existe dicha casilla." + Valor.RESET);
             return;
         }
 
         if(casilla.getDuenho() != jugadoractual){
             System.out.println(Valor.YELLOW + jugadoractual.getNombre() + "no puede hipotecar" + casilla.getNombre() +
-                    "Esta casilla no pertenece al jugador actual" + Valor.RESET);
+                    "Esta casilla no pertenece al jugador actual." + Valor.RESET);
             return;
         }
 
         if(casilla.isHipotecada()){
-            System.out.println(Valor.YELLOW + "Esta casilla ya está hipotecada" + Valor.RESET);
+            System.out.println(Valor.YELLOW + "Esta casilla ya está hipotecada." + Valor.RESET);
             return;
         }
 
@@ -857,7 +857,8 @@ public class Menu {
 
         String grupo = casilla.getGrupo().getColorGrupo();
 
-        System.out.println("El jugador" + jugadoractual.getNombre() + "recibe" + sumaHipoteca + "por hipotecar" + casilla.getNombre() + "No puede edificar ni cobrar alquilerers en el grupo" + grupo);
+        System.out.println("El jugador" + jugadoractual.getNombre() + "recibe" + sumaHipoteca + "por hipotecar" + casilla.getNombre()
+                + "No puede edificar ni cobrar alquilerers en el grupo" + grupo);
 
     }
 
@@ -872,8 +873,8 @@ public class Menu {
      */
     private boolean pagar(Jugador actual, float cantidad) {
         if (actual.getFortuna() < cantidad) {
-            System.out.println(actual.getNombre() + " no puede pagar " + (long) cantidad
-                    + "€. Debe hipotecar alguna propiedad o declararse en bancarrota.");
+            System.out.println(Valor.YELLOW + actual.getNombre() + " no puede pagar " + (long) cantidad
+                    + "€. Debe hipotecar alguna propiedad o declararse en bancarrota." + Valor.RESET);
             return false;
         }
         actual.sumarFortuna(-cantidad);

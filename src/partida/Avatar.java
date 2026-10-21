@@ -1,11 +1,15 @@
 package partida;
 
 import monopoly.*;
-
 import java.util.ArrayList;
 import java.util.Random;
 
-
+/**
+ * Ficha con la que un jugador se mueve por el tablero.
+ * Tiene un identificador de una letra, que es lo que se ve en el tablero, un
+ * tipo (coche, esfinge, sombrero o pelota), el jugador al que pertenece y la
+ * casilla en la que está.
+ */
 public class Avatar {
 
     //Atributos
@@ -14,29 +18,20 @@ public class Avatar {
     private Jugador jugador; //Un jugador al que pertenece ese avatar.
     private Casilla lugar; //Los avatares se sitúan en casillas del tablero.
 
-    public Jugador getJugador() {
-        return jugador;
-    }
-
-    public Casilla getLugar() {
-        return lugar;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public String getId(){
-        return id;
-    }
-
-    //Constructor vacío
+    /**
+     * Crea un avatar sin datos.
+     */
     public Avatar() {
     }
 
-    /*Constructor principal. Requiere éstos parámetros:
-    * Tipo del avatar, jugador al que pertenece, lugar en el que estará ubicado, y un arraylist con los
-    * avatares creados (usado para crear un ID distinto del de los demás avatares).
+    /**
+     * Crea el avatar de un jugador, le asigna un identificador que no tiene ningún
+     * otro avatar y lo sitúa en la casilla indicada.
+     *
+     * @param tipo      Tipo de avatar: coche, esfinge, sombrero o pelota.
+     * @param jugador   Jugador al que pertenece el avatar.
+     * @param lugar     Casilla en la que empieza (la Salida).
+     * @param avCreados Avatares ya creados, para no repetir identificador.
      */
     public Avatar(String tipo, Jugador jugador, Casilla lugar, ArrayList<Avatar> avCreados) {
         // Se asignan los atributos del objeto.
@@ -47,21 +42,32 @@ public class Avatar {
         generarId(avCreados);
     }
 
-    //A continuación, tenemos otros métodos útiles para el desarrollo del juego.
-    /*Método que permite mover a un avatar a una casilla concreta. Parámetros:
-    * - Un array con las casillas del tablero. Se trata de un arrayList de arrayList de casillas (uno por lado).
-    * - Un entero que indica el numero de casillas a moverse (será el valor sacado en la tirada de los dados).
-    * EN ESTA VERSIÓN SUPONEMOS QUE valorTirada siemrpe es positivo.
+    /**
+     * Cambia la casilla en la que está el avatar, pero sin actualizar las listas de
+     * avatares de las casillas. Para mover el avatar, usa {@code moverAvatar} o
+     * {@code colocarEn}.
+     *
+     * @param lugar Nueva casilla del avatar.
      */
-
     public void setLugar(Casilla lugar) {
         this.lugar = lugar;
     }
 
+    /**
+     * Avanza el avatar tantas casillas como indique la tirada, dando la vuelta al
+     * tablero si hace falta. Lo quita de la casilla en la que estaba y lo añade a la
+     * de destino; si pasa por la Salida, el jugador cobra lo que le corresponde.
+     * Supone que {@code valorTirada} es positivo.
+     *
+     * @param casillas    Casillas del tablero, en una lista por cada lado.
+     * @param valorTirada Número de casillas que avanza (normalmente, la suma de los
+     *                    dados).
+     */
     public void moverAvatar(ArrayList<ArrayList<Casilla>> casillas, int valorTirada) {
         if (this.lugar != null) {
             this.lugar.eliminarAvatar(this);
         }
+        assert lugar != null;
         if ((lugar.getPosicion() - 1 + valorTirada) / 40 >= 1) {
             System.out.println(this.jugador.getNombre() + " pasa por la Salida y cobra " + (long) Valor.SUMA_VUELTA + "€.");
             this.jugador.sumarFortuna(Valor.SUMA_VUELTA);
@@ -73,9 +79,12 @@ public class Avatar {
         this.lugar.anhadirAvatar(this);
     }
 
-    /*Método que permite generar un ID para un avatar. Sólo lo usamos en esta clase (por ello es privado).
-    * El ID generado será una letra mayúscula. Parámetros:
-    * - Un arraylist de los avatares ya creados, con el objetivo de evitar que se generen dos ID iguales.
+    /**
+     * Genera el identificador del avatar: una letra mayúscula aleatoria que no
+     * tenga ningún otro avatar de la partida.
+     *
+     * @param avCreados Avatares ya creados, para comprobar que la letra no está
+     *                  cogida.
      */
     private void generarId(ArrayList<Avatar> avCreados) {
         // Se inicializa variables auxiliares, un booleano y una string.
@@ -104,11 +113,34 @@ public class Avatar {
         this.id = id;
     }
 
-    // Coloca el avatar directamente en la casilla indicada, sin recorrer el tablero (no cobra la Salida).
+    /**
+     * Coloca el avatar directamente en la casilla indicada, sin recorrer el tablero,
+     * así que no cobra la Salida aunque pase por ella. Lo quita de su casilla actual
+     * y lo añade a la de destino. Sirve, por ejemplo, para enviarlo a la Cárcel.
+     *
+     * @param destino Casilla en la que se coloca el avatar.
+     */
     public void colocarEn(Casilla destino) {
         this.lugar.eliminarAvatar(this);
         this.lugar = destino;
         destino.anhadirAvatar(this);
+    }
+
+    // Getters y setters:
+    public Jugador getJugador() {
+        return jugador;
+    }
+
+    public Casilla getLugar() {
+        return lugar;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public String getId(){
+        return id;
     }
 }
 

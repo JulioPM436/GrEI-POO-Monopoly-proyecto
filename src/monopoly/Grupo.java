@@ -92,6 +92,35 @@ class Grupo {
         return true;
     }
 
+    /**
+     * Obtiene el nombre (string) de un grupo.
+     *
+     * @return        La string con el nombre del grupo, o NULL si no lo encuentra.
+     */
+    public String getNombreGrupo() {
+        // Según el código de color, devuelve su string.
+        switch(this.colorGrupo){
+            case Valor.BLACK:
+                return "Negro";
+            case Valor.RED:
+                return "Rojo";
+            case Valor.GREEN:
+                return "Verde";
+            case Valor.YELLOW:
+                return "Amarillo";
+            case Valor.BLUE:
+                return "Azul";
+            case Valor.PURPLE:
+                return "Violeta";
+            case Valor.CYAN:
+                return "Cian";
+            case Valor.WHITE:
+                return "Blanco";
+            default:
+                return "Sin color";
+        }
+    }
+
     // Getters y setters.
     public String getColorGrupo() {
         return colorGrupo;
