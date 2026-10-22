@@ -7,7 +7,7 @@
 Programación Orientada a Objetos · Grado en Ingeniería Informática · Universidade de Santiago de Compostela
 
 ![Java](https://img.shields.io/badge/Java-17%2B-orange?logo=openjdk&logoColor=white)
-![Curso](https://img.shields.io/badge/curso-2025--2026-blue)
+![Curso](https://img.shields.io/badge/curso-2026--2027-blue)
 ![Entrega](https://img.shields.io/badge/entrega-Parte%201-green)
 
 </div>
