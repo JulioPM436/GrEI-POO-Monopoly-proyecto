@@ -527,7 +527,7 @@ public class Menu {
 
     /**
      * Ejecuta el comando {@code salir carcel}: el jugador con el turno paga la
-     * fianza (500.000€) y sale de la Cárcel, tras lo cual puede lanzar los dados.
+     * fianza (500.000 €) y sale de la Cárcel, tras lo cual puede lanzar los dados.
      * Solo es posible si está en la Cárcel y tiene dinero suficiente.
      */
     private void salirCarcel() {
@@ -642,11 +642,13 @@ public class Menu {
         Casilla actualCasilla = actual.getAvatar().getLugar();
         Grupo actualGrupo = actual.getAvatar().getLugar().getGrupo();
         String actualCasillaTipo = actualCasilla.getTipo();
+        // Necesitamos saber el número de edificaciones en la casilla.
         int numeroCasas = actualCasilla.getCasas();
         int hayHotel = actualCasilla.getHotel();
         int hayPiscina = actualCasilla.getPiscina();
         int hayPistadeporte = actualCasilla.getPistadeporte();
         float precio;
+
         // Sólo se puede edificar en los solares.
         if (!actualCasillaTipo.equals("Solar")){
             System.out.println(Valor.YELLOW + "Sólo se puede edificar en los solares." + Valor.RESET);
@@ -700,7 +702,10 @@ public class Menu {
                                     // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
                                     actual.sumarFortuna(-precio);
                                     // Se actualiza el número de casas.
-                                    actualCasilla.setCasa(cantidad);
+                                    for (int i = 0; i < cantidad; i++){
+                                        actualCasilla.setCasa(tablero.generarIDcasa());
+                                    }
+
                                     // Por cosmética, se imprime un mensaje dependiendo de si se compra una casa o varias.
                                     if (cantidad == 1) {
                                         System.out.println("Se ha edificado una casa en " + actualCasilla.getNombre() + ". La " +
@@ -738,7 +743,7 @@ public class Menu {
                         // Se le resta el valor del hotel a la fortuna del jugador.
                         actual.sumarFortuna(-precio);
                         // Se actualiza la cantidad de hoteles.
-                        actualCasilla.setHotel();
+                        actualCasilla.setHotel(tablero.generarIDhotel());
                         // Se imprime el aviso de la compra.
                         System.out.println("Se ha edificado un hotel en " + actualCasilla.getNombre() + ". La " +
                                 "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
@@ -768,7 +773,7 @@ public class Menu {
                         // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
                         actual.sumarFortuna(-precio);
                         // Se actualiza el número de casas.
-                        actualCasilla.setPiscina();
+                        actualCasilla.setPiscina(tablero.generarIDpiscina());
                         // Se imprime el aviso de la compra.
                         System.out.println("Se ha edificado una piscina en " + actualCasilla.getNombre() + ". La " +
                                 "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
@@ -801,7 +806,7 @@ public class Menu {
                         // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
                         actual.sumarFortuna(-precio);
                         // Se actualiza el número de casas.
-                        actualCasilla.setPistadeporte();
+                        actualCasilla.setPistadeporte(tablero.generarIDpistadeporte());
                         // Se imprime el aviso de la compra.
                         System.out.println("Se ha edificado una pista de deporte en " + actualCasilla.getNombre() + ". La " +
                                 "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
@@ -909,7 +914,7 @@ public class Menu {
 
                 case 3:
                     System.out.println(CARTAS_SUERTE[2]);
-                    getJugadorActual().sumarFortuna(1000000);
+                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(1000000);
                     break;
 
                 case 4:
@@ -958,7 +963,7 @@ public class Menu {
 
                 case 4:
                     System.out.println(CARTAS_COMUNIDAD[3]);
-                    getJugadorActual().sumarFortuna(500000);
+                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(500000);
                     break;
 
                 case 5:
@@ -1058,14 +1063,17 @@ public class Menu {
         System.out.println("  nombre: " + j.getNombre() + ",");
         System.out.println("  avatar: " + j.getAvatar().getId() + ",");
         System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
-        //System.out.println("propiedades: " + j.getPropiedades());
         System.out.print("  propiedades: [");
         for (Casilla c : j.getPropiedades()) {
             System.out.print(c.getNombre() + " ");
         }
         System.out.println("  ]");
         System.out.println("  hipotecas: -");
-        System.out.println("  edificios: -");
+        System.out.println("  edificios: [");
+
+        // Hay que re-visitar las casillas que tiene
+
+        System.out.println("  ]");
         System.out.println("}");
     }
 

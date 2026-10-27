@@ -15,6 +15,7 @@ public class Tablero {
     private ArrayList<ArrayList<Casilla>> posiciones; //Posiciones del tablero: se define como un arraylist de arraylists de casillas (uno por cada lado del tablero).
     private HashMap<String, Grupo> grupos; //Grupos del tablero, almacenados como un HashMap con clave String (será el color del grupo).
     private Jugador banca; //Un jugador que será la banca.
+    private int ultimoIdCasa, ultimoIdHotel, ultimoIdPiscina, ultimoIdPistadeporte; // El número de ID más alto creado.
 
     /**
      * Crea el tablero con todas sus casillas, que tienen a la banca como dueña
@@ -253,5 +254,27 @@ public class Tablero {
             }
         }
         return null;
+    }
+
+    // Estos generan el ID para un edificio, e incrementa el registro de ID más alto.
+    public String generarIDcasa() {
+        String ID = "casa-" + (ultimoIdCasa+1);
+        ultimoIdCasa += 1;
+        return ID;
+    }
+    public String generarIDhotel() {
+        String ID = "hotel-" + (ultimoIdHotel+1);
+        ultimoIdHotel += 1;
+        return ID;
+    }
+    public String generarIDpiscina() {
+        String ID = "piscina-" + (ultimoIdPiscina+1);
+        ultimoIdPiscina += 1;
+        return ID;
+    }
+    public String generarIDpistadeporte() {
+        String ID = "pistadeporte-" + (ultimoIdPistadeporte+1);
+        ultimoIdPistadeporte += 1;
+        return ID;
     }
 }
