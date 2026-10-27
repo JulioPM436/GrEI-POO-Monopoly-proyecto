@@ -64,6 +64,10 @@ public class Casilla {
         this.valor = valor;
         this.duenho = duenho;
         this.impuesto = impuesto;
+        casas = new ArrayList<>();
+        hotel = new ArrayList<>();
+        piscina = new ArrayList<>();
+        pistadeporte = new ArrayList<>();
     }
 
     /**
