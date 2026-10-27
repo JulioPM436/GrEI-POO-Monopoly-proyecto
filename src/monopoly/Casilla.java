@@ -22,6 +22,8 @@ public class Casilla {
     private ArrayList<Avatar> avatares = new ArrayList<>(); //Avatares que están situados en la casilla.
     private int casas, hotel, piscina, pistadeporte; // Número de edificaciones dentro de cada casilla.
     private boolean hipotecada;
+    private float dineroGenerado = 0.0f;
+    private int vecesVisitada = 0;
 
     /**
      * Crea una casilla sin datos.
@@ -119,7 +121,7 @@ public class Casilla {
         switch (tipo) {
             case "Solar":
                 // Sin dueño (es de la banca) o es suya: no paga nada; o está hipotecada
-                if (duenho == banca || duenho == actual || this.isHipotecada() == true) {
+                if (duenho == banca || duenho == actual || this.isHipotecada()) {
                     return true;
                 }
                 alquiler = impuesto;
@@ -130,12 +132,15 @@ public class Casilla {
                 if (actual.getFortuna() < alquiler) {
                     System.out.println(Valor.YELLOW + actual.getNombre() + " no puede pagar " + (long) alquiler
                             + "€. Debe hipotecar alguna propiedad o declararse en bancarrota." + Valor.RESET);
+
                     return false;
                 }
                 //Paga
                 actual.sumarFortuna(-alquiler);
+                actual.sumarPagoDeAlquileres(alquiler);//Estadística
                 actual.sumarGastos(alquiler);
                 duenho.sumarFortuna(alquiler);
+                duenho.sumarCobroDeAlquileres(alquiler);
                 System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a "
                         + duenho.getNombre() + ".");
                 return true;
@@ -177,6 +182,7 @@ public class Casilla {
                     return false;
                 }
                 actual.sumarFortuna(-impuesto);
+                actual.sumarPagoTasasEImpuestos(impuesto);
                 actual.sumarGastos(impuesto);
                 parking.sumarValor(impuesto);
                 System.out.println("El jugador paga " + (long) impuesto + "€ que se depositan en el Parking.");
@@ -184,6 +190,7 @@ public class Casilla {
             case "especial":
                 if (nombre.equals("Parking")) {
                     actual.sumarFortuna(valor);
+                    actual.sumarPremiosInversionesOBote(valor);
                     System.out.println("El jugador " + actual.getNombre() + " recibe " + (long) valor + "€.");
                     valor = 0;
                 }
@@ -476,5 +483,21 @@ public class Casilla {
 
     public void eliminarAvatar(Avatar av) {
         avatares.remove(av);
+    }
+
+    public void sumarDineroGenerado(float cantidad) {
+        this.dineroGenerado += cantidad;
+    }
+
+    public float getDineroGenerado() {
+        return this.dineroGenerado;
+    }
+
+    public void incrementarVecesVisitada() {
+        this.vecesVisitada++;
+    }
+
+    public int getVecesVisitada() {
+        return this.vecesVisitada;
     }
 }

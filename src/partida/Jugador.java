@@ -20,6 +20,44 @@ public class Jugador {
     private int vueltas; //Cuenta las vueltas dadas al tablero.
     private ArrayList<Casilla> propiedades; //Propiedades que posee el jugador.
 
+
+    //ESTADÍSITCAS (Atributos también):
+    private float dineroInvertido = 0.0f;
+    private float pagoTasasEImpuestos = 0.0f;
+    private float pagoDeAlquileres = 0.0f;
+    private float cobroDeAlquileres = 0.0f;
+    private float pasarPorCasillaDeSalida = 0.0f;
+    private float premiosInversionesOBote = 0.0f;
+    private int vecesEnLaCarcel = 0;
+
+    // Métodos para sumar a las estadísticas
+    public void sumarDineroInvertido(float cantidad) {
+        this.dineroInvertido += cantidad;
+    }
+
+    public void sumarPagoTasasEImpuestos(float cantidad) {
+        this.pagoTasasEImpuestos += cantidad;
+    }
+
+    public void sumarPagoDeAlquileres(float cantidad) {
+        this.pagoDeAlquileres += cantidad;
+    }
+
+    public void sumarCobroDeAlquileres(float cantidad) {
+        this.cobroDeAlquileres += cantidad;
+    }
+
+    public void sumarPasarPorCasillaDeSalida(float cantidad) {
+        this.pasarPorCasillaDeSalida += cantidad;
+    }
+
+    public void sumarPremiosInversionesOBote(float cantidad) {
+        this.premiosInversionesOBote += cantidad;
+    }
+
+    public void incrementarVecesEnLaCarcel() {
+        this.vecesEnLaCarcel++;
+    }
     /**
      * Crea la banca. No tiene avatar, empieza con {@code Valor.FORTUNA_BANCA} de
      * fortuna y con la lista de propiedades vacía.
@@ -156,4 +194,17 @@ public class Jugador {
         return propiedades;
     }
 
+    public String obtenerEstadisticas() {
+        return "{\n" +
+                "dineroInvertido: " + (long) this.dineroInvertido + ",\n" +
+                " pagoTasasEImpuestos: " + (long) this.pagoTasasEImpuestos + ",\n" +
+                "pagoDeAlquileres: " + (long) this.pagoDeAlquileres + ",\n" +
+                "cobroDeAlquileres: " + (long) this.cobroDeAlquileres + ",\n" +
+                "pasarPorCasillaDeSalida: " + (long) this.pasarPorCasillaDeSalida + ",\n" +
+                "premiosInversionesOBote: " + (long) this.premiosInversionesOBote + ",\n" +
+                "vecesEnLaCarcel: " + this.vecesEnLaCarcel + "\n" +
+                "}";
+    }
 }
+
+

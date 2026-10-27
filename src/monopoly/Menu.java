@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import partida.*;
+
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -175,6 +177,11 @@ public class Menu {
                     salirCarcel();
                 }
                 break;
+
+            case "estadisticas":
+                mostrarEstadisticas(partes[1]);
+                break;
+
             case "ver":
                 System.out.println(tablero);
                 break;
@@ -516,6 +523,7 @@ public class Menu {
         if (casilla.getNombre().equals("IrCarcel")) {
             System.out.println("Has caído en IrCarcel: el avatar se coloca en la casilla de Cárcel.");
             actual.encarcelar(tablero.getPosiciones());
+            actual.incrementarVecesEnLaCarcel();
         } else if (casilla.getTipo().equals("Suerte") || casilla.getTipo().equals("Comunidad")) {
             //sacarCarta(actual, casilla.getTipo());
         }
@@ -614,9 +622,15 @@ public class Menu {
 
         jugadorActual.sumarFortuna(-sumaHipoteca);
         casilla.setHipotecada(false);
-        String grupo = casilla.getGrupo().getColorGrupo();
-        System.out.println(jugadorActual.getNombre() + "paga" + sumaHipoteca + "para deshipotecar " +casilla.getNombre() +
-                ". Ahora puede cobrar alquileres y edificar en el grupo " + grupo);
+        if (casilla.getGrupo() != null) {
+            String grupo = casilla.getGrupo().getColorGrupo();
+            System.out.println(jugadorActual.getNombre() + " paga " + sumaHipoteca + "€ para deshipotecar " + casilla.getNombre() +
+                    ". Ahora puede cobrar alquileres y edificar en el grupo " + grupo + ".");
+        } else {
+            System.out.println(jugadorActual.getNombre() + " paga " + sumaHipoteca + "€ para deshipotecar " + casilla.getNombre() +
+                    ". Ahora puede cobrar alquileres de esta casilla.");
+        }
+
     }
 
     /**
@@ -855,13 +869,25 @@ public class Menu {
         float sumaHipoteca = casilla.getValorHipoteca();
         jugadoractual.sumarFortuna(sumaHipoteca);
 
-        String grupo = casilla.getGrupo().getColorGrupo();
-
-        System.out.println("El jugador" + jugadoractual.getNombre() + "recibe" + sumaHipoteca + "por hipotecar" + casilla.getNombre()
-                + "No puede edificar ni cobrar alquilerers en el grupo" + grupo);
+        if (casilla.getGrupo() != null) {
+            String grupo = casilla.getGrupo().getColorGrupo();
+            System.out.println(jugadoractual.getNombre() + " recibe " + sumaHipoteca + "€ por la hipoteca de " + casilla.getNombre() +
+                    ". No puede recibir alquileres ni edificar en el grupo " + grupo + ".");
+        } else {
+            System.out.println(jugadoractual.getNombre() + " recibe " + sumaHipoteca + "€ por la hipoteca de " + casilla.getNombre() +
+                    ". No puede recibir alquileres de esta casilla.");
+        }
 
     }
 
+    private void mostrarEstadisticas(String nombreJugador) {
+        Jugador j = buscarjugador(nombreJugador);
+        if (j == null) {
+            System.out.println("No existe ningún jugador con el nombre: " + nombreJugador);
+            return;
+        }
+        System.out.println(j.obtenerEstadisticas());
+    }
     /**
      * Intenta cobrar una cantidad al jugador. Si no tiene dinero suficiente, se lo
      * indica y no le cobra nada.
@@ -871,6 +897,7 @@ public class Menu {
      * @return {@code true} si se ha hecho el pago; {@code false} si no tenía dinero
      *         suficiente.
      */
+
     private boolean pagar(Jugador actual, float cantidad) {
         if (actual.getFortuna() < cantidad) {
             System.out.println(Valor.YELLOW + actual.getNombre() + " no puede pagar " + (long) cantidad
@@ -1144,6 +1171,29 @@ public class Menu {
         if (!hayEnVenta) {
             System.out.println(Valor.YELLOW + "No hay casillas en venta." + Valor.RESET);
         }
+    }
+
+
+    private void mostrarEstadisticasJuego{
+        Casilla masRentable = null;
+        Casilla masFrecuentada = null;
+
+        for(ArrayList<Casilla> paso : this.tablero.getPosiciones()){
+            for(Casilla cas : paso){
+                if(cas.getDineroGenerado() > masRentable.getDineroGenerado() || masRentable == null){
+                    masRentable = cas;
+                }
+                if(cas.getVecesVisitada() > masFrecuentada.getVecesVisitada()|| masFrecuentada == null){
+                    masFrecuentada = cas;
+                }
+            }
+        }
+
+        for (Grupo g : tablero.getGrupos().values()) {
+
+        }
+
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

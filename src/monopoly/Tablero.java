@@ -39,6 +39,15 @@ public class Tablero {
     }
 
     /**
+     * Devuelve los grupos s del tablero, organizadas en una lista por cada lado.
+     *
+     * @return Lista con las cuatro listas de casillas, una por lado.
+     */
+    public HashMap<String, Grupo> getGrupos() {
+        return grupos;
+    }
+
+    /**
      * Crea todas las casillas del tablero y las guarda en {@code posiciones}, un
      * lado cada vez, mediante los cuatro métodos {@code insertarLado...}.
      */
