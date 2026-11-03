@@ -536,7 +536,7 @@ public class Menu {
             System.out.println("Has caído en IrCarcel: el avatar se coloca en la casilla de Cárcel.");
             actual.encarcelar(tablero.getPosiciones());
         } else if (casilla.getTipo().equals("Suerte") || casilla.getTipo().equals("Comunidad")) {
-            //sacarCarta(actual, casilla.getTipo());
+            sacarCarta(actual, casilla.getTipo());
         }
 
         else {
@@ -969,6 +969,8 @@ public class Menu {
 
                 case 7:
                     System.out.println(CARTAS_SUERTE[6]);
+                    Avatar avat = j.getAvatar();
+                    moverHasta(j, transporteMasCercano(avat.getLugar(), j).getNombre(), false);
                     break;
                 default:
                     System.out.println("ERROR, esto no es una posicion de carta valida, esto nunca lo deberia leer el ususario");
@@ -998,7 +1000,7 @@ public class Menu {
 
                 case 4:
                     System.out.println(CARTAS_COMUNIDAD[3]);
-                    getJugadorActual().sumarFortuna(500000);
+                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(500000);
                     break;
 
                 case 5:
@@ -1027,12 +1029,15 @@ public class Menu {
      * @param desde Casilla desde la que se empieza a buscar.
      * @return La primera casilla de transporte que se encuentra.
      */
-    private Casilla transporteMasCercano(Casilla desde) {
+    private Casilla transporteMasCercano(Casilla desde, Jugador j) {
         int indice = desde.getPosicion() - 1;
         for (int i = 1; i <= 40; i++) {
             Casilla c = casillaEnIndice((indice + i) % 40);
             if (c.getTipo().equals("Transporte")) {
                 return c;
+            }
+            if (c.getTipo().equals("Salida")){
+                j.sumarFortuna(2000000);
             }
         }
         return desde;
