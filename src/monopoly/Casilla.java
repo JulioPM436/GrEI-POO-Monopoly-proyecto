@@ -428,6 +428,13 @@ public class Casilla {
         return this.casas.size();
     }
 
+    public void venderCasas(int i){
+        if (i < 1)
+            throw new IllegalArgumentException(Valor.RED + "venderCasas: i debe ser al menos 1 y es " + i + Valor.RESET);
+        for (int j = 0; j < i || this.casas.isEmpty(); j++)
+            this.casas.remove(0);
+    }
+
     public String getIDCasa(int i) {
         if (!this.casas.isEmpty())
             return this.casas.get(i);
@@ -438,6 +445,11 @@ public class Casilla {
     public void setHotel(String ID) {
         this.casas.clear();  // Se cambian las 4 casas por el hotel.
         this.hotel.add(ID);
+    }
+
+    public void venderHotel(){
+        if (!this.hotel.isEmpty())
+            this.hotel.remove(0);
     }
 
     public int getHotel() {
@@ -454,6 +466,11 @@ public class Casilla {
         this.piscina.add(ID);
     }
 
+    public void venderPiscina(){
+        if (!this.piscina.isEmpty())
+            this.piscina.remove(0);
+    }
+
     public int getPiscina() {
         return this.piscina.size();
     }
@@ -467,6 +484,11 @@ public class Casilla {
 
     public void setPistadeporte(String ID) {
         this.pistadeporte.add(ID);
+    }
+
+    public void venderPistadeporte(){
+        if (!this.pistadeporte.isEmpty())
+            this.pistadeporte.remove(0);
     }
 
     public int getPistadeporte() {

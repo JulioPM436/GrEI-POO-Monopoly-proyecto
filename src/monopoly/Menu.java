@@ -1106,16 +1106,20 @@ public class Menu {
         System.out.println("  avatar: " + j.getAvatar().getId() + ",");
         System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
         // Se itera sobre las casillas que tiene el jugador y se imprime su nombre.
-        System.out.print("  propiedades: [");
+        System.out.print("  propiedades: ");
         StringJoiner casillas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("-");
         for (Casilla c : j.getPropiedades()) {
             casillas.add(c.getNombre());
         }
-        System.out.println("  propiedades: " + casillas + ",");
+        System.out.println(casillas + ",");
         // Se itera sobre las propiedades del jugador, y si están hipotecadas, salen aquí.
-        System.out.println("  hipotecas: -");
-
-
+        System.out.print("  hipotecas: ");
+        StringJoiner hipotecas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("-");
+        for (Casilla c : j.getPropiedades()) {
+            if (c.isHipotecada())
+                hipotecas.add(c.getNombre());
+        }
+        System.out.println(hipotecas + ",");
         System.out.print("  edificios: [");
         // Hay que re-visitar las casillas que tiene el jugador, y para cada una imprimir los IDs de los edificios.
         if (j.getPropiedades().isEmpty())
