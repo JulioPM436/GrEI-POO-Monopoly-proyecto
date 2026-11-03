@@ -1069,9 +1069,16 @@ public class Menu {
         }
         System.out.println("  ]");
         System.out.println("  hipotecas: -");
-        System.out.println("  edificios: [");
+        System.out.print("  edificios: [");
 
-        // Hay que re-visitar las casillas que tiene
+        // Hay que re-visitar las casillas que tiene el jugador, y para cada una imprimir los IDs de los edificios.
+        for (Casilla c : j.getPropiedades()) {
+            for (int i = 0; i < c.getCasas(); i++){
+                System.out.print(c.getIDCasa(i) + " ");
+            }
+            System.out.print(c.getIDHotel() + " ");
+            System.out.print(c.getNombre() + " ");
+        }
 
         System.out.println("  ]");
         System.out.println("}");

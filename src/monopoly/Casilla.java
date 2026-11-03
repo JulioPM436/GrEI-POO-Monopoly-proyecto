@@ -429,7 +429,10 @@ public class Casilla {
     }
 
     public String getIDCasa(int i) {
-        return this.casas.get(i);
+        if (!this.casas.isEmpty())
+            return this.casas.get(i);
+        else
+            return null;
     }
 
     public void setHotel(String ID) {
@@ -441,7 +444,10 @@ public class Casilla {
         return this.hotel.size();
     }
     public String getIDHotel() {
-        return this.hotel.get(0);
+        if (!this.hotel.isEmpty())
+            return this.hotel.get(0);
+        else
+            return null;
     }
 
     public void setPiscina(String ID) {
@@ -453,7 +459,10 @@ public class Casilla {
     }
 
     public String getIDpiscina() {
-        return this.piscina.get(0);
+        if (!this.piscina.isEmpty())
+            return this.piscina.get(0);
+        else
+            return null;
     }
 
     public void setPistadeporte(String ID) {
