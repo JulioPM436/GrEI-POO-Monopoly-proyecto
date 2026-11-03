@@ -20,7 +20,7 @@ public class Casilla {
     private float impuesto; //Cantidad a pagar por caer en la casilla: el alquiler en solares/servicios/transportes o impuestos.
     private float hipoteca; //Valor otorgado por hipotecar una casilla.
     private ArrayList<Avatar> avatares = new ArrayList<>(); //Avatares que están situados en la casilla.
-    private int casas, hotel, piscina, pistadeporte; // Número de edificaciones dentro de cada casilla.
+    private ArrayList<String> casas, hotel, piscina, pistadeporte; // ArrayList con los IDs de los edificios.
     private boolean hipotecada;
     private float dineroGenerado = 0.0f;
     private int vecesVisitada = 0;
@@ -66,6 +66,10 @@ public class Casilla {
         this.valor = valor;
         this.duenho = duenho;
         this.impuesto = impuesto;
+        casas = new ArrayList<>();
+        hotel = new ArrayList<>();
+        piscina = new ArrayList<>();
+        pistadeporte = new ArrayList<>();
     }
 
     /**
@@ -423,37 +427,61 @@ public class Casilla {
         this.avatares = avatares;
     }
 
-    public void setCasa(int numCasas) {
-        this.casas += numCasas;
+    public void setCasa(String ID) {
+        this.casas.add(ID);
     }
 
     public int getCasas() {
-        return this.casas;
+        return this.casas.size();
     }
 
-    public void setHotel() {
-        this.casas = 0;  // Se cambian las 4 casas por el hotel.
-        this.hotel = 1;
+    public String getIDCasa(int i) {
+        if (!this.casas.isEmpty())
+            return this.casas.get(i);
+        else
+            return null;
+    }
+
+    public void setHotel(String ID) {
+        this.casas.clear();  // Se cambian las 4 casas por el hotel.
+        this.hotel.add(ID);
     }
 
     public int getHotel() {
-        return this.hotel;
+        return this.hotel.size();
+    }
+    public String getIDHotel() {
+        if (!this.hotel.isEmpty())
+            return this.hotel.get(0);
+        else
+            return null;
     }
 
-    public void setPiscina() {
-        this.piscina = 1;
+    public void setPiscina(String ID) {
+        this.piscina.add(ID);
     }
 
     public int getPiscina() {
-        return this.piscina;
+        return this.piscina.size();
     }
 
-    public void setPistadeporte() {
-        this.pistadeporte = 1;
+    public String getIDpiscina() {
+        if (!this.piscina.isEmpty())
+            return this.piscina.get(0);
+        else
+            return null;
+    }
+
+    public void setPistadeporte(String ID) {
+        this.pistadeporte.add(ID);
     }
 
     public int getPistadeporte() {
-        return this.pistadeporte;
+        return this.pistadeporte.size();
+    }
+
+    public String getIDpistadeporte() {
+        return this.pistadeporte.get(0);
     }
 
     public boolean isHipotecada() {
@@ -465,7 +493,7 @@ public class Casilla {
     }
 
     public int getNumEdificios() {
-        return this.casas + this.hotel + this.piscina + this.pistadeporte;
+        return getCasas() + getHotel() + getPiscina() + getPistadeporte();
     }
 
     // Valor que recibe el jugador por hipotecarla
