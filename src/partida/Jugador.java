@@ -186,6 +186,10 @@ public class Jugador {
         return tiradasCarcel;
     }
 
+    public int getVueltas(){
+        return tiradasCarcel;
+    }
+
     public void setTiradasCarcel(int tiradasCarcel) {
         this.tiradasCarcel = tiradasCarcel;
     }
@@ -204,6 +208,18 @@ public class Jugador {
                 "premiosInversionesOBote: " + (long) this.premiosInversionesOBote + ",\n" +
                 "vecesEnLaCarcel: " + this.vecesEnLaCarcel + "\n" +
                 "}";
+    }
+
+    public float getFortunaTotal() {
+        float fortuna_total = 0;
+        fortuna_total += this.fortuna;
+        for (Casilla c : this.getPropiedades()) {
+            if (c != null) {
+                fortuna_total += c.getValorEdificios();
+                fortuna_total += c.getValor();
+            }
+        }
+        return fortuna_total;
     }
 }
 

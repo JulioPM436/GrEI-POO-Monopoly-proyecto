@@ -1225,30 +1225,78 @@ public class Menu {
     }
 
 
-    private void mostrarEstadisticasJuego{
-        Casilla masRentable = null;
-        Casilla masFrecuentada = null;
+    private void mostrarEstadisticasJuego() {
+        String txtRentables = "";
+        float maxRentable = -1;
 
-        for(ArrayList<Casilla> paso : this.tablero.getPosiciones()){
-            for(Casilla cas : paso){
-                if(cas.getDineroGenerado() > masRentable.getDineroGenerado() || masRentable == null){
-                    masRentable = cas;
+        String txtFrecuentadas = "";
+        int maxFrecuentada = -1;
+
+        // 1 y 2. Casillas más rentables y más frecuentadas
+        for (ArrayList<Casilla> paso : this.tablero.getPosiciones()) {
+            for (Casilla cas : paso) {
+                // Rentabilidad
+                if (cas.getDineroGenerado() > maxRentable) {
+                    maxRentable = cas.getDineroGenerado();
+                    txtRentables = cas.getNombre();
+                } else if (cas.getDineroGenerado() == maxRentable && maxRentable > 0) {
+                    txtRentables += ", " + cas.getNombre();
                 }
-                if(cas.getVecesVisitada() > masFrecuentada.getVecesVisitada()|| masFrecuentada == null){
-                    masFrecuentada = cas;
+
+                // Frecuencia
+                if (cas.getVecesVisitada() > maxFrecuentada) {
+                    maxFrecuentada = cas.getVecesVisitada();
+                    txtFrecuentadas = cas.getNombre();
+                } else if (cas.getVecesVisitada() == maxFrecuentada && maxFrecuentada > 0) {
+                    txtFrecuentadas += ", " + cas.getNombre();
                 }
             }
         }
 
-        for (Grupo g : tablero.getGrupos().values()) {
-
+        // 3. Grupo más rentable (con empates)
+        String txtGrupos = "";
+        float maxGrupo = -1;
+        for (Grupo g : this.tablero.getGrupos().values()) {
+            if (g.getRentabilidadGrupo() > maxGrupo) {
+                maxGrupo = g.getRentabilidadGrupo();
+                txtGrupos = g.getColorGrupo();
+            } else if (g.getRentabilidadGrupo() == maxGrupo && maxGrupo > 0) {
+                txtGrupos += ", " + g.getColorGrupo();
+            }
         }
 
+        // 4. Jugador con más vueltas (con empates)
+        String txtVueltas = "";
+        int maxVueltas = -1;
+        for (Jugador j : this.jugadores) {
+            if (j.getVueltas() > maxVueltas) {
+                maxVueltas = j.getVueltas();
+                txtVueltas = j.getNombre();
+            } else if (j.getVueltas() == maxVueltas) {
+                txtVueltas += ", " + j.getNombre();
+            }
+        }
 
+        // 5. Jugador en cabeza (uno solo)
+        Jugador jugador_cabeza = null;
+        for (Jugador j : this.jugadores) {
+            if (jugador_cabeza == null || j.getFortunaTotal() > jugador_cabeza.getFortunaTotal()) {
+                jugador_cabeza = j;
+            }
+        }
+
+        // Formato de salida
+        System.out.println("casilla mas rentable: " + txtRentables);
+        System.out.println("grupo mas rentable: " + txtGrupos);
+        System.out.println("casilla mas frecuentada: " + txtFrecuentadas);
+        System.out.println("jugador mas vueltas: " + txtVueltas);
+        System.out.println("jugador en cabeza: " + jugador_cabeza.getNombre());
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////// BÚSQUEDAS AUXILIARES //////////////////////////////////////////////////
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////// BÚSQUEDAS AUXILIARES //////////////////////////////////////////////////
 
     /**
      * Busca un avatar de la partida a partir de su identificador.

@@ -4,6 +4,9 @@ import partida.*;
 import java.util.ArrayList;
 import java.util.StringJoiner;
 
+import static monopoly.Valor.SOLAR_PRECIOS;
+import static monopoly.Valor.SOLAR_PRECIOS_CASA;
+
 /**
  * Casilla del tablero del Monopoly.
  * Guarda su nombre, tipo, posición y dueño y, según el tipo, su valor, alquiler,
@@ -309,7 +312,7 @@ public class Casilla {
         info.append("  grupo: ").append(this.grupo.getNombreGrupo()).append("\n");
         info.append("  alquiler: ").append(Valor.SOLAR_ALQUILERES[this.posicion]).append("€\n");
         info.append("  valor hotel: ").append(Valor.SOLAR_PRECIOS_HOTEL[this.posicion]).append("€\n");
-        info.append("  valor casa: ").append(Valor.SOLAR_PRECIOS_CASA[this.posicion]).append("€\n");
+        info.append("  valor casa: ").append(SOLAR_PRECIOS_CASA[this.posicion]).append("€\n");
         info.append("  valor piscina: ").append(Valor.SOLAR_PRECIOS_PISCINA[this.posicion]).append("€\n");
         info.append("  valor pista de deporte: ").append(Valor.SOLAR_PRECIOS_PISTADEPORTE[this.posicion]).append("€\n");
         info.append("  alquiler casa: ").append(Valor.SOLAR_ALQUILERES_CASA[this.posicion]).append("€\n");
@@ -527,5 +530,14 @@ public class Casilla {
 
     public int getVecesVisitada() {
         return this.vecesVisitada;
+    }
+
+    public float getValorEdificios(){
+        float valor_total = 0;
+        valor_total += this.getCasas()*Valor.SOLAR_PRECIOS_CASA[this.getPosicion()];
+        valor_total += this.getHotel()*Valor.SOLAR_PRECIOS_HOTEL[this.getPosicion()];
+        valor_total += this.getPiscina()*Valor.SOLAR_PRECIOS_PISCINA[this.getPosicion()];
+        valor_total += this.getPistadeporte()*Valor.SOLAR_PRECIOS_PISTADEPORTE[this.getPosicion()];
+        return valor_total;
     }
 }
