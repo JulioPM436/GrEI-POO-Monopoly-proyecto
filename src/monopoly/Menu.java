@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import partida.*;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.StringJoiner;
 
 /**
  * El menú contiene todo lo necesario para crear la partida.
@@ -1099,24 +1100,47 @@ public class Menu {
         System.out.println("  nombre: " + j.getNombre() + ",");
         System.out.println("  avatar: " + j.getAvatar().getId() + ",");
         System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
+        // Se itera sobre las casillas que tiene el jugador y se imprime su nombre.
         System.out.print("  propiedades: [");
+        StringJoiner casillas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("-");
         for (Casilla c : j.getPropiedades()) {
-            System.out.print(c.getNombre() + " ");
+            casillas.add(c.getNombre());
         }
-        System.out.println("  ]");
+        System.out.println("  propiedades: " + casillas + ",");
+        // Se itera sobre las propiedades del jugador, y si están hipotecadas, salen aquí.
         System.out.println("  hipotecas: -");
+
+
         System.out.print("  edificios: [");
-
         // Hay que re-visitar las casillas que tiene el jugador, y para cada una imprimir los IDs de los edificios.
+        if (j.getPropiedades().isEmpty())
+            System.out.println("[-]");
         for (Casilla c : j.getPropiedades()) {
-            for (int i = 0; i < c.getCasas(); i++){
-                System.out.print(c.getIDCasa(i) + " ");
+            if (c.getCasas() > 0){
+                for (int i = 0; i < c.getCasas(); i++){
+                    if (c.getNumEdificios()-1 == i)
+                        System.out.print(c.getIDCasa(i));
+                    else
+                        System.out.print(c.getIDCasa(i) + ", ");
+                }
             }
-            System.out.print(c.getIDHotel() + " ");
-            System.out.print(c.getNombre() + " ");
+            if (c.getHotel() > 0)
+                if (c.getNumEdificios() == 1)
+                    System.out.print(c.getIDHotel());
+                else
+                    System.out.print(c.getIDHotel() + ", ");
+            if (c.getPiscina() > 0)
+                if (c.getNumEdificios() == 2)
+                    System.out.print(c.getIDpiscina());
+                else
+                    System.out.print(c.getIDpiscina() + ", ");
+            if (c.getPistadeporte() > 0)
+                if (c.getNumEdificios() == 3)
+                    System.out.print(c.getIDpistadeporte());
+                else
+                    System.out.print(c.getIDpistadeporte() + ", ");
         }
-
-        System.out.println("  ]");
+        System.out.println("]");
         System.out.println("}");
     }
 
