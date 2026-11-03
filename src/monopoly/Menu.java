@@ -493,12 +493,30 @@ public class Menu {
      * (de eso se encarga {@code moverAvatar}). Pensado para las cartas que mandan
      * a una casilla determinada.
      *
-     * @param actual  Jugador cuyo avatar se mueve.
-     * @param destino Casilla a la que tiene que llegar.
+     * @param j  Jugador cuyo avatar se mueve.
+     * @param nombreDestino Casilla a la que tiene que llegar.
+     * @param puedeCobrarSalida aaaaaa
      */
-    private void moverHasta(Jugador actual, Casilla destino) {
-        int pasos = (destino.getPosicion() - actual.getAvatar().getLugar().getPosicion() + 40) % 40;
-        actual.getAvatar().moverAvatar(tablero.getPosiciones(), pasos);
+    private void moverHasta(Jugador j, String nombreDestino, boolean puedeCobrarSalida) {
+        Avatar av = j.getAvatar();
+        Casilla origen = av.getLugar();
+        Casilla destino = tablero.encontrar_casilla(nombreDestino);
+
+        if (puedeCobrarSalida) {
+            if (destino.getPosicion() < origen.getPosicion()) {
+                j.sumarFortuna(2000000);
+                System.out.println(j.getNombre() + " pasa por Salida y cobra "
+                        + (long) 2000000 + "€.");
+            }
+        }
+
+        // Movemos el avatar
+
+        av.colocarEn(destino);
+
+        System.out.println(tablero);
+
+        solvente = destino.evaluarCasilla(j, banca, 0, tablero.getCasillaPorPosicion(21));
     }
 
     /**
@@ -899,28 +917,33 @@ public class Menu {
      * @param tipo Tipo de la casilla en la que ha caído (Suerte o Caja de
      *             Comunidad), que indica de qué mazo se saca la carta.
      */
+    //metodo para seleccionar la carta
     private void sacarCarta(Jugador j, String tipo){
         if (tipo.equals("Suerte")){
+            if (numCartaSuerte == 7){
+                numCartaSuerte = 0;
+            }
             numCartaSuerte ++;
             switch (numCartaSuerte) {
                 case 1:
                     System.out.println(CARTAS_SUERTE[0]);
-
+                    moverHasta(j,"Solar19", true);
                     break;
 
                 case 2:
                     System.out.println(CARTAS_SUERTE[1]);
+                    j.encarcelar(tablero.getPosiciones());
                     break;
 
                 case 3:
                     System.out.println(CARTAS_SUERTE[2]);
-                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(1000000);
+                    getJugadorActual().sumarFortuna(1000000);
                     break;
 
                 case 4:
                     System.out.println(CARTAS_SUERTE[3]);
                     int numJugadores = jugadores.size();
-                    pagar(Objects.requireNonNull(getJugadorActual()),250000 * numJugadores);
+                    pagar(Objects.requireNonNull(getJugadorActual()),250000 * ((numJugadores)-1));
                     for(int i = 0; i < numJugadores; i++){
                         Jugador jey = jugadores.get(i);
                         if(jey != getJugadorActual()){
@@ -931,6 +954,11 @@ public class Menu {
 
                 case 5:
                     System.out.println(CARTAS_SUERTE[4]);
+                    Avatar av = j.getAvatar();
+                    Casilla cas_act = av.getLugar();
+                    int pos_tres_atras = cas_act.getPosicion() - 3;
+                    String nombre_cas_tres_atras = tablero.getCasillaPorPosicion(pos_tres_atras).getNombre();
+                    moverHasta(j,nombre_cas_tres_atras, false);
                     break;
 
                 case 6:
@@ -947,31 +975,39 @@ public class Menu {
             }
         }
         else{
+            if (numCartaComunidad == 6){
+                numCartaComunidad = 0;
+            }
+            numCartaComunidad ++;
             switch (numCartaComunidad) {
                 case 1:
                     System.out.println(CARTAS_COMUNIDAD[0]);
-                    pagar(Objects.requireNonNull(getJugadorActual()),150000);
+                    pagar(Objects.requireNonNull(getJugadorActual()),500000);
                     break;
 
                 case 2:
                     System.out.println(CARTAS_COMUNIDAD[1]);
+                    j.encarcelar(tablero.getPosiciones());
                     break;
 
                 case 3:
                     System.out.println(CARTAS_COMUNIDAD[2]);
+                    moverHasta(j,"Salida", true);
                     break;
 
                 case 4:
                     System.out.println(CARTAS_COMUNIDAD[3]);
-                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(500000);
+                    getJugadorActual().sumarFortuna(500000);
                     break;
 
                 case 5:
                     System.out.println(CARTAS_COMUNIDAD[4]);
+                    moverHasta(j,"Solar1", false);
                     break;
 
                 case 6:
                     System.out.println(CARTAS_COMUNIDAD[5]);
+                    moverHasta(j,"Solar20", true);
                     break;
 
                 default:
