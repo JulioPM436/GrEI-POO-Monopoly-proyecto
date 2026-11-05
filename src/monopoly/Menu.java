@@ -9,6 +9,7 @@ import partida.*;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.StringJoiner;
 
 /**
  * El menú contiene todo lo necesario para crear la partida.
@@ -543,7 +544,7 @@ public class Menu {
             actual.encarcelar(tablero.getPosiciones());
             actual.incrementarVecesEnLaCarcel();
         } else if (casilla.getTipo().equals("Suerte") || casilla.getTipo().equals("Comunidad")) {
-            //sacarCarta(actual, casilla.getTipo());
+            sacarCarta(actual, casilla.getTipo());
         }
 
         else {
@@ -995,6 +996,8 @@ public class Menu {
 
                 case 7:
                     System.out.println(CARTAS_SUERTE[6]);
+                    Avatar avat = j.getAvatar();
+                    moverHasta(j, transporteMasCercano(avat.getLugar(), j).getNombre(), false);
                     break;
                 default:
                     System.out.println("ERROR, esto no es una posicion de carta valida, esto nunca lo deberia leer el ususario");
@@ -1024,7 +1027,7 @@ public class Menu {
 
                 case 4:
                     System.out.println(CARTAS_COMUNIDAD[3]);
-                    getJugadorActual().sumarFortuna(500000);
+                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(500000);
                     break;
 
                 case 5:
@@ -1053,12 +1056,15 @@ public class Menu {
      * @param desde Casilla desde la que se empieza a buscar.
      * @return La primera casilla de transporte que se encuentra.
      */
-    private Casilla transporteMasCercano(Casilla desde) {
+    private Casilla transporteMasCercano(Casilla desde, Jugador j) {
         int indice = desde.getPosicion() - 1;
         for (int i = 1; i <= 40; i++) {
             Casilla c = casillaEnIndice((indice + i) % 40);
             if (c.getTipo().equals("Transporte")) {
                 return c;
+            }
+            if (c.getTipo().equals("Salida")){
+                j.sumarFortuna(2000000);
             }
         }
         return desde;
@@ -1126,24 +1132,51 @@ public class Menu {
         System.out.println("  nombre: " + j.getNombre() + ",");
         System.out.println("  avatar: " + j.getAvatar().getId() + ",");
         System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
-        System.out.print("  propiedades: [");
+        // Se itera sobre las casillas que tiene el jugador y se imprime su nombre.
+        System.out.print("  propiedades: ");
+        StringJoiner casillas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("-");
         for (Casilla c : j.getPropiedades()) {
-            System.out.print(c.getNombre() + " ");
+            casillas.add(c.getNombre());
         }
-        System.out.println("  ]");
-        System.out.println("  hipotecas: -");
+        System.out.println(casillas + ",");
+        // Se itera sobre las propiedades del jugador, y si están hipotecadas, salen aquí.
+        System.out.print("  hipotecas: ");
+        StringJoiner hipotecas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("-");
+        for (Casilla c : j.getPropiedades()) {
+            if (c.isHipotecada())
+                hipotecas.add(c.getNombre());
+        }
+        System.out.println(hipotecas + ",");
         System.out.print("  edificios: [");
-
         // Hay que re-visitar las casillas que tiene el jugador, y para cada una imprimir los IDs de los edificios.
+        if (j.getPropiedades().isEmpty())
+            System.out.println("[-]");
         for (Casilla c : j.getPropiedades()) {
-            for (int i = 0; i < c.getCasas(); i++){
-                System.out.print(c.getIDCasa(i) + " ");
+            if (c.getCasas() > 0){
+                for (int i = 0; i < c.getCasas(); i++){
+                    if (c.getNumEdificios()-1 == i)
+                        System.out.print(c.getIDCasa(i));
+                    else
+                        System.out.print(c.getIDCasa(i) + ", ");
+                }
             }
-            System.out.print(c.getIDHotel() + " ");
-            System.out.print(c.getNombre() + " ");
+            if (c.getHotel() > 0)
+                if (c.getNumEdificios() == 1)
+                    System.out.print(c.getIDHotel());
+                else
+                    System.out.print(c.getIDHotel() + ", ");
+            if (c.getPiscina() > 0)
+                if (c.getNumEdificios() == 2)
+                    System.out.print(c.getIDpiscina());
+                else
+                    System.out.print(c.getIDpiscina() + ", ");
+            if (c.getPistadeporte() > 0)
+                if (c.getNumEdificios() == 3)
+                    System.out.print(c.getIDpistadeporte());
+                else
+                    System.out.print(c.getIDpistadeporte() + ", ");
         }
-
-        System.out.println("  ]");
+        System.out.println("]");
         System.out.println("}");
     }
 
