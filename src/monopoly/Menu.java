@@ -679,7 +679,6 @@ public class Menu {
             return;
         }
         // Necesitamos saber el número de edificaciones en la casilla.
-        System.out.println("DEBUG " + actualCasilla.getNombre() + " tipo=" + actualCasillaTipo);
         int numeroCasas = actualCasilla.getCasas();
         int hayHotel = actualCasilla.getHotel();
         int hayPiscina = actualCasilla.getPiscina();
@@ -986,7 +985,7 @@ public class Menu {
 
                 case 3:
                     System.out.println(CARTAS_SUERTE[2]);
-                    getJugadorActual().sumarFortuna(1000000);
+                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(1000000);
                     break;
 
                 case 4:
@@ -1155,49 +1154,38 @@ public class Menu {
         System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
         // Se itera sobre las casillas que tiene el jugador y se imprime su nombre.
         System.out.print("  propiedades: ");
-        StringJoiner casillas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("-");
+        StringJoiner casillas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("[ - ]");
         for (Casilla c : j.getPropiedades()) {
             casillas.add(c.getNombre());
         }
         System.out.println(casillas + ",");
         // Se itera sobre las propiedades del jugador, y si están hipotecadas, salen aquí.
         System.out.print("  hipotecas: ");
-        StringJoiner hipotecas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("-");
+        StringJoiner hipotecas = new StringJoiner(", ", "[", "]"); hipotecas.setEmptyValue("[ - ]");
         for (Casilla c : j.getPropiedades()) {
             if (c.isHipotecada())
                 hipotecas.add(c.getNombre());
         }
         System.out.println(hipotecas + ",");
-        System.out.print("  edificios: [");
+        System.out.print("  edificios: ");
         // Hay que re-visitar las casillas que tiene el jugador, y para cada una imprimir los IDs de los edificios.
         if (j.getPropiedades().isEmpty())
             System.out.println("[-]");
+        StringJoiner edificios = new StringJoiner(", ", "[", "]"); edificios.setEmptyValue("[ - ]");
         for (Casilla c : j.getPropiedades()) {
             if (c.getCasas() > 0){
                 for (int i = 0; i < c.getCasas(); i++){
-                    if (c.getNumEdificios()-1 == i)
-                        System.out.print(c.getIDCasa(i));
-                    else
-                        System.out.print(c.getIDCasa(i) + ", ");
+                    edificios.add(c.getIDCasa(i));
                 }
             }
             if (c.getHotel() > 0)
-                if (c.getNumEdificios() == 1)
-                    System.out.print(c.getIDHotel());
-                else
-                    System.out.print(c.getIDHotel() + ", ");
+                edificios.add(c.getIDHotel());
             if (c.getPiscina() > 0)
-                if (c.getNumEdificios() == 2)
-                    System.out.print(c.getIDpiscina());
-                else
-                    System.out.print(c.getIDpiscina() + ", ");
+                edificios.add(c.getIDpiscina());
             if (c.getPistadeporte() > 0)
-                if (c.getNumEdificios() == 3)
-                    System.out.print(c.getIDpistadeporte());
-                else
-                    System.out.print(c.getIDpistadeporte() + ", ");
+                edificios.add(c.getIDpistadeporte());
         }
-        System.out.println("]");
+        System.out.println(edificios);
         System.out.println("}");
     }
 
@@ -1223,20 +1211,75 @@ public class Menu {
     }
 
     /**
-     * Ejecuta el comando {@code listar edificios}: muestra todos los edificios construidos.
+     * Ejecuta el comando {@code listar edificios [<color>]}: muestra todos los datos de todos los edificios construidos. Si
+     * se especificó un grupo (color), se imprimirán solo los edificios en casillas de ese grupo.
      */
-    private void listarEdificios(String partes[]) {
+    private void listarEdificios(String[] partes) {
+        // Si el comando tiene más de 3 argumentos, está mal.
+        if (partes.length > 3){
+            System.out.println(Valor.ERROR_USO + "listar jugadores|avatares|enventa|edificios [<color>]");
+            return;
+        }
+        // En esta variable irá el nombre del color del grupo, si no se introdujo un argumento con color, será null.
+        String color = null;
+        // Si el color coincide con alguno, se asigna a otra variable y se sale del bucle. Si no
+        if (partes.length == 3){
+            // Se recorren los posibles nombres de grupo, si coincide, se asigna ese nombre.
+            for (int i = 0; i < Valor.colores.length; i++)
+                if (partes[2].equalsIgnoreCase(Valor.colores[i])) {
+                    color = partes[2];
+                    break;
+                }
+            // Si tras esto, el color sigue siendo NULL (cuando, al ser 3 argumentos se supone que debería coincidir
+            //      con algún color), se avisa de que el color es erróneo y se sale.
+            if (color == null){
+                System.out.println(Valor.YELLOW + "No existe un grupo con ese color." + Valor.RESET);
+                return;
+            }
+        }
         // Se recorren los cuatro lados del tablero.
         for (ArrayList<Casilla> lado : tablero.getPosiciones()) {
             // Para cada lado del tablero, se recorren sus casillas.
             for (Casilla c : lado) {
-                if (c.getTipo().equals("Solar")) {
+                // Si la casilla es un solar, se imprimen sus edificios. Si se especifica un grupo, su color debe coincidir.
+                if (c.getTipo().equals("Solar") && (color == null || c.getGrupo().getNombreGrupo().equalsIgnoreCase(color))) {
+                    // Se imprimen las casas de la casilla.
                     for (int i = 0; i < c.getCasas(); i++) {
                         System.out.println("{");
                         System.out.println("  id: " + c.getIDCasa(i) + ",");
                         System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
                         System.out.println("  casilla: " + c.getNombre() + ",");
-                        System.out.println("  grupo: " + c.getGrupo() + ",");
+                        System.out.println("  grupo: " + c.getGrupo().getNombreGrupo() + ",");
+                        System.out.println("  coste: " + Valor.SOLAR_PRECIOS_CASA[c.getPosicion()]);
+                        System.out.println("}");
+                    }
+                    // Se imprime el hotel.
+                    for (int i = 0; i < c.getHotel(); i++) {
+                        System.out.println("{");
+                        System.out.println("  id: " + c.getIDHotel() + ",");
+                        System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
+                        System.out.println("  casilla: " + c.getNombre() + ",");
+                        System.out.println("  grupo: " + c.getGrupo().getNombreGrupo() + ",");
+                        System.out.println("  coste: " + Valor.SOLAR_PRECIOS_CASA[c.getPosicion()]);
+                        System.out.println("}");
+                    }
+                    // Se imprime la piscina.
+                    for (int i = 0; i < c.getPiscina(); i++) {
+                        System.out.println("{");
+                        System.out.println("  id: " + c.getIDpiscina() + ",");
+                        System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
+                        System.out.println("  casilla: " + c.getNombre() + ",");
+                        System.out.println("  grupo: " + c.getGrupo().getNombreGrupo() + ",");
+                        System.out.println("  coste: " + Valor.SOLAR_PRECIOS_CASA[c.getPosicion()]);
+                        System.out.println("}");
+                    }
+                    // Se imprime la pista de deportes.
+                    for (int i = 0; i < c.getPistadeporte(); i++) {
+                        System.out.println("{");
+                        System.out.println("  id: " + c.getIDpistadeporte() + ",");
+                        System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
+                        System.out.println("  casilla: " + c.getNombre() + ",");
+                        System.out.println("  grupo: " + c.getGrupo().getNombreGrupo() + ",");
                         System.out.println("  coste: " + Valor.SOLAR_PRECIOS_CASA[c.getPosicion()]);
                         System.out.println("}");
                     }
@@ -1256,18 +1299,45 @@ public class Menu {
         }
         for (int i = 0; i < jugadores.size(); i++){
             Jugador j = jugadores.get(i);
+
             System.out.println("{");
             System.out.println("  nombre: " + j.getNombre() + ",");
             System.out.println("  avatar: " + j.getAvatar().getId() + ",");
-            System.out.println("  fortuna: " + (long) j.getFortuna() + "€,");
-            //System.out.println("propiedades: " + j.getPropiedades());
-            System.out.print("  propiedades: [");
+            System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
+            // Se itera sobre las casillas que tiene el jugador y se imprime su nombre.
+            System.out.print("  propiedades: ");
+            StringJoiner casillas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("[ - ]");
             for (Casilla c : j.getPropiedades()) {
-                System.out.print(c.getNombre() + " ");
+                casillas.add(c.getNombre());
             }
-            System.out.println("  ]");
-            System.out.println("  hipotecas: -");
-            System.out.println("  edificios: -");
+            System.out.println(casillas + ",");
+            // Se itera sobre las propiedades del jugador, y si están hipotecadas, salen aquí.
+            System.out.print("  hipotecas: ");
+            StringJoiner hipotecas = new StringJoiner(", ", "[", "]"); hipotecas.setEmptyValue("[ - ]");
+            for (Casilla c : j.getPropiedades()) {
+                if (c.isHipotecada())
+                    hipotecas.add(c.getNombre());
+            }
+            System.out.println(hipotecas + ",");
+            System.out.print("  edificios: ");
+            // Hay que re-visitar las casillas que tiene el jugador, y para cada una imprimir los IDs de los edificios.
+            if (j.getPropiedades().isEmpty())
+                System.out.println("[-]");
+            StringJoiner edificios = new StringJoiner(", ", "[", "]"); edificios.setEmptyValue("[ - ]");
+            for (Casilla c : j.getPropiedades()) {
+                if (c.getCasas() > 0){
+                    for (int w = 0; w < c.getCasas(); w++){
+                        edificios.add(c.getIDCasa(w));
+                    }
+                }
+                if (c.getHotel() > 0)
+                    edificios.add(c.getIDHotel());
+                if (c.getPiscina() > 0)
+                    edificios.add(c.getIDpiscina());
+                if (c.getPistadeporte() > 0)
+                    edificios.add(c.getIDpistadeporte());
+            }
+            System.out.println(edificios);
             if (jugadores.size()-1 == i){
                 System.out.println("}");
             } else {
@@ -1348,6 +1418,17 @@ public class Menu {
      */
     private Casilla casillaEnIndice(int indice) {
         return tablero.getPosiciones().get(indice / 10).get(indice % 10);
+    }
+
+    private int getEdificiosTotal(Jugador j) {
+        int resultado = 0;
+        for (ArrayList<Casilla> lado : tablero.getPosiciones())
+            // Para cada lado del tablero, se recorren sus casillas.
+            for (Casilla c : lado)
+                if (c.getTipo().equals("Solar"))
+                    if (c.getDuenho().equals(j))
+                        resultado += c.getNumEdificios();
+        return resultado;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

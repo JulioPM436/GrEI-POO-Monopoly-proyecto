@@ -23,6 +23,8 @@ public class Valor {
     public static final String PURPLE = "\u001B[35m";
     public static final String CYAN = "\u001B[36m";
     public static final String WHITE = "\u001B[37m";
+    // Es importante que los códigos de colores y los nombres del array tengan el mismo orden.
+    public static final String[] colores = {"Negro","Rojo","Verde","Amarillo","Azul","Violeta","Cian","Blanco"};
 
     /**
      * Pone "ERROR:" en rojo delante de algunos mensajes de error.

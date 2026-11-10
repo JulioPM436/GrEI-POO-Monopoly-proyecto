@@ -14,7 +14,7 @@
 #    edificar y pasar por la Salida.
 #  - IDs: un contador por tipo para toda la partida, que nunca se
 #    reutiliza. Para la pista de deporte el enunciado no da ejemplo de ID:
-#    aquí sale como pista_deporte-N. Si usáis otro prefijo, cambia solo eso.
+#    aquí sale como pistadeporte-N. Si usáis otro prefijo, cambia solo eso.
 #  - Supuestos donde el enunciado no es claro:
 #      * Al edificar el hotel, las 4 casas desaparecen y no se devuelve
 #        su dinero.
@@ -172,15 +172,15 @@ edificar casa
 edificar hotel
 # Edifica piscina-2 en Solar1 por 100.000. Pedro: 13.200.000
 edificar piscina
-# Edifica pista_deporte-1 en Solar1 por 200.000. Pedro: 13.000.000
-edificar pista_deporte
+# Edifica pistadeporte-1 en Solar1 por 200.000. Pedro: 13.000.000
+edificar pistadeporte
 # Debe dar error: en Solar1 ya no se puede edificar nada más. No se edifica nada.
 edificar casa
 # Esperado: 5 edificios (el orden puede cambiar):
 #   id               propietario  casilla  grupo   coste
 #   hotel-2          Pedro        Solar1   negro   500000
 #   piscina-2        Pedro        Solar1   negro   100000
-#   pista_deporte-1  Pedro        Solar1   negro   200000
+#   pistadeporte-1  Pedro        Solar1   negro   200000
 #   hotel-1          Maria        Solar7   morado  1000000
 #   piscina-1        Maria        Solar7   morado  200000
 listar edificios
@@ -213,7 +213,7 @@ edificar hotel
 # Debe dar error: no se puede edificar una piscina, ya que no se dispone de un hotel. No se edifica nada.
 edificar piscina
 # Debe dar error: para la pista de deporte hacen falta un hotel y una piscina. No se edifica nada.
-edificar pista_deporte
+edificar pistadeporte
 # Pedro saca 2+3. Avanza 5, de Solar2 a Solar4.
 lanzar dados 2+3
 # Pasa el turno a Maria.
@@ -238,7 +238,7 @@ edificar casa
 # El hotel sustituye a las 4 casas: casa-11 a casa-14 desaparecen.
 edificar hotel
 # Debe dar error: para la pista de deporte hacen falta un hotel y una piscina. No se edifica nada.
-edificar pista_deporte
+edificar pistadeporte
 # Pasa el turno a Pedro.
 acabar turno
 
@@ -274,7 +274,7 @@ edificar hotel
 #   id               propietario  casilla  grupo   coste
 #   hotel-2          Pedro        Solar1   negro   500000
 #   piscina-2        Pedro        Solar1   negro   100000
-#   pista_deporte-1  Pedro        Solar1   negro   200000
+#   pistadeporte-1  Pedro        Solar1   negro   200000
 #   casa-9           Pedro        Solar2   negro   500000
 #   casa-10          Pedro        Solar2   negro   500000
 #   hotel-3          Maria        Solar6   morado  1000000
@@ -288,7 +288,7 @@ listar edificios
 
 # Esperado:
 #   Solar1: hoteles [hotel-2], casas -, piscinas [piscina-2],
-#           pistasDeDeporte [pista_deporte-1], alquiler 3500000
+#           pistasDeDeporte [pistadeporte-1], alquiler 3500000
 #   Solar2: hoteles -, casas [casa-9, casa-10], piscinas -,
 #           pistasDeDeporte -, alquiler 1600000
 # En Solar1 ya no cabe nada. En Solar2 aún caben 2 casas y, después,
@@ -311,7 +311,7 @@ listar edificios morado
 listar edificios naranja
 
 # Esperado: fortuna 12000000, propiedades [Solar2, Solar1], hipotecas -,
-#   edificios [casa-9, casa-10, hotel-2, piscina-2, pista_deporte-1]
+#   edificios [casa-9, casa-10, hotel-2, piscina-2, pistadeporte-1]
 #   (los edificios pueden salir en otro orden, pero tienen que ser estos)
 describir jugador Pedro
 
@@ -322,7 +322,7 @@ describir jugador Maria
 
 # Esperado:
 #   Pedro: fortuna 12000000, propiedades [Solar2, Solar1],
-#          edificios [casa-9, casa-10, hotel-2, piscina-2, pista_deporte-1]
+#          edificios [casa-9, casa-10, hotel-2, piscina-2, pistadeporte-1]
 #   Maria: fortuna 400000, propiedades [Solar6, Solar8, Solar7],
 #          edificios [hotel-3, casa-15, casa-16, casa-17, casa-18, hotel-1, piscina-1]
 listar jugadores
