@@ -435,6 +435,7 @@ public class Casilla {
     }
 
     public int getCasas() {
+        
         return this.casas.size();
     }
 
