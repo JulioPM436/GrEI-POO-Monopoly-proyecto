@@ -432,7 +432,7 @@ public class Casilla {
     public void venderCasas(int i){
         if (i < 1)
             throw new IllegalArgumentException(Valor.RED + "venderCasas: i debe ser al menos 1 y es " + i + Valor.RESET);
-        for (int j = 0; j < i || this.casas.isEmpty(); j++)
+        for (int j = 0; j < i && !this.casas.isEmpty(); j++)
             this.casas.remove(0);
     }
 

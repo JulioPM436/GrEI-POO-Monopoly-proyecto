@@ -528,7 +528,11 @@ public class Menu {
 
         System.out.println(tablero);
 
-        solvente = destino.evaluarCasilla(j, banca, 0, tablero.getCasillaPorPosicion(21));
+        if (destino.getTipo().equals("Suerte") || destino.getTipo().equals("Comunidad")) {
+            sacarCarta(j, destino.getTipo());
+        } else {
+            solvente = destino.evaluarCasilla(j, banca, 0, tablero.getCasillaPorPosicion(21));
+        }
     }
 
     /**
@@ -941,6 +945,11 @@ public class Menu {
                 disponibles = casilla.getHotel();
                 precio = Valor.SOLAR_PRECIOS_HOTEL[casilla.getPosicion()];
 
+                if (casilla.getPiscina() > 0){
+                    System.out.println(Valor.YELLOW + "Hay piscinas en " + casilla.getNombre() + "por lo que no puedes vender." + Valor.RESET);
+                    return;
+                }
+
                 if (disponibles == 0) {
                     // No hay hotel: avisar y salir
                     System.out.println(Valor.YELLOW + "No hay hoteles en " + casilla.getNombre() + "." + Valor.RESET);
@@ -966,6 +975,10 @@ public class Menu {
             case "piscina":
                 disponibles = casilla.getPiscina();
                 precio = Valor.SOLAR_PRECIOS_PISCINA[casilla.getPosicion()];
+                if (casilla.getPistadeporte() > 0){
+                    System.out.println(Valor.YELLOW + "Hay pistas de deporte en " + casilla.getNombre() + "por lo que no puedes vender." + Valor.RESET);
+                    return;
+                }
 
                 if (disponibles == 0) {
                     // No hay piscina: avisar y salir
@@ -1013,11 +1026,6 @@ public class Menu {
                 }
                 break;
         }
-
-        // TODO: dinero total, sumarFortuna y mensaje
-
-
-
 
     }
 
@@ -1125,11 +1133,17 @@ public class Menu {
                 case 4:
                     System.out.println(CARTAS_SUERTE[3]);
                     int numJugadores = jugadores.size();
-                    pagar(Objects.requireNonNull(getJugadorActual()),250000 * ((numJugadores)-1));
-                    for(int i = 0; i < numJugadores; i++){
-                        Jugador jey = jugadores.get(i);
-                        if(jey != getJugadorActual()){
-                            jey.sumarFortuna(250000);
+
+                    // Paga a todos los demás de una vez
+                    solvente = pagar(j, 250000 * (numJugadores - 1));
+
+                    // Solo si ha podido pagar, cada jugador recibe su parte
+                    if (solvente) {
+                        for (int i = 0; i < numJugadores; i++) {
+                            Jugador jey = jugadores.get(i);
+                            if (jey != j) {
+                                jey.sumarFortuna(250000);
+                            }
                         }
                     }
                     break;
@@ -1145,13 +1159,13 @@ public class Menu {
 
                 case 6:
                     System.out.println(CARTAS_SUERTE[5]);
-                    pagar(Objects.requireNonNull(getJugadorActual()),150000);
+                    solvente = pagar(j, 150000);
                     break;
 
                 case 7:
                     System.out.println(CARTAS_SUERTE[6]);
                     Avatar avat = j.getAvatar();
-                    moverHasta(j, transporteMasCercano(avat.getLugar(), j).getNombre(), false);
+                    moverHasta(j, transporteMasCercano(avat.getLugar()).getNombre(), true);
                     break;
                 default:
                     System.out.println("ERROR, esto no es una posicion de carta valida, esto nunca lo deberia leer el ususario");
@@ -1166,7 +1180,7 @@ public class Menu {
             switch (numCartaComunidad) {
                 case 1:
                     System.out.println(CARTAS_COMUNIDAD[0]);
-                    pagar(Objects.requireNonNull(getJugadorActual()),500000);
+                    solvente = pagar(j, 500000);
                     break;
 
                 case 2:
@@ -1210,15 +1224,12 @@ public class Menu {
      * @param desde Casilla desde la que se empieza a buscar.
      * @return La primera casilla de transporte que se encuentra.
      */
-    private Casilla transporteMasCercano(Casilla desde, Jugador j) {
+    private Casilla transporteMasCercano(Casilla desde) {
         int indice = desde.getPosicion() - 1;
         for (int i = 1; i <= 40; i++) {
             Casilla c = casillaEnIndice((indice + i) % 40);
             if (c.getTipo().equals("Transporte")) {
                 return c;
-            }
-            if (c.getTipo().equals("Salida")){
-                j.sumarFortuna(2000000);
             }
         }
         return desde;
