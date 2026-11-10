@@ -145,6 +145,14 @@ public class Menu {
                 }
                 break;
 
+            case "deshipotecar":
+                if (partes.length == 2) {
+                    deshipotecar(partes[1], getJugadorActual());
+                } else {
+                    System.out.println(Valor.ERROR_USO + "deshipotecar <casilla>");
+                }
+                break;
+
             case "jugador":
                 turnoActual();
                 break;
@@ -180,7 +188,13 @@ public class Menu {
                 break;
 
             case "estadisticas":
-                mostrarEstadisticas(partes[1]);
+                if (partes.length == 1) {
+                    mostrarEstadisticasJuego();
+                } else if (partes.length == 2) {
+                    mostrarEstadisticas(partes[1]);
+                } else {
+                    System.out.println(Valor.ERROR_USO + "estadisticas [<jugador>]");
+                }
                 break;
 
             case "ver":
