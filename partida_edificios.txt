@@ -305,7 +305,7 @@ listar edificios negro
 # Ya no se pueden edificar más casas. Aún se puede edificar: hotel en
 #   Solar8; piscina en Solar6 (y en Solar8 tras el hotel); pista de
 #   deporte en Solar7, y en Solar6 y Solar8 tras su piscina.
-listar edificios morado
+listar edificios violeta
 
 # Debe dar error: no existe el grupo naranja.
 listar edificios naranja

@@ -528,4 +528,13 @@ public class Casilla {
     public void eliminarAvatar(Avatar av) {
         avatares.remove(av);
     }
+
+    public void actualizarAlquiler() {
+        if (getNumEdificios() > 0)
+            this.impuesto = getCasas()*Valor.SOLAR_ALQUILERES_CASA[this.posicion]
+                +getHotel()*Valor.SOLAR_ALQUILERES_HOTEL[this.posicion]+getPiscina()*Valor.SOLAR_ALQUILERES_PISCINA[this.posicion]
+                +getPistadeporte()*Valor.SOLAR_ALQUILERES_PISTADEPORTE[this.posicion];
+        else
+            this.impuesto = Valor.SOLAR_ALQUILERES[this.posicion];
+    }
 }

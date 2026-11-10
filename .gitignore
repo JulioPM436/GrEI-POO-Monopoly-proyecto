@@ -6,6 +6,7 @@ out/
 .idea
 script.txt
 compilar.sh
+*.txt
 PrimeiraClase.iml
 proyecto_POO_2.0.iml
 ### Eclipse ###
