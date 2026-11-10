@@ -886,6 +886,139 @@ public class Menu {
             return;
         }
 
+        if (casilla.getDuenho() != actual) {
+            System.out.println(Valor.YELLOW + "No se pueden vender " + tipo + "s en " + casilla.getNombre()
+                    + ". Esta propiedad no pertenece a " + actual.getNombre() + "." + Valor.RESET);
+            return;
+        }
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(partes[3]);
+        } catch (NumberFormatException e) {
+            System.out.println(Valor.ERROR + "La cantidad debe ser un número: " + partes[3]);
+            return;
+        }
+
+        // ¿La cantidad es mayor que 0?
+        if (cantidad <= 0) {
+            System.out.println(Valor.YELLOW + "La cantidad debe ser mayor que 0." + Valor.RESET);
+            return;
+        }
+        int disponibles = 0;     // cuántos hay en la casilla
+        float precio = 0;        // precio de un edificio
+
+        switch (tipo) {
+            case "casa":
+                disponibles = casilla.getCasas();
+                precio = Valor.SOLAR_PRECIOS_CASA[casilla.getPosicion()];
+                // 2. Los tres casos
+                if (disponibles == 0) {
+                    // no hay ninguna: avisar y salir
+                    System.out.println(Valor.YELLOW + "No hay casas en " + casilla.getNombre() + "." + Valor.RESET);
+                    return;
+
+                } else if (cantidad <= disponibles) {
+                    // hay suficientes: se venden las que pide
+                    casilla.venderCasas(cantidad);
+                    actual.sumarFortuna(precio * cantidad);
+                    System.out.println(actual.getNombre() + " ha vendido " + cantidad + " casas en "
+                            + casilla.getNombre() + ", recibiendo " + (long) (precio * cantidad)
+                            + "€. En la propiedad quedan " + casilla.getCasas() + " casas.");
+
+
+                } else {
+                    // hay alguna, pero menos de las que pide: se venden las que hay
+                    casilla.venderCasas(disponibles);
+                    actual.sumarFortuna(precio * disponibles);
+                    System.out.println("Solamente se puede vender " + disponibles + " casas, recibiendo "
+                            + (long) (precio * disponibles) + "€.");
+
+                }
+
+                break;
+
+            case "hotel":
+                disponibles = casilla.getHotel();
+                precio = Valor.SOLAR_PRECIOS_HOTEL[casilla.getPosicion()];
+
+                if (disponibles == 0) {
+                    // No hay hotel: avisar y salir
+                    System.out.println(Valor.YELLOW + "No hay hoteles en " + casilla.getNombre() + "." + Valor.RESET);
+                    return;
+
+                } else if (cantidad <= disponibles) {
+                    // Pide 1 y hay 1: se vende
+                    casilla.venderHotel();
+                    actual.sumarFortuna(precio);
+                    System.out.println(actual.getNombre() + " ha vendido 1 hotel en "
+                            + casilla.getNombre() + ", recibiendo " + (long) precio
+                            + "€. En la propiedad quedan " + casilla.getHotel() + " hoteles.");
+
+                } else {
+                    // Pide más de 1, pero solo hay 1: se vende ese
+                    casilla.venderHotel();
+                    actual.sumarFortuna(precio);
+                    System.out.println("Solamente se puede vender 1 hotel, recibiendo "
+                            + (long) precio + "€.");
+                }
+                break;
+
+            case "piscina":
+                disponibles = casilla.getPiscina();
+                precio = Valor.SOLAR_PRECIOS_PISCINA[casilla.getPosicion()];
+
+                if (disponibles == 0) {
+                    // No hay piscina: avisar y salir
+                    System.out.println(Valor.YELLOW + "No hay piscinas en " + casilla.getNombre() + "." + Valor.RESET);
+                    return;
+
+                } else if (cantidad <= disponibles) {
+                    // Pide 1 y hay 1: se vende
+                    casilla.venderPiscina();
+                    actual.sumarFortuna(precio);
+                    System.out.println(actual.getNombre() + " ha vendido 1 piscina en "
+                            + casilla.getNombre() + ", recibiendo " + (long) precio + "€.");
+
+                } else {
+                    // Pide más de 1, pero solo hay 1: se vende esa
+                    casilla.venderPiscina();
+                    actual.sumarFortuna(precio);
+                    System.out.println("Solamente se puede vender 1 piscina, recibiendo "
+                            + (long) precio + "€.");
+                }
+                break;
+
+            case "pistadeporte":
+                disponibles = casilla.getPistadeporte();
+                precio = Valor.SOLAR_PRECIOS_PISTADEPORTE[casilla.getPosicion()];
+
+                if (disponibles == 0) {
+                    // No hay pista de deporte: avisar y salir
+                    System.out.println(Valor.YELLOW + "No hay pistas de deporte en " + casilla.getNombre() + "." + Valor.RESET);
+                    return;
+
+                } else if (cantidad <= disponibles) {
+                    // Pide 1 y hay 1: se vende
+                    casilla.venderPistadeporte();
+                    actual.sumarFortuna(precio);
+                    System.out.println(actual.getNombre() + " ha vendido 1 pista de deporte en "
+                            + casilla.getNombre() + ", recibiendo " + (long) precio + "€.");
+
+                } else {
+                    // Pide más de 1, pero solo hay 1: se vende esa
+                    casilla.venderPistadeporte();
+                    actual.sumarFortuna(precio);
+                    System.out.println("Solamente se puede vender 1 pista de deporte, recibiendo "
+                            + (long) precio + "€.");
+                }
+                break;
+        }
+
+        // TODO: dinero total, sumarFortuna y mensaje
+
+
+
+
     }
 
     /**
