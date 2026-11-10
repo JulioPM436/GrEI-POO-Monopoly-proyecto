@@ -151,6 +151,14 @@ public class Menu {
                 lanzarDados(partes);
                 break;
 
+            case "vender":
+                if (partes.length != 4) {
+                    System.out.println(Valor.ERROR_USO + "vender casas|hoteles|piscina|pistadeporte <solar> <cantidad>");
+                    break;
+                }
+                vender(partes);
+                break;
+
             case "listar":
                 if (partes.length == 1) {
                     System.out.println(Valor.ERROR_USO + "listar jugadores|avatares|enventa|edificios [<color>]");
@@ -838,6 +846,41 @@ public class Menu {
         } else {
             System.out.println(Valor.YELLOW + "Debes ser dueño de todo el grupo para poder construir." + Valor.RESET);
         }
+    }
+
+
+
+
+    private void vender(String[] partes){
+        if (this.jugadores.isEmpty()) {
+            System.out.println(Valor.YELLOW + "Aún no hay jugadores en la partida." + Valor.RESET);
+            return;
+        }
+        Jugador actual = getJugadorActual();
+
+        String tipo = partes[1].toLowerCase();
+
+        if (!tipo.equals("casa") && !tipo.equals("hotel")
+                && !tipo.equals("piscina") && !tipo.equals("pistadeporte")) {
+            System.out.println(Valor.ERROR + "Tipo de edificio no válido: " + partes[1]);
+            return;
+        }
+
+        // Casilla donde se vende
+        String nombreCasilla = partes[2];
+        Casilla casilla = tablero.encontrar_casilla(nombreCasilla);
+
+        // ¿Existe la casilla?
+        if (casilla == null) {
+            System.out.println(Valor.ERROR + "No existe la casilla " + nombreCasilla + ".");
+            return;
+        }
+        // ¿Es un solar?
+        if (!casilla.getTipo().equals("Solar")) {
+            System.out.println(Valor.YELLOW + "Solo se pueden vender edificios en los solares." + Valor.RESET);
+            return;
+        }
+
     }
 
     /**
