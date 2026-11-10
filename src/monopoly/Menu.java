@@ -167,6 +167,9 @@ public class Menu {
                     case "enventa":
                         listarVenta();
                         break;
+                    case "edificios":
+                        listarEdificios(partes);
+                        break;
                     default:
                         System.out.println(Valor.ERROR_USO + "listar jugadores|avatares|enventa|edificios [<color>]");
                 }
@@ -661,18 +664,20 @@ public class Menu {
         Casilla actualCasilla = actual.getAvatar().getLugar();
         Grupo actualGrupo = actual.getAvatar().getLugar().getGrupo();
         String actualCasillaTipo = actualCasilla.getTipo();
-        // Necesitamos saber el número de edificaciones en la casilla.
-        int numeroCasas = actualCasilla.getCasas();
-        int hayHotel = actualCasilla.getHotel();
-        int hayPiscina = actualCasilla.getPiscina();
-        int hayPistadeporte = actualCasilla.getPistadeporte();
-        float precio;
 
         // Sólo se puede edificar en los solares.
         if (!actualCasillaTipo.equals("Solar")){
             System.out.println(Valor.YELLOW + "Sólo se puede edificar en los solares." + Valor.RESET);
             return;
         }
+        // Necesitamos saber el número de edificaciones en la casilla.
+        System.out.println("DEBUG " + actualCasilla.getNombre() + " tipo=" + actualCasillaTipo);
+        int numeroCasas = actualCasilla.getCasas();
+        int hayHotel = actualCasilla.getHotel();
+        int hayPiscina = actualCasilla.getPiscina();
+        int hayPistadeporte = actualCasilla.getPistadeporte();
+        float precio;
+
         // Si es dueño de todas las casillas del grupo, puede edificar.
         if (actualGrupo.esDuenhoGrupo(actual)) {
             // Si es dueño del grupo, puede empezar a construir.
@@ -1171,6 +1176,29 @@ public class Menu {
             System.out.println("  casilla: " + a.getLugar().getNombre() + ",");
             System.out.println("  jugador: " + a.getJugador().getNombre());
             System.out.println("}");
+        }
+    }
+
+    /**
+     * Ejecuta el comando {@code listar edificios}: muestra todos los edificios construidos.
+     */
+    private void listarEdificios(String partes[]) {
+        // Se recorren los cuatro lados del tablero.
+        for (ArrayList<Casilla> lado : tablero.getPosiciones()) {
+            // Para cada lado del tablero, se recorren sus casillas.
+            for (Casilla c : lado) {
+                if (c.getTipo().equals("Solar")) {
+                    for (int i = 0; i < c.getCasas(); i++) {
+                        System.out.println("{");
+                        System.out.println("  id: " + c.getIDCasa(i) + ",");
+                        System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
+                        System.out.println("  casilla: " + c.getNombre() + ",");
+                        System.out.println("  grupo: " + c.getGrupo() + ",");
+                        System.out.println("  coste: " + Valor.SOLAR_PRECIOS_CASA[c.getPosicion()]);
+                        System.out.println("}");
+                    }
+                }
+            }
         }
     }
 
