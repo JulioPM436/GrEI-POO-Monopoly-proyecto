@@ -201,7 +201,7 @@ public class Jugador {
     public String obtenerEstadisticas() {
         return "{\n" +
                 "dineroInvertido: " + (long) this.dineroInvertido + ",\n" +
-                " pagoTasasEImpuestos: " + (long) this.pagoTasasEImpuestos + ",\n" +
+                "pagoTasasEImpuestos: " + (long) this.pagoTasasEImpuestos + ",\n" +
                 "pagoDeAlquileres: " + (long) this.pagoDeAlquileres + ",\n" +
                 "cobroDeAlquileres: " + (long) this.cobroDeAlquileres + ",\n" +
                 "pasarPorCasillaDeSalida: " + (long) this.pasarPorCasillaDeSalida + ",\n" +

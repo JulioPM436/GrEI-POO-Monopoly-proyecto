@@ -873,7 +873,7 @@ public class Menu {
         }
 
         if(casilla.getDuenho() != jugadoractual){
-            System.out.println(Valor.YELLOW + jugadoractual.getNombre() + "no puede hipotecar" + casilla.getNombre() +
+            System.out.println(Valor.YELLOW + jugadoractual.getNombre() + " no puede hipotecar " + casilla.getNombre() +
                     "Esta casilla no pertenece al jugador actual." + Valor.RESET);
             return;
         }
