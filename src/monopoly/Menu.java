@@ -1096,18 +1096,15 @@ public class Menu {
             System.out.println(Valor.YELLOW + "No existe dicha casilla." + Valor.RESET);
             return;
         }
-
         if(casilla.getDuenho() != jugadoractual){
             System.out.println(Valor.YELLOW + jugadoractual.getNombre() + " no puede hipotecar " + casilla.getNombre() +
                     "Esta casilla no pertenece al jugador actual." + Valor.RESET);
             return;
         }
-
         if(casilla.isHipotecada()){
             System.out.println(Valor.YELLOW + "Esta casilla ya está hipotecada." + Valor.RESET);
             return;
         }
-
         if (casilla.getTipo().equalsIgnoreCase("Solar") && casilla.tieneEdificios()) {
             System.out.println(Valor.YELLOW + jugadoractual.getNombre() + " no puede hipotecar " + casilla.getNombre() +
                     ". Se deben vender todos los edificios antes." + Valor.RESET);
