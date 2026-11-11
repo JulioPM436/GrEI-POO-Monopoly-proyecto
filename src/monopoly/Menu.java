@@ -549,7 +549,11 @@ public class Menu {
 
         System.out.println(tablero);
 
-        solvente = destino.evaluarCasilla(j, banca, 0, tablero.getCasillaPorPosicion(21));
+        if (destino.getTipo().equals("Suerte") || destino.getTipo().equals("Comunidad")) {
+            sacarCarta(j, destino.getTipo());
+        } else {
+            solvente = destino.evaluarCasilla(j, banca, 0, tablero.getCasillaPorPosicion(21));
+        }
     }
 
     /**
@@ -707,7 +711,6 @@ public class Menu {
             return;
         }
         // Necesitamos saber el número de edificaciones en la casilla.
-        System.out.println("DEBUG " + actualCasilla.getNombre() + " tipo=" + actualCasillaTipo);
         int numeroCasas = actualCasilla.getCasas();
         int hayHotel = actualCasilla.getHotel();
         int hayPiscina = actualCasilla.getPiscina();
@@ -765,7 +768,8 @@ public class Menu {
                                     for (int i = 0; i < cantidad; i++){
                                         actualCasilla.setCasa(tablero.generarIDcasa());
                                     }
-
+                                    // Una vez se añade la casa, se recalcula el alquiler.
+                                    actualCasilla.actualizarAlquiler();
                                     // Por cosmética, se imprime un mensaje dependiendo de si se compra una casa o varias.
                                     if (cantidad == 1) {
                                         System.out.println("Se ha edificado una casa en " + actualCasilla.getNombre() + ". La " +
@@ -804,6 +808,8 @@ public class Menu {
                         actual.sumarFortuna(-precio);
                         // Se actualiza la cantidad de hoteles.
                         actualCasilla.setHotel(tablero.generarIDhotel());
+                        // Una vez se añade el hotel, se recalcula el alquiler.
+                        actualCasilla.actualizarAlquiler();
                         // Se imprime el aviso de la compra.
                         System.out.println("Se ha edificado un hotel en " + actualCasilla.getNombre() + ". La " +
                                 "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
@@ -834,6 +840,8 @@ public class Menu {
                         actual.sumarFortuna(-precio);
                         // Se actualiza el número de casas.
                         actualCasilla.setPiscina(tablero.generarIDpiscina());
+                        // Una vez se añade la piscina, se recalcula el alquiler.
+                        actualCasilla.actualizarAlquiler();
                         // Se imprime el aviso de la compra.
                         System.out.println("Se ha edificado una piscina en " + actualCasilla.getNombre() + ". La " +
                                 "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
@@ -867,6 +875,8 @@ public class Menu {
                         actual.sumarFortuna(-precio);
                         // Se actualiza el número de casas.
                         actualCasilla.setPistadeporte(tablero.generarIDpistadeporte());
+                        // Una vez se añade la pista de deporte, se recalcula el alquiler.
+                        actualCasilla.actualizarAlquiler();
                         // Se imprime el aviso de la compra.
                         System.out.println("Se ha edificado una pista de deporte en " + actualCasilla.getNombre() + ". La " +
                                 "fortuna de " + actual.getNombre() + " se reduce en " + precio + "€.");
@@ -912,6 +922,159 @@ public class Menu {
         if (!casilla.getTipo().equals("Solar")) {
             System.out.println(Valor.YELLOW + "Solo se pueden vender edificios en los solares." + Valor.RESET);
             return;
+        }
+
+        if (casilla.getDuenho() != actual) {
+            System.out.println(Valor.YELLOW + "No se pueden vender " + tipo + "s en " + casilla.getNombre()
+                    + ". Esta propiedad no pertenece a " + actual.getNombre() + "." + Valor.RESET);
+            return;
+        }
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(partes[3]);
+        } catch (NumberFormatException e) {
+            System.out.println(Valor.ERROR + "La cantidad debe ser un número: " + partes[3]);
+            return;
+        }
+
+        // ¿La cantidad es mayor que 0?
+        if (cantidad <= 0) {
+            System.out.println(Valor.YELLOW + "La cantidad debe ser mayor que 0." + Valor.RESET);
+            return;
+        }
+        int disponibles = 0;     // cuántos hay en la casilla
+        float precio = 0;        // precio de un edificio
+
+        switch (tipo) {
+            case "casa":
+                disponibles = casilla.getCasas();
+                precio = Valor.SOLAR_PRECIOS_CASA[casilla.getPosicion()];
+                // 2. Los tres casos
+                if (disponibles == 0) {
+                    // no hay ninguna: avisar y salir
+                    System.out.println(Valor.YELLOW + "No hay casas en " + casilla.getNombre() + "." + Valor.RESET);
+                    return;
+
+                } else if (cantidad <= disponibles) {
+                    // hay suficientes: se venden las que pide
+                    casilla.venderCasas(cantidad);
+                    actual.sumarFortuna(precio * cantidad);
+                    // Se recalcula el alquiler tras la venta.
+                    casilla.actualizarAlquiler();
+                    System.out.println(actual.getNombre() + " ha vendido " + cantidad + " casas en "
+                            + casilla.getNombre() + ", recibiendo " + (long) (precio * cantidad)
+                            + "€. En la propiedad quedan " + casilla.getCasas() + " casas.");
+
+
+                } else {
+                    // hay alguna, pero menos de las que pide: se venden las que hay
+                    casilla.venderCasas(disponibles);
+                    actual.sumarFortuna(precio * disponibles);
+                    // Se recalcula el alquiler tras la venta.
+                    casilla.actualizarAlquiler();
+                    System.out.println("Solamente se puede vender " + disponibles + " casas, recibiendo "
+                            + (long) (precio * disponibles) + "€.");
+
+                }
+
+                break;
+
+            case "hotel":
+                disponibles = casilla.getHotel();
+                precio = Valor.SOLAR_PRECIOS_HOTEL[casilla.getPosicion()];
+
+                if (casilla.getPiscina() > 0){
+                    System.out.println(Valor.YELLOW + "Hay piscinas en " + casilla.getNombre() + "por lo que no puedes vender." + Valor.RESET);
+                    return;
+                }
+
+                if (disponibles == 0) {
+                    // No hay hotel: avisar y salir
+                    System.out.println(Valor.YELLOW + "No hay hoteles en " + casilla.getNombre() + "." + Valor.RESET);
+                    return;
+
+                } else if (cantidad <= disponibles) {
+                    // Pide 1 y hay 1: se vende
+                    casilla.venderHotel();
+                    actual.sumarFortuna(precio);
+                    // Se recalcula el alquiler tras la venta.
+                    casilla.actualizarAlquiler();
+                    System.out.println(actual.getNombre() + " ha vendido 1 hotel en "
+                            + casilla.getNombre() + ", recibiendo " + (long) precio
+                            + "€. En la propiedad quedan " + casilla.getHotel() + " hoteles.");
+
+                } else {
+                    // Pide más de 1, pero solo hay 1: se vende ese
+                    casilla.venderHotel();
+                    actual.sumarFortuna(precio);
+                    // Se recalcula el alquiler tras la venta.
+                    casilla.actualizarAlquiler();
+                    System.out.println("Solamente se puede vender 1 hotel, recibiendo "
+                            + (long) precio + "€.");
+                }
+                break;
+
+            case "piscina":
+                disponibles = casilla.getPiscina();
+                precio = Valor.SOLAR_PRECIOS_PISCINA[casilla.getPosicion()];
+                if (casilla.getPistadeporte() > 0){
+                    System.out.println(Valor.YELLOW + "Hay pistas de deporte en " + casilla.getNombre() + "por lo que no puedes vender." + Valor.RESET);
+                    return;
+                }
+
+                if (disponibles == 0) {
+                    // No hay piscina: avisar y salir
+                    System.out.println(Valor.YELLOW + "No hay piscinas en " + casilla.getNombre() + "." + Valor.RESET);
+                    return;
+
+                } else if (cantidad <= disponibles) {
+                    // Pide 1 y hay 1: se vende
+                    casilla.venderPiscina();
+                    actual.sumarFortuna(precio);
+                    // Se recalcula el alquiler tras la venta.
+                    casilla.actualizarAlquiler();
+                    System.out.println(actual.getNombre() + " ha vendido 1 piscina en "
+                            + casilla.getNombre() + ", recibiendo " + (long) precio + "€.");
+
+                } else {
+                    // Pide más de 1, pero solo hay 1: se vende esa
+                    casilla.venderPiscina();
+                    actual.sumarFortuna(precio);
+                    // Se recalcula el alquiler tras la venta.
+                    casilla.actualizarAlquiler();
+                    System.out.println("Solamente se puede vender 1 piscina, recibiendo "
+                            + (long) precio + "€.");
+                }
+                break;
+
+            case "pistadeporte":
+                disponibles = casilla.getPistadeporte();
+                precio = Valor.SOLAR_PRECIOS_PISTADEPORTE[casilla.getPosicion()];
+
+                if (disponibles == 0) {
+                    // No hay pista de deporte: avisar y salir
+                    System.out.println(Valor.YELLOW + "No hay pistas de deporte en " + casilla.getNombre() + "." + Valor.RESET);
+                    return;
+
+                } else if (cantidad <= disponibles) {
+                    // Pide 1 y hay 1: se vende
+                    casilla.venderPistadeporte();
+                    actual.sumarFortuna(precio);
+                    // Se recalcula el alquiler tras la venta.
+                    casilla.actualizarAlquiler();
+                    System.out.println(actual.getNombre() + " ha vendido 1 pista de deporte en "
+                            + casilla.getNombre() + ", recibiendo " + (long) precio + "€.");
+
+                } else {
+                    // Pide más de 1, pero solo hay 1: se vende esa
+                    casilla.venderPistadeporte();
+                    actual.sumarFortuna(precio);
+                    // Se recalcula el alquiler tras la venta.
+                    casilla.actualizarAlquiler();
+                    System.out.println("Solamente se puede vender 1 pista de deporte, recibiendo "
+                            + (long) precio + "€.");
+                }
+                break;
         }
 
     }
@@ -1027,17 +1190,23 @@ public class Menu {
 
                 case 3:
                     System.out.println(CARTAS_SUERTE[2]);
-                    getJugadorActual().sumarFortuna(1000000);
+                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(1000000);
                     break;
 
                 case 4:
                     System.out.println(CARTAS_SUERTE[3]);
                     int numJugadores = jugadores.size();
-                    pagar(Objects.requireNonNull(getJugadorActual()),250000 * ((numJugadores)-1));
-                    for(int i = 0; i < numJugadores; i++){
-                        Jugador jey = jugadores.get(i);
-                        if(jey != getJugadorActual()){
-                            jey.sumarFortuna(250000);
+
+                    // Paga a todos los demás de una vez
+                    solvente = pagar(j, 250000 * (numJugadores - 1));
+
+                    // Solo si ha podido pagar, cada jugador recibe su parte
+                    if (solvente) {
+                        for (int i = 0; i < numJugadores; i++) {
+                            Jugador jey = jugadores.get(i);
+                            if (jey != j) {
+                                jey.sumarFortuna(250000);
+                            }
                         }
                     }
                     break;
@@ -1053,13 +1222,13 @@ public class Menu {
 
                 case 6:
                     System.out.println(CARTAS_SUERTE[5]);
-                    pagar(Objects.requireNonNull(getJugadorActual()),150000);
+                    solvente = pagar(j, 150000);
                     break;
 
                 case 7:
                     System.out.println(CARTAS_SUERTE[6]);
                     Avatar avat = j.getAvatar();
-                    moverHasta(j, transporteMasCercano(avat.getLugar(), j).getNombre(), false);
+                    moverHasta(j, transporteMasCercano(avat.getLugar()).getNombre(), true);
                     break;
                 default:
                     System.out.println("ERROR, esto no es una posicion de carta valida, esto nunca lo deberia leer el ususario");
@@ -1074,7 +1243,7 @@ public class Menu {
             switch (numCartaComunidad) {
                 case 1:
                     System.out.println(CARTAS_COMUNIDAD[0]);
-                    pagar(Objects.requireNonNull(getJugadorActual()),500000);
+                    solvente = pagar(j, 500000);
                     break;
 
                 case 2:
@@ -1118,15 +1287,12 @@ public class Menu {
      * @param desde Casilla desde la que se empieza a buscar.
      * @return La primera casilla de transporte que se encuentra.
      */
-    private Casilla transporteMasCercano(Casilla desde, Jugador j) {
+    private Casilla transporteMasCercano(Casilla desde) {
         int indice = desde.getPosicion() - 1;
         for (int i = 1; i <= 40; i++) {
             Casilla c = casillaEnIndice((indice + i) % 40);
             if (c.getTipo().equals("Transporte")) {
                 return c;
-            }
-            if (c.getTipo().equals("Salida")){
-                j.sumarFortuna(2000000);
             }
         }
         return desde;
@@ -1196,49 +1362,38 @@ public class Menu {
         System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
         // Se itera sobre las casillas que tiene el jugador y se imprime su nombre.
         System.out.print("  propiedades: ");
-        StringJoiner casillas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("-");
+        StringJoiner casillas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("[ - ]");
         for (Casilla c : j.getPropiedades()) {
             casillas.add(c.getNombre());
         }
         System.out.println(casillas + ",");
         // Se itera sobre las propiedades del jugador, y si están hipotecadas, salen aquí.
         System.out.print("  hipotecas: ");
-        StringJoiner hipotecas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("-");
+        StringJoiner hipotecas = new StringJoiner(", ", "[", "]"); hipotecas.setEmptyValue("[ - ]");
         for (Casilla c : j.getPropiedades()) {
             if (c.isHipotecada())
                 hipotecas.add(c.getNombre());
         }
         System.out.println(hipotecas + ",");
-        System.out.print("  edificios: [");
+        System.out.print("  edificios: ");
         // Hay que re-visitar las casillas que tiene el jugador, y para cada una imprimir los IDs de los edificios.
         if (j.getPropiedades().isEmpty())
             System.out.println("[-]");
+        StringJoiner edificios = new StringJoiner(", ", "[", "]"); edificios.setEmptyValue("[ - ]");
         for (Casilla c : j.getPropiedades()) {
             if (c.getCasas() > 0){
                 for (int i = 0; i < c.getCasas(); i++){
-                    if (c.getNumEdificios()-1 == i)
-                        System.out.print(c.getIDCasa(i));
-                    else
-                        System.out.print(c.getIDCasa(i) + ", ");
+                    edificios.add(c.getIDCasa(i));
                 }
             }
             if (c.getHotel() > 0)
-                if (c.getNumEdificios() == 1)
-                    System.out.print(c.getIDHotel());
-                else
-                    System.out.print(c.getIDHotel() + ", ");
+                edificios.add(c.getIDHotel());
             if (c.getPiscina() > 0)
-                if (c.getNumEdificios() == 2)
-                    System.out.print(c.getIDpiscina());
-                else
-                    System.out.print(c.getIDpiscina() + ", ");
+                edificios.add(c.getIDpiscina());
             if (c.getPistadeporte() > 0)
-                if (c.getNumEdificios() == 3)
-                    System.out.print(c.getIDpistadeporte());
-                else
-                    System.out.print(c.getIDpistadeporte() + ", ");
+                edificios.add(c.getIDpistadeporte());
         }
-        System.out.println("]");
+        System.out.println(edificios);
         System.out.println("}");
     }
 
@@ -1264,22 +1419,156 @@ public class Menu {
     }
 
     /**
-     * Ejecuta el comando {@code listar edificios}: muestra todos los edificios construidos.
+     * Ejecuta el comando {@code listar edificios [<color>]}: muestra todos los datos de todos los edificios construidos. Si
+     * se especificó un grupo (color), se imprimirán solo los edificios en casillas de ese grupo.
      */
-    private void listarEdificios(String partes[]) {
-        // Se recorren los cuatro lados del tablero.
-        for (ArrayList<Casilla> lado : tablero.getPosiciones()) {
-            // Para cada lado del tablero, se recorren sus casillas.
-            for (Casilla c : lado) {
-                if (c.getTipo().equals("Solar")) {
-                    for (int i = 0; i < c.getCasas(); i++) {
-                        System.out.println("{");
-                        System.out.println("  id: " + c.getIDCasa(i) + ",");
-                        System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
-                        System.out.println("  casilla: " + c.getNombre() + ",");
-                        System.out.println("  grupo: " + c.getGrupo() + ",");
-                        System.out.println("  coste: " + Valor.SOLAR_PRECIOS_CASA[c.getPosicion()]);
-                        System.out.println("}");
+    private void listarEdificios(String[] partes) {
+        // Si el comando tiene más de 3 argumentos, está mal.
+        if (partes.length > 3){
+            System.out.println(Valor.ERROR_USO + "listar jugadores|avatares|enventa|edificios [<color>]");
+            return;
+        }
+        // En esta variable irá el nombre del color del grupo, si no se introdujo un argumento con color, será null.
+        String color = null;
+        // Si el color coincide con alguno, se asigna a otra variable y se sale del bucle. Si no
+        if (partes.length == 3) {
+            // Se recorren los posibles nombres de grupo, si coincide, se asigna ese nombre.
+            for (int i = 0; i < Valor.colores.length; i++)
+                if (partes[2].equalsIgnoreCase(Valor.colores[i])) {
+                    color = partes[2];
+                    break;
+                }
+            // Si tras esto, el color sigue siendo NULL (cuando, al ser 3 argumentos se supone que debería coincidir
+            //      con algún color), se avisa de que el color es erróneo y se sale.
+            if (color == null){
+                System.out.println(Valor.YELLOW + "No existe un grupo con ese color." + Valor.RESET);
+                return;
+            } else {
+                int casasLibres = 0, hotelesLibres = 0, piscinasLibres = 0, pistadeportesLibres = 0;
+                // Se recorren los cuatro lados del tablero.
+                for (ArrayList<Casilla> lado : tablero.getPosiciones()) {
+                    // Para cada lado del tablero, se recorren sus casillas.
+                    for (Casilla c : lado) {
+                        if (c.getTipo().equals("Solar") && c.getNumEdificios() == 0
+                                && c.getGrupo().getNombreGrupo().equalsIgnoreCase(color)) {
+                            System.out.println(c.getNombre() + ": Sin edificios.");
+                            casasLibres += 4;
+                            hotelesLibres += 1;
+                            piscinasLibres += 1;
+                            pistadeportesLibres += 1;
+                        }
+                        if (c.getTipo().equals("Solar") && c.getNumEdificios() > 0
+                                && c.getGrupo().getNombreGrupo().equalsIgnoreCase(color)) {
+                            System.out.println("{");
+                            System.out.println("  propiedad: " + c.getNombre() + ",");
+                            System.out.print("  hoteles: ");
+                            if (c.getHotel() == 1)
+                                System.out.println("[" + c.getIDHotel() + "],");
+                            else
+                                System.out.println("[ - ],");
+                            System.out.print("  casas: ");
+                            StringJoiner casas = new StringJoiner(", ", "[", "]");
+                            casas.setEmptyValue("[ - ]");
+                            for (int i = 0; i < c.getCasas(); i++) {
+                                casas.add(c.getIDCasa(i));
+                            }
+                            System.out.println(casas);
+                            //
+                            System.out.print("  piscinas: ");
+                            if (c.getPiscina() == 1)
+                                System.out.println("[" + c.getIDpiscina() + "],");
+                            else
+                                System.out.println("[ - ],");
+                            System.out.print("  pistasDeDeporte: ");
+                            //
+                            if (c.getPistadeporte() == 1)
+                                System.out.println("[" + c.getIDpistadeporte() + "],");
+                            else
+                                System.out.println("[ - ],");
+                            System.out.println("  alquiler: " + c.getImpuesto());
+                            System.out.println("},");
+                            // Se evalúa la cantidad de sitios libres para edificaciones.
+                            if (c.getCasas() >= 0 && c.getHotel() == 0){
+                                casasLibres += 4 - c.getCasas();
+                                hotelesLibres += 1;
+                                piscinasLibres += 1;
+                                pistadeportesLibres += 1;
+                            }
+                            else if (c.getHotel() == 1 && c.getPiscina() == 0 && c.getPistadeporte() == 0) {
+                                piscinasLibres += 1;
+                                pistadeportesLibres += 1;
+                            }
+                            else if (c.getHotel() == 1 && c.getPiscina() == 1 && c.getPistadeporte() == 0)
+                                pistadeportesLibres += 1;
+                        }
+                    }
+                }
+                int libres = casasLibres+hotelesLibres+piscinasLibres+pistadeportesLibres;
+                if (libres == 0)
+                    System.out.println("No se pueden construir más edificios en este grupo.");
+                else if (casasLibres > 0 && hotelesLibres > 0 && piscinasLibres > 0 && pistadeportesLibres > 0)
+                    System.out.println("Se pueden construir " + casasLibres + " casa(s), " + hotelesLibres + " hotel(es), "
+                            + piscinasLibres + " piscina(s) y " + pistadeportesLibres + " pista(s) de deporte.");
+                else if (casasLibres == 0 && hotelesLibres > 0 && piscinasLibres > 0 && pistadeportesLibres > 0)
+                    System.out.println("No se pueden construir más casas. Se pueden construir " + hotelesLibres + " hotel(es), "
+                            + piscinasLibres + " piscina(s) y " + pistadeportesLibres + " pista(s) de deporte.");
+                else if (casasLibres == 0 && hotelesLibres == 0 && piscinasLibres > 0 && pistadeportesLibres > 0)
+                    System.out.println("No se pueden construir más casas ni hoteles. Se pueden construir " + piscinasLibres +
+                            " piscina(s) y " + pistadeportesLibres + " pista(s) de deporte");
+                else if (casasLibres == 0 && hotelesLibres == 0 && piscinasLibres == 0 && pistadeportesLibres > 0)
+                    System.out.println("No se pueden construir más casas, hoteles ni piscinas. Se pueden construir "
+                            + pistadeportesLibres + " pista(s) de deporte.");
+                else
+                    System.out.println(Valor.RED+"Error al contabilizar edificios libres."+Valor.RESET);
+            }
+        // Si no se especifica color, el comando es listar edificios en general.
+        } else {
+            // Se recorren los cuatro lados del tablero.
+            for (ArrayList<Casilla> lado : tablero.getPosiciones()) {
+                // Para cada lado del tablero, se recorren sus casillas.
+                for (Casilla c : lado) {
+                    // Si la casilla es un solar, se imprimen sus edificios. Si se especifica un grupo, su color debe coincidir.
+                    if (c.getTipo().equals("Solar")) {
+                        // Se imprimen las casas de la casilla.
+                        for (int i = 0; i < c.getCasas(); i++) {
+                            System.out.println("{");
+                            System.out.println("  id: " + c.getIDCasa(i) + ",");
+                            System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
+                            System.out.println("  casilla: " + c.getNombre() + ",");
+                            System.out.println("  grupo: " + c.getGrupo().getNombreGrupo() + ",");
+                            System.out.println("  coste: " + Valor.SOLAR_PRECIOS_CASA[c.getPosicion()]);
+                            System.out.println("},");
+                        }
+                        // Se imprime el hotel.
+                        for (int i = 0; i < c.getHotel(); i++) {
+                            System.out.println("{");
+                            System.out.println("  id: " + c.getIDHotel() + ",");
+                            System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
+                            System.out.println("  casilla: " + c.getNombre() + ",");
+                            System.out.println("  grupo: " + c.getGrupo().getNombreGrupo() + ",");
+                            System.out.println("  coste: " + Valor.SOLAR_PRECIOS_HOTEL[c.getPosicion()]);
+                            System.out.println("},");
+                        }
+                        // Se imprime la piscina.
+                        for (int i = 0; i < c.getPiscina(); i++) {
+                            System.out.println("{");
+                            System.out.println("  id: " + c.getIDpiscina() + ",");
+                            System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
+                            System.out.println("  casilla: " + c.getNombre() + ",");
+                            System.out.println("  grupo: " + c.getGrupo().getNombreGrupo() + ",");
+                            System.out.println("  coste: " + Valor.SOLAR_PRECIOS_PISCINA[c.getPosicion()]);
+                            System.out.println("},");
+                        }
+                        // Se imprime la pista de deportes.
+                        for (int i = 0; i < c.getPistadeporte(); i++) {
+                            System.out.println("{");
+                            System.out.println("  id: " + c.getIDpistadeporte() + ",");
+                            System.out.println("  propietario: " + c.getDuenho().getNombre() + ",");
+                            System.out.println("  casilla: " + c.getNombre() + ",");
+                            System.out.println("  grupo: " + c.getGrupo().getNombreGrupo() + ",");
+                            System.out.println("  coste: " + Valor.SOLAR_PRECIOS_PISTADEPORTE[c.getPosicion()]);
+                            System.out.println("},");
+                        }
                     }
                 }
             }
@@ -1297,18 +1586,45 @@ public class Menu {
         }
         for (int i = 0; i < jugadores.size(); i++){
             Jugador j = jugadores.get(i);
+
             System.out.println("{");
             System.out.println("  nombre: " + j.getNombre() + ",");
             System.out.println("  avatar: " + j.getAvatar().getId() + ",");
-            System.out.println("  fortuna: " + (long) j.getFortuna() + "€,");
-            //System.out.println("propiedades: " + j.getPropiedades());
-            System.out.print("  propiedades: [");
+            System.out.println("  fortuna: " + (long) j.getFortuna() + ",");
+            // Se itera sobre las casillas que tiene el jugador y se imprime su nombre.
+            System.out.print("  propiedades: ");
+            StringJoiner casillas = new StringJoiner(", ", "[", "]"); casillas.setEmptyValue("[ - ]");
             for (Casilla c : j.getPropiedades()) {
-                System.out.print(c.getNombre() + " ");
+                casillas.add(c.getNombre());
             }
-            System.out.println("  ]");
-            System.out.println("  hipotecas: -");
-            System.out.println("  edificios: -");
+            System.out.println(casillas + ",");
+            // Se itera sobre las propiedades del jugador, y si están hipotecadas, salen aquí.
+            System.out.print("  hipotecas: ");
+            StringJoiner hipotecas = new StringJoiner(", ", "[", "]"); hipotecas.setEmptyValue("[ - ]");
+            for (Casilla c : j.getPropiedades()) {
+                if (c.isHipotecada())
+                    hipotecas.add(c.getNombre());
+            }
+            System.out.println(hipotecas + ",");
+            System.out.print("  edificios: ");
+            // Hay que re-visitar las casillas que tiene el jugador, y para cada una imprimir los IDs de los edificios.
+            if (j.getPropiedades().isEmpty())
+                System.out.println("[-]");
+            StringJoiner edificios = new StringJoiner(", ", "[", "]"); edificios.setEmptyValue("[ - ]");
+            for (Casilla c : j.getPropiedades()) {
+                if (c.getCasas() > 0){
+                    for (int w = 0; w < c.getCasas(); w++){
+                        edificios.add(c.getIDCasa(w));
+                    }
+                }
+                if (c.getHotel() > 0)
+                    edificios.add(c.getIDHotel());
+                if (c.getPiscina() > 0)
+                    edificios.add(c.getIDpiscina());
+                if (c.getPistadeporte() > 0)
+                    edificios.add(c.getIDpistadeporte());
+            }
+            System.out.println(edificios);
             if (jugadores.size()-1 == i){
                 System.out.println("}");
             } else {
@@ -1460,6 +1776,17 @@ public class Menu {
      */
     private Casilla casillaEnIndice(int indice) {
         return tablero.getPosiciones().get(indice / 10).get(indice % 10);
+    }
+
+    private int getEdificiosTotal(Jugador j) {
+        int resultado = 0;
+        for (ArrayList<Casilla> lado : tablero.getPosiciones())
+            // Para cada lado del tablero, se recorren sus casillas.
+            for (Casilla c : lado)
+                if (c.getTipo().equals("Solar"))
+                    if (c.getDuenho().equals(j))
+                        resultado += c.getNumEdificios();
+        return resultado;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -101,21 +101,21 @@ class Grupo {
         // Según el código de color, devuelve su string.
         switch(this.colorGrupo){
             case Valor.BLACK:
-                return "Negro";
+                return Valor.colores[0];
             case Valor.RED:
-                return "Rojo";
+                return Valor.colores[1];
             case Valor.GREEN:
-                return "Verde";
+                return Valor.colores[2];
             case Valor.YELLOW:
-                return "Amarillo";
+                return Valor.colores[3];
             case Valor.BLUE:
-                return "Azul";
+                return Valor.colores[4];
             case Valor.PURPLE:
-                return "Violeta";
+                return Valor.colores[5];
             case Valor.CYAN:
-                return "Cian";
+                return Valor.colores[6];
             case Valor.WHITE:
-                return "Blanco";
+                return Valor.colores[7];
             default:
                 return "Sin color";
         }
