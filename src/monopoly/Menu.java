@@ -143,6 +143,14 @@ public class Menu {
                 }
                 break;
 
+            case "deshipotecar":
+                if (partes.length > 1) {
+                    deshipotecar(partes[1], getJugadorActual());
+                } else {
+                    System.out.println(Valor.ERROR_USO + "deshipotecar <casilla>");
+                }
+                break;
+
             case "jugador":
                 turnoActual();
                 break;
