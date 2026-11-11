@@ -1186,8 +1186,21 @@ public class Menu {
 
                 case 7:
                     System.out.println(CARTAS_SUERTE[6]);
-                    Avatar avat = j.getAvatar();
-                    moverHasta(j, transporteMasCercano(avat.getLugar()).getNombre(), true);
+                    Casilla trans = transporteMasCercano(j.getAvatar().getLugar());
+
+                    // Va al transporte: aquí ya paga el alquiler normal si tiene dueño
+                    moverHasta(j, trans.getNombre(), true);
+
+                    // Si tiene dueño, paga otra vez lo mismo para que sea el doble
+                    Jugador duenho = trans.getDuenho();
+                    if (solvente && duenho != banca && duenho != j && !trans.isHipotecada()) {
+                        solvente = pagar(j, 250000);
+                        if (solvente) {
+                            duenho.sumarFortuna(250000);
+                            System.out.println("Por la carta, " + j.getNombre() + " paga otros 250000€ a "
+                                    + duenho.getNombre() + " (el doble del alquiler).");
+                        }
+                    }
                     break;
                 default:
                     System.out.println("ERROR, esto no es una posicion de carta valida, esto nunca lo deberia leer el ususario");
