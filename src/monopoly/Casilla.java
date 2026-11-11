@@ -148,6 +148,7 @@ public class Casilla {
                 actual.sumarGastos(alquiler);
                 duenho.sumarFortuna(alquiler);
                 duenho.sumarCobroDeAlquileres(alquiler);
+                this.sumarDineroGenerado(alquiler);
                 System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a "
                         + duenho.getNombre() + ".");
                 return true;
@@ -164,6 +165,9 @@ public class Casilla {
                 actual.sumarFortuna(-alquiler);
                 actual.sumarGastos(alquiler);
                 duenho.sumarFortuna(alquiler);
+                actual.sumarPagoDeAlquileres(alquiler);
+                this.sumarDineroGenerado(alquiler);
+                duenho.sumarCobroDeAlquileres(alquiler);
                 System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a " + duenho.getNombre() + ".");
                 return true;
             case "Servicios":
@@ -177,6 +181,9 @@ public class Casilla {
                     return false;
                 }
                 actual.sumarFortuna(-alquiler);
+                this.sumarDineroGenerado(alquiler);
+                actual.sumarPagoDeAlquileres(alquiler);
+                duenho.sumarCobroDeAlquileres(alquiler);
                 actual.sumarGastos(alquiler);
                 duenho.sumarFortuna(alquiler);
                 System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a " + duenho.getNombre() + ".");
@@ -192,6 +199,7 @@ public class Casilla {
                 actual.sumarPagoTasasEImpuestos(impuesto);
                 actual.sumarGastos(impuesto);
                 parking.sumarValor(impuesto);
+                this.sumarDineroGenerado(impuesto);
                 System.out.println("El jugador paga " + (long) impuesto + "€ que se depositan en el Parking.");
                 return true;
             case "especial":
@@ -232,6 +240,7 @@ public class Casilla {
 
         solicitante.sumarFortuna(-this.valor);
         solicitante.sumarGastos(this.valor);
+        solicitante.sumarDineroInvertido(this.valor);
         banca.sumarFortuna(this.valor);
 
         this.duenho = solicitante;

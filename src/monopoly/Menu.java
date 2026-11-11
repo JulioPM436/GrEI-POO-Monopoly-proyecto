@@ -474,6 +474,7 @@ public class Menu {
                     return;
                 }
                 actual.sumarFortuna(-Valor.CARCEL_SALIR);
+                actual.sumarPagoTasasEImpuestos(Valor.CARCEL_SALIR);
                 actual.sumarGastos(Valor.CARCEL_SALIR);
                 actual.setEnCarcel(false);
                 actual.setTiradasCarcel(0);
@@ -538,6 +539,8 @@ public class Menu {
         if (puedeCobrarSalida) {
             if (destino.getPosicion() < origen.getPosicion()) {
                 j.sumarFortuna(2000000);
+                j.sumarPasarPorCasillaDeSalida(2000000);
+                j.incrementarVueltas();
                 System.out.println(j.getNombre() + " pasa por Salida y cobra "
                         + (long) 2000000 + "€.");
             }
@@ -546,7 +549,7 @@ public class Menu {
         // Movemos el avatar
 
         av.colocarEn(destino);
-
+        destino.incrementarVecesVisitada();
         System.out.println(tablero);
 
         if (destino.getTipo().equals("Suerte") || destino.getTipo().equals("Comunidad")) {
@@ -567,11 +570,10 @@ public class Menu {
     private void moverYEvaluar(Jugador actual, int suma) {
         actual.getAvatar().moverAvatar(tablero.getPosiciones(), suma);
         Casilla casilla = actual.getAvatar().getLugar();
-
+        casilla.incrementarVecesVisitada();
         if (casilla.getNombre().equals("IrCarcel")) {
             System.out.println("Has caído en IrCarcel: el avatar se coloca en la casilla de Cárcel.");
             actual.encarcelar(tablero.getPosiciones());
-            actual.incrementarVecesEnLaCarcel();
         } else if (casilla.getTipo().equals("Suerte") || casilla.getTipo().equals("Comunidad")) {
             sacarCarta(actual, casilla.getTipo());
         }
@@ -602,6 +604,7 @@ public class Menu {
             return;
         }
         getJugadorActual().sumarFortuna(-fianza);
+        getJugadorActual().sumarPagoTasasEImpuestos(fianza);
         getJugadorActual().sumarGastos(fianza);
 
         getJugadorActual().setEnCarcel(false);
@@ -764,6 +767,7 @@ public class Menu {
                                 if (actual.getFortuna() >= precio) {
                                     // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
                                     actual.sumarFortuna(-precio);
+                                    actual.sumarDineroInvertido(precio);
                                     // Se actualiza el número de casas.
                                     for (int i = 0; i < cantidad; i++){
                                         actualCasilla.setCasa(tablero.generarIDcasa());
@@ -806,6 +810,7 @@ public class Menu {
                     if (actual.getFortuna() >= precio) {
                         // Se le resta el valor del hotel a la fortuna del jugador.
                         actual.sumarFortuna(-precio);
+                        actual.sumarDineroInvertido(precio);
                         // Se actualiza la cantidad de hoteles.
                         actualCasilla.setHotel(tablero.generarIDhotel());
                         // Una vez se añade el hotel, se recalcula el alquiler.
@@ -838,6 +843,7 @@ public class Menu {
                     if (actual.getFortuna() >= precio) {
                         // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
                         actual.sumarFortuna(-precio);
+                        actual.sumarDineroInvertido(precio);
                         // Se actualiza el número de casas.
                         actualCasilla.setPiscina(tablero.generarIDpiscina());
                         // Una vez se añade la piscina, se recalcula el alquiler.
@@ -873,6 +879,7 @@ public class Menu {
                     if (actual.getFortuna() >= precio) {
                         // Se le resta el valor de la casa en esa casilla, tantas veces como casas compre.
                         actual.sumarFortuna(-precio);
+                        actual.sumarDineroInvertido(precio);
                         // Se actualiza el número de casas.
                         actualCasilla.setPistadeporte(tablero.generarIDpistadeporte());
                         // Una vez se añade la pista de deporte, se recalcula el alquiler.
@@ -1086,7 +1093,7 @@ public class Menu {
      * propiedad le pertenece y no está ya hipotecada; si es un solar con edificios,
      * antes hay que venderlos.
      *
-     * @param nombrecasilla Nombre de la propiedad que se quiere hipotecar.
+     * @param nombrecasilla Nombre de la propiedad que se quiere listar.
      * @param jugadoractual Jugador que tiene el turno.
      */
     private void hipotecarPropiedad(String nombrecasilla, Jugador jugadoractual){
@@ -1187,7 +1194,8 @@ public class Menu {
 
                 case 3:
                     System.out.println(CARTAS_SUERTE[2]);
-                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(1000000);
+                    j.sumarFortuna(1000000);
+                    j.sumarPremiosInversionesOBote(1000000);
                     break;
 
                 case 4:
@@ -1199,6 +1207,7 @@ public class Menu {
 
                     // Solo si ha podido pagar, cada jugador recibe su parte
                     if (solvente) {
+                        j.sumarPagoTasasEImpuestos(250000 * (numJugadores - 1));
                         for (int i = 0; i < numJugadores; i++) {
                             Jugador jey = jugadores.get(i);
                             if (jey != j) {
@@ -1220,6 +1229,9 @@ public class Menu {
                 case 6:
                     System.out.println(CARTAS_SUERTE[5]);
                     solvente = pagar(j, 150000);
+                    if (solvente) {
+                        j.sumarPagoTasasEImpuestos(150000);
+                    }
                     break;
 
                 case 7:
@@ -1235,6 +1247,8 @@ public class Menu {
                         solvente = pagar(j, 250000);
                         if (solvente) {
                             duenho.sumarFortuna(250000);
+                            j.sumarPagoDeAlquileres(250000);
+                            duenho.sumarCobroDeAlquileres(250000);
                             System.out.println("Por la carta, " + j.getNombre() + " paga otros 250000€ a "
                                     + duenho.getNombre() + " (el doble del alquiler).");
                         }
@@ -1254,6 +1268,9 @@ public class Menu {
                 case 1:
                     System.out.println(CARTAS_COMUNIDAD[0]);
                     solvente = pagar(j, 500000);
+                    if (solvente) {
+                        j.sumarPagoTasasEImpuestos(500000);
+                    }
                     break;
 
                 case 2:
@@ -1268,7 +1285,8 @@ public class Menu {
 
                 case 4:
                     System.out.println(CARTAS_COMUNIDAD[3]);
-                    Objects.requireNonNull(getJugadorActual()).sumarFortuna(500000);
+                    j.sumarFortuna(500000);
+                    j.sumarPremiosInversionesOBote(500000);
                     break;
 
                 case 5:
@@ -1703,9 +1721,9 @@ public class Menu {
         for (Grupo g : this.tablero.getGrupos().values()) {
             if (g.getRentabilidadGrupo() > maxGrupo) {
                 maxGrupo = g.getRentabilidadGrupo();
-                txtGrupos = g.getColorGrupo();
+                txtGrupos = g.getNombreGrupo();
             } else if (g.getRentabilidadGrupo() == maxGrupo && maxGrupo > 0) {
-                txtGrupos += ", " + g.getColorGrupo();
+                txtGrupos += ", " + g.getNombreGrupo();
             }
         }
 

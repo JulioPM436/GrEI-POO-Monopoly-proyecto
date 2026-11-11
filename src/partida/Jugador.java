@@ -58,6 +58,9 @@ public class Jugador {
     public void incrementarVecesEnLaCarcel() {
         this.vecesEnLaCarcel++;
     }
+    public void incrementarVueltas() {
+        this.vueltas++;
+    }
     /**
      * Crea la banca. No tiene avatar, empieza con {@code Valor.FORTUNA_BANCA} de
      * fortuna y con la lista de propiedades vacía.
@@ -155,6 +158,7 @@ public class Jugador {
         }
         this.enCarcel = true;
         this.tiradasCarcel = 0;
+        this.vecesEnLaCarcel++;
     }
 
     // Getters y setters:
@@ -187,7 +191,7 @@ public class Jugador {
     }
 
     public int getVueltas(){
-        return tiradasCarcel;
+        return vueltas;
     }
 
     public void setTiradasCarcel(int tiradasCarcel) {
