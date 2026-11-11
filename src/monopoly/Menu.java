@@ -720,6 +720,15 @@ public class Menu {
         int hayPistadeporte = actualCasilla.getPistadeporte();
         float precio;
 
+        // No se puede edificar si alguna propiedad del grupo está hipotecada
+        for (Casilla c : actualGrupo.getMiembros()) {
+            if (c.isHipotecada()) {
+                System.out.println(Valor.YELLOW + "No se puede edificar: " + c.getNombre()
+                        + " está hipotecada." + Valor.RESET);
+                return;
+            }
+        }
+
         // Si es dueño de todas las casillas del grupo, puede edificar.
         if (actualGrupo.esDuenhoGrupo(actual)) {
             // Si es dueño del grupo, puede empezar a construir.

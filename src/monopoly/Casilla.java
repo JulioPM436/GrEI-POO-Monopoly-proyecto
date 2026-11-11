@@ -132,7 +132,7 @@ public class Casilla {
                     return true;
                 }
                 alquiler = impuesto;
-                if (grupo.esDuenhoGrupo(duenho)) {
+                if (grupo.esDuenhoGrupo(duenho) && this.getNumEdificios() == 0) {
                     alquiler = impuesto * 2;
                 }
                 // ¿Puede pagar?
