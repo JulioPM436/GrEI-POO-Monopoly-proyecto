@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import partida.*;
+
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.StringJoiner;
@@ -144,7 +146,11 @@ public class Menu {
                 break;
 
             case "deshipotecar":
+<<<<<<< HEAD
                 if (partes.length > 1) {
+=======
+                if (partes.length == 2) {
+>>>>>>> 5d82307d7b6d7caab88fd226d242bc27789c7583
                     deshipotecar(partes[1], getJugadorActual());
                 } else {
                     System.out.println(Valor.ERROR_USO + "deshipotecar <casilla>");
@@ -195,6 +201,17 @@ public class Menu {
                     salirCarcel();
                 }
                 break;
+
+            case "estadisticas":
+                if (partes.length == 1) {
+                    mostrarEstadisticasJuego();
+                } else if (partes.length == 2) {
+                    mostrarEstadisticas(partes[1]);
+                } else {
+                    System.out.println(Valor.ERROR_USO + "estadisticas [<jugador>]");
+                }
+                break;
+
             case "ver":
                 System.out.println(tablero);
                 break;
@@ -558,6 +575,7 @@ public class Menu {
         if (casilla.getNombre().equals("IrCarcel")) {
             System.out.println("Has caído en IrCarcel: el avatar se coloca en la casilla de Cárcel.");
             actual.encarcelar(tablero.getPosiciones());
+            actual.incrementarVecesEnLaCarcel();
         } else if (casilla.getTipo().equals("Suerte") || casilla.getTipo().equals("Comunidad")) {
             sacarCarta(actual, casilla.getTipo());
         }
@@ -656,9 +674,15 @@ public class Menu {
 
         jugadorActual.sumarFortuna(-sumaHipoteca);
         casilla.setHipotecada(false);
-        String grupo = casilla.getGrupo().getColorGrupo();
-        System.out.println(jugadorActual.getNombre() + "paga" + sumaHipoteca + "para deshipotecar " +casilla.getNombre() +
-                ". Ahora puede cobrar alquileres y edificar en el grupo " + grupo);
+        if (casilla.getGrupo() != null) {
+            String grupo = casilla.getGrupo().getColorGrupo();
+            System.out.println(jugadorActual.getNombre() + " paga " + sumaHipoteca + "€ para deshipotecar " + casilla.getNombre() +
+                    ". Ahora puede cobrar alquileres y edificar en el grupo " + grupo + ".");
+        } else {
+            System.out.println(jugadorActual.getNombre() + " paga " + sumaHipoteca + "€ para deshipotecar " + casilla.getNombre() +
+                    ". Ahora puede cobrar alquileres de esta casilla.");
+        }
+
     }
 
     /**
@@ -1076,18 +1100,15 @@ public class Menu {
             System.out.println(Valor.YELLOW + "No existe dicha casilla." + Valor.RESET);
             return;
         }
-
         if(casilla.getDuenho() != jugadoractual){
-            System.out.println(Valor.YELLOW + jugadoractual.getNombre() + "no puede hipotecar" + casilla.getNombre() +
+            System.out.println(Valor.YELLOW + jugadoractual.getNombre() + " no puede hipotecar " + casilla.getNombre() +
                     "Esta casilla no pertenece al jugador actual." + Valor.RESET);
             return;
         }
-
         if(casilla.isHipotecada()){
             System.out.println(Valor.YELLOW + "Esta casilla ya está hipotecada." + Valor.RESET);
             return;
         }
-
         if (casilla.getTipo().equalsIgnoreCase("Solar") && casilla.tieneEdificios()) {
             System.out.println(Valor.YELLOW + jugadoractual.getNombre() + " no puede hipotecar " + casilla.getNombre() +
                     ". Se deben vender todos los edificios antes." + Valor.RESET);
@@ -1098,13 +1119,25 @@ public class Menu {
         float sumaHipoteca = casilla.getValorHipoteca();
         jugadoractual.sumarFortuna(sumaHipoteca);
 
-        String grupo = casilla.getGrupo().getColorGrupo();
-
-        System.out.println("El jugador" + jugadoractual.getNombre() + "recibe" + sumaHipoteca + "por hipotecar" + casilla.getNombre()
-                + "No puede edificar ni cobrar alquilerers en el grupo" + grupo);
+        if (casilla.getGrupo() != null) {
+            String grupo = casilla.getGrupo().getColorGrupo();
+            System.out.println(jugadoractual.getNombre() + " recibe " + sumaHipoteca + "€ por la hipoteca de " + casilla.getNombre() +
+                    ". No puede recibir alquileres ni edificar en el grupo " + grupo + ".");
+        } else {
+            System.out.println(jugadoractual.getNombre() + " recibe " + sumaHipoteca + "€ por la hipoteca de " + casilla.getNombre() +
+                    ". No puede recibir alquileres de esta casilla.");
+        }
 
     }
 
+    private void mostrarEstadisticas(String nombreJugador) {
+        Jugador j = buscarjugador(nombreJugador);
+        if (j == null) {
+            System.out.println("No existe ningún jugador con el nombre: " + nombreJugador);
+            return;
+        }
+        System.out.println(j.obtenerEstadisticas());
+    }
     /**
      * Intenta cobrar una cantidad al jugador. Si no tiene dinero suficiente, se lo
      * indica y no le cobra nada.
@@ -1114,6 +1147,7 @@ public class Menu {
      * @return {@code true} si se ha hecho el pago; {@code false} si no tenía dinero
      *         suficiente.
      */
+
     private boolean pagar(Jugador actual, float cantidad) {
         if (actual.getFortuna() < cantidad) {
             System.out.println(Valor.YELLOW + actual.getNombre() + " no puede pagar " + (long) cantidad
@@ -1638,8 +1672,79 @@ public class Menu {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////////////////////// BÚSQUEDAS AUXILIARES //////////////////////////////////////////////////
+
+    private void mostrarEstadisticasJuego() {
+        String txtRentables = "";
+        float maxRentable = -1;
+
+        String txtFrecuentadas = "";
+        int maxFrecuentada = -1;
+
+        // 1 y 2. Casillas más rentables y más frecuentadas
+        for (ArrayList<Casilla> paso : this.tablero.getPosiciones()) {
+            for (Casilla cas : paso) {
+                // Rentabilidad
+                if (cas.getDineroGenerado() > maxRentable) {
+                    maxRentable = cas.getDineroGenerado();
+                    txtRentables = cas.getNombre();
+                } else if (cas.getDineroGenerado() == maxRentable && maxRentable > 0) {
+                    txtRentables += ", " + cas.getNombre();
+                }
+
+                // Frecuencia
+                if (cas.getVecesVisitada() > maxFrecuentada) {
+                    maxFrecuentada = cas.getVecesVisitada();
+                    txtFrecuentadas = cas.getNombre();
+                } else if (cas.getVecesVisitada() == maxFrecuentada && maxFrecuentada > 0) {
+                    txtFrecuentadas += ", " + cas.getNombre();
+                }
+            }
+        }
+
+        // 3. Grupo más rentable (con empates)
+        String txtGrupos = "";
+        float maxGrupo = -1;
+        for (Grupo g : this.tablero.getGrupos().values()) {
+            if (g.getRentabilidadGrupo() > maxGrupo) {
+                maxGrupo = g.getRentabilidadGrupo();
+                txtGrupos = g.getColorGrupo();
+            } else if (g.getRentabilidadGrupo() == maxGrupo && maxGrupo > 0) {
+                txtGrupos += ", " + g.getColorGrupo();
+            }
+        }
+
+        // 4. Jugador con más vueltas (con empates)
+        String txtVueltas = "";
+        int maxVueltas = -1;
+        for (Jugador j : this.jugadores) {
+            if (j.getVueltas() > maxVueltas) {
+                maxVueltas = j.getVueltas();
+                txtVueltas = j.getNombre();
+            } else if (j.getVueltas() == maxVueltas) {
+                txtVueltas += ", " + j.getNombre();
+            }
+        }
+
+        // 5. Jugador en cabeza (uno solo)
+        Jugador jugador_cabeza = null;
+        for (Jugador j : this.jugadores) {
+            if (jugador_cabeza == null || j.getFortunaTotal() > jugador_cabeza.getFortunaTotal()) {
+                jugador_cabeza = j;
+            }
+        }
+
+        // Formato de salida
+        System.out.println("casilla mas rentable: " + txtRentables);
+        System.out.println("grupo mas rentable: " + txtGrupos);
+        System.out.println("casilla mas frecuentada: " + txtFrecuentadas);
+        System.out.println("jugador mas vueltas: " + txtVueltas);
+        System.out.println("jugador en cabeza: " + jugador_cabeza.getNombre());
+    }
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////// BÚSQUEDAS AUXILIARES //////////////////////////////////////////////////
 
     /**
      * Busca un avatar de la partida a partir de su identificador.

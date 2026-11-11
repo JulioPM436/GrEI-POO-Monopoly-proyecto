@@ -137,4 +137,14 @@ class Grupo {
     public int getNumCasillas() {
         return numCasillas;
     }
+
+    public float getRentabilidadGrupo() {
+        float total = 0.0f;
+        for (Casilla c : this.miembros) {
+            if (c != null) {
+                total += c.getDineroGenerado();
+            }
+        }
+        return total;
+    }
 }

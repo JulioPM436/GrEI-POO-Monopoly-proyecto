@@ -71,6 +71,7 @@ public class Avatar {
         if ((lugar.getPosicion() - 1 + valorTirada) / 40 >= 1) {
             System.out.println(this.jugador.getNombre() + " pasa por la Salida y cobra " + (long) Valor.SUMA_VUELTA + "€.");
             this.jugador.sumarFortuna(Valor.SUMA_VUELTA);
+            this.jugador.sumarPasarPorCasillaDeSalida(Valor.SUMA_VUELTA);
         }
         int posicion = (lugar.getPosicion() - 1 + valorTirada) % 40;
         int lado = posicion / 10;

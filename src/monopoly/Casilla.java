@@ -4,6 +4,9 @@ import partida.*;
 import java.util.ArrayList;
 import java.util.StringJoiner;
 
+import static monopoly.Valor.SOLAR_PRECIOS;
+import static monopoly.Valor.SOLAR_PRECIOS_CASA;
+
 /**
  * Casilla del tablero del Monopoly.
  * Guarda su nombre, tipo, posición y dueño y, según el tipo, su valor, alquiler,
@@ -22,6 +25,8 @@ public class Casilla {
     private ArrayList<Avatar> avatares = new ArrayList<>(); //Avatares que están situados en la casilla.
     private ArrayList<String> casas, hotel, piscina, pistadeporte; // ArrayList con los IDs de los edificios.
     private boolean hipotecada;
+    private float dineroGenerado = 0.0f;
+    private int vecesVisitada = 0;
 
     /**
      * Crea una casilla sin datos.
@@ -123,7 +128,7 @@ public class Casilla {
         switch (tipo) {
             case "Solar":
                 // Sin dueño (es de la banca) o es suya: no paga nada; o está hipotecada
-                if (duenho == banca || duenho == actual || this.isHipotecada() == true) {
+                if (duenho == banca || duenho == actual || this.isHipotecada()) {
                     return true;
                 }
                 alquiler = impuesto;
@@ -134,12 +139,15 @@ public class Casilla {
                 if (actual.getFortuna() < alquiler) {
                     System.out.println(Valor.YELLOW + actual.getNombre() + " no puede pagar " + (long) alquiler
                             + "€. Debe hipotecar alguna propiedad o declararse en bancarrota." + Valor.RESET);
+
                     return false;
                 }
                 //Paga
                 actual.sumarFortuna(-alquiler);
+                actual.sumarPagoDeAlquileres(alquiler);//Estadística
                 actual.sumarGastos(alquiler);
                 duenho.sumarFortuna(alquiler);
+                duenho.sumarCobroDeAlquileres(alquiler);
                 System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a "
                         + duenho.getNombre() + ".");
                 return true;
@@ -181,6 +189,7 @@ public class Casilla {
                     return false;
                 }
                 actual.sumarFortuna(-impuesto);
+                actual.sumarPagoTasasEImpuestos(impuesto);
                 actual.sumarGastos(impuesto);
                 parking.sumarValor(impuesto);
                 System.out.println("El jugador paga " + (long) impuesto + "€ que se depositan en el Parking.");
@@ -188,6 +197,7 @@ public class Casilla {
             case "especial":
                 if (nombre.equals("Parking")) {
                     actual.sumarFortuna(valor);
+                    actual.sumarPremiosInversionesOBote(valor);
                     System.out.println("El jugador " + actual.getNombre() + " recibe " + (long) valor + "€.");
                     valor = 0;
                 }
@@ -302,7 +312,7 @@ public class Casilla {
         info.append("  grupo: ").append(this.grupo.getNombreGrupo()).append("\n");
         info.append("  alquiler: ").append(Valor.SOLAR_ALQUILERES[this.posicion]).append("€\n");
         info.append("  valor hotel: ").append(Valor.SOLAR_PRECIOS_HOTEL[this.posicion]).append("€\n");
-        info.append("  valor casa: ").append(Valor.SOLAR_PRECIOS_CASA[this.posicion]).append("€\n");
+        info.append("  valor casa: ").append(SOLAR_PRECIOS_CASA[this.posicion]).append("€\n");
         info.append("  valor piscina: ").append(Valor.SOLAR_PRECIOS_PISCINA[this.posicion]).append("€\n");
         info.append("  valor pista de deporte: ").append(Valor.SOLAR_PRECIOS_PISTADEPORTE[this.posicion]).append("€\n");
         info.append("  alquiler casa: ").append(Valor.SOLAR_ALQUILERES_CASA[this.posicion]).append("€\n");
@@ -432,7 +442,7 @@ public class Casilla {
     public void venderCasas(int i){
         if (i < 1)
             throw new IllegalArgumentException(Valor.RED + "venderCasas: i debe ser al menos 1 y es " + i + Valor.RESET);
-        for (int j = 0; j < i && !this.casas.isEmpty(); j++)
+        for (int j = 0; j < i || this.casas.isEmpty(); j++)
             this.casas.remove(0);
     }
 
@@ -529,11 +539,36 @@ public class Casilla {
         avatares.remove(av);
     }
 
+    public void sumarDineroGenerado(float cantidad) {
+        this.dineroGenerado += cantidad;
+    }
+
+    public float getDineroGenerado() {
+        return this.dineroGenerado;
+    }
+
+    public void incrementarVecesVisitada() {
+        this.vecesVisitada++;
+    }
+
+    public int getVecesVisitada() {
+        return this.vecesVisitada;
+    }
+
+    public float getValorEdificios(){
+        float valor_total = 0;
+        valor_total += this.getCasas()*Valor.SOLAR_PRECIOS_CASA[this.getPosicion()];
+        valor_total += this.getHotel()*Valor.SOLAR_PRECIOS_HOTEL[this.getPosicion()];
+        valor_total += this.getPiscina()*Valor.SOLAR_PRECIOS_PISCINA[this.getPosicion()];
+        valor_total += this.getPistadeporte()*Valor.SOLAR_PRECIOS_PISTADEPORTE[this.getPosicion()];
+        return valor_total;
+    }
+
     public void actualizarAlquiler() {
         if (getNumEdificios() > 0)
             this.impuesto = getCasas()*Valor.SOLAR_ALQUILERES_CASA[this.posicion]
-                +getHotel()*Valor.SOLAR_ALQUILERES_HOTEL[this.posicion]+getPiscina()*Valor.SOLAR_ALQUILERES_PISCINA[this.posicion]
-                +getPistadeporte()*Valor.SOLAR_ALQUILERES_PISTADEPORTE[this.posicion];
+                    +getHotel()*Valor.SOLAR_ALQUILERES_HOTEL[this.posicion]+getPiscina()*Valor.SOLAR_ALQUILERES_PISCINA[this.posicion]
+                    +getPistadeporte()*Valor.SOLAR_ALQUILERES_PISTADEPORTE[this.posicion];
         else
             this.impuesto = Valor.SOLAR_ALQUILERES[this.posicion];
     }
