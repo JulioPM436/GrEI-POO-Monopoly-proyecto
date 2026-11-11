@@ -22,11 +22,15 @@ public class Casilla {
     private Grupo grupo; //Grupo al que pertenece la casilla (si es solar).
     private float impuesto; //Cantidad a pagar por caer en la casilla: el alquiler en solares/servicios/transportes o impuestos.
     private float hipoteca; //Valor otorgado por hipotecar una casilla.
-    private ArrayList<Avatar> avatares = new ArrayList<>(); //Avatares que están situados en la casilla.
-    private ArrayList<String> casas, hotel, piscina, pistadeporte; // ArrayList con los IDs de los edificios.
+    private ArrayList<Avatar> avatares = new ArrayList<>(); //Avatares que están situados en la casilla
     private boolean hipotecada;
     private float dineroGenerado = 0.0f;
     private int vecesVisitada = 0;
+    // Listas con los IDs de los edificios (se crean vacías en todas las casillas)
+    private ArrayList<String> casas = new ArrayList<>();
+    private ArrayList<String> hotel = new ArrayList<>();
+    private ArrayList<String> piscina = new ArrayList<>();
+    private ArrayList<String> pistadeporte = new ArrayList<>();
 
     /**
      * Crea una casilla sin datos.
@@ -69,10 +73,6 @@ public class Casilla {
         this.valor = valor;
         this.duenho = duenho;
         this.impuesto = impuesto;
-        casas = new ArrayList<>();
-        hotel = new ArrayList<>();
-        piscina = new ArrayList<>();
-        pistadeporte = new ArrayList<>();
     }
 
     /**
