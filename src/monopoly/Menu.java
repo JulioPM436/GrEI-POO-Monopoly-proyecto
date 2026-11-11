@@ -146,11 +146,7 @@ public class Menu {
                 break;
 
             case "deshipotecar":
-<<<<<<< HEAD
-                if (partes.length > 1) {
-=======
                 if (partes.length == 2) {
->>>>>>> 5d82307d7b6d7caab88fd226d242bc27789c7583
                     deshipotecar(partes[1], getJugadorActual());
                 } else {
                     System.out.println(Valor.ERROR_USO + "deshipotecar <casilla>");
