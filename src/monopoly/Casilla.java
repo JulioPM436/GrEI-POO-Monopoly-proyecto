@@ -13,24 +13,16 @@ import static monopoly.Valor.SOLAR_PRECIOS_CASA;
  * hipoteca, grupo y edificios, además de los avatares que hay en ella. La casilla
  * del Parking usa su valor como bote.
  */
-public class Casilla {
+public abstract class Casilla {
     private String nombre; //Nombre de la casilla
     private String tipo; //Tipo de casilla (Solar, Especial, Transporte, Servicios, Comunidad, Suerte y Impuesto).
-    private float valor; //Valor de esa casilla (será valor de compra, en la casilla parking se usará como el bote).
     private int posicion; //Posición que ocupa la casilla en el tablero (entero entre 1 y 40).
-    private Jugador duenho; //Dueño de la casilla (por defecto sería la banca).
     private Grupo grupo; //Grupo al que pertenece la casilla (si es solar).
-    private float impuesto; //Cantidad a pagar por caer en la casilla: el alquiler en solares/servicios/transportes o impuestos.
-    private float hipoteca; //Valor otorgado por hipotecar una casilla.
+
     private ArrayList<Avatar> avatares = new ArrayList<>(); //Avatares que están situados en la casilla
-    private boolean hipotecada;
     private float dineroGenerado = 0.0f;
     private int vecesVisitada = 0;
-    // Listas con los IDs de los edificios (se crean vacías en todas las casillas)
-    private ArrayList<String> casas = new ArrayList<>();
-    private ArrayList<String> hotel = new ArrayList<>();
-    private ArrayList<String> piscina = new ArrayList<>();
-    private ArrayList<String> pistadeporte = new ArrayList<>();
+
 
     /**
      * Crea una casilla sin datos.
@@ -55,25 +47,7 @@ public class Casilla {
         this.duenho = duenho;
     }
 
-    /**
-     * Crea una casilla que se puede comprar guardando además su alquiler.
-     * Se usa para los solares.
-     *
-     * @param nombre   Nombre de la casilla.
-     * @param tipo     Tipo de la casilla (Solar).
-     * @param posicion Posición en el tablero, entre 1 y 40.
-     * @param valor    Precio de compra.
-     * @param duenho   Dueño inicial (la banca).
-     * @param impuesto Alquiler que paga quien cae en la casilla.
-     */
-    public Casilla(String nombre, String tipo, int posicion, float valor, Jugador duenho, float impuesto) {
-        this.nombre = nombre;
-        this.tipo = tipo;
-        this.posicion = posicion;
-        this.valor = valor;
-        this.duenho = duenho;
-        this.impuesto = impuesto;
-    }
+
 
     /**
      * Crea una casilla de impuesto. Su tipo queda fijado como Impuesto.
@@ -126,32 +100,8 @@ public class Casilla {
     public boolean evaluarCasilla(Jugador actual, Jugador banca, int tirada, Casilla parking) {
         float alquiler;
         switch (tipo) {
-            case "Solar":
-                // Sin dueño (es de la banca) o es suya: no paga nada; o está hipotecada
-                if (duenho == banca || duenho == actual || this.isHipotecada()) {
-                    return true;
-                }
-                alquiler = impuesto;
-                if (grupo.esDuenhoGrupo(duenho) && this.getNumEdificios() == 0) {
-                    alquiler = impuesto * 2;
-                }
-                // ¿Puede pagar?
-                if (actual.getFortuna() < alquiler) {
-                    System.out.println(Valor.YELLOW + actual.getNombre() + " no puede pagar " + (long) alquiler
-                            + "€. Debe hipotecar alguna propiedad o declararse en bancarrota." + Valor.RESET);
 
-                    return false;
-                }
-                //Paga
-                actual.sumarFortuna(-alquiler);
-                actual.sumarPagoDeAlquileres(alquiler);//Estadística
-                actual.sumarGastos(alquiler);
-                duenho.sumarFortuna(alquiler);
-                duenho.sumarCobroDeAlquileres(alquiler);
-                this.sumarDineroGenerado(alquiler);
-                System.out.println("Se han pagado " + (long) alquiler + "€ de alquiler a "
-                        + duenho.getNombre() + ".");
-                return true;
+
             case "Transporte":
                 if (duenho == banca || duenho == actual || this.isHipotecada() == true) {
                     return true;
@@ -215,39 +165,7 @@ public class Casilla {
         }
     }
 
-    /**
-     * Vende la casilla al jugador que la solicita: le cobra su valor, la casilla
-     * pasa a ser suya y se añade a sus propiedades. La casilla tiene que pertenecer
-     * todavía a la banca.
-     *
-     * @param solicitante Jugador que compra la casilla.
-     * @param banca       La banca, dueña de las casillas que aún no se han comprado.
-     */
-    public void comprarCasilla (Jugador solicitante, Jugador banca){
-        if (this.getDuenho() != banca) {
-            System.out.println(Valor.YELLOW + "No puedes comprar esta casilla porque es de otro jugador" + Valor.RESET);
-            return;
-        } else if (solicitante.getFortuna()<this.getValor()){
-            System.out.println();
-            System.out.println(Valor.YELLOW + "No puedes comprar esta casilla porque no tienes saldo suficiente. |SALDO ACTUAL:"
-                    + solicitante.getFortuna() + Valor.RESET);
-            return;
-        }
-        if (!this.tipo.equals("Solar") && !this.tipo.equals("Servicios") && !this.tipo.equals("Transporte")) {
-            System.out.println(Valor.YELLOW + "No puedes comprar este tipo de casilla." + Valor.RESET);
-            return;
-        }
 
-        solicitante.sumarFortuna(-this.valor);
-        solicitante.sumarGastos(this.valor);
-        solicitante.sumarDineroInvertido(this.valor);
-        banca.sumarFortuna(this.valor);
-
-        this.duenho = solicitante;
-        solicitante.anhadirPropiedad(this);
-
-        System.out.println("El jugador " + solicitante.getNombre() + " compra la casilla " + this.nombre + " por " + this.valor + "€.");
-    }
 
     /**
      * Suma una cantidad al valor de la casilla. Sirve para acumular el bote en el
@@ -423,13 +341,7 @@ public class Casilla {
         this.impuesto = impuesto;
     }
 
-    public float getHipoteca() {
-        return hipoteca;
-    }
 
-    public void setHipoteca(float hipoteca) {
-        this.hipoteca = hipoteca;
-    }
 
     public ArrayList<Avatar> getAvatares() {
         return avatares;
@@ -439,106 +351,7 @@ public class Casilla {
         this.avatares = avatares;
     }
 
-    public void setCasa(String ID) {
-        this.casas.add(ID);
-    }
 
-    public int getCasas() {
-        
-        return this.casas.size();
-    }
-
-    public void venderCasas(int i){
-        if (i < 1)
-            throw new IllegalArgumentException(Valor.RED + "venderCasas: i debe ser al menos 1 y es " + i + Valor.RESET);
-        for (int j = 0; j < i && !this.casas.isEmpty(); j++)
-            this.casas.remove(0);
-    }
-
-    public String getIDCasa(int i) {
-        if (!this.casas.isEmpty())
-            return this.casas.get(i);
-        else
-            return null;
-    }
-
-    public void setHotel(String ID) {
-        this.casas.clear();  // Se cambian las 4 casas por el hotel.
-        this.hotel.add(ID);
-    }
-
-    public void venderHotel(){
-        if (!this.hotel.isEmpty())
-            this.hotel.remove(0);
-    }
-
-    public int getHotel() {
-        return this.hotel.size();
-    }
-    public String getIDHotel() {
-        if (!this.hotel.isEmpty())
-            return this.hotel.get(0);
-        else
-            return null;
-    }
-
-    public void setPiscina(String ID) {
-        this.piscina.add(ID);
-    }
-
-    public void venderPiscina(){
-        if (!this.piscina.isEmpty())
-            this.piscina.remove(0);
-    }
-
-    public int getPiscina() {
-        return this.piscina.size();
-    }
-
-    public String getIDpiscina() {
-        if (!this.piscina.isEmpty())
-            return this.piscina.get(0);
-        else
-            return null;
-    }
-
-    public void setPistadeporte(String ID) {
-        this.pistadeporte.add(ID);
-    }
-
-    public void venderPistadeporte(){
-        if (!this.pistadeporte.isEmpty())
-            this.pistadeporte.remove(0);
-    }
-
-    public int getPistadeporte() {
-        return this.pistadeporte.size();
-    }
-
-    public String getIDpistadeporte() {
-        return this.pistadeporte.get(0);
-    }
-
-    public boolean isHipotecada() {
-        return this.hipotecada;
-    }
-
-    public void setHipotecada(boolean hipotecada) {
-        this.hipotecada = hipotecada;
-    }
-
-    public int getNumEdificios() {
-        return getCasas() + getHotel() + getPiscina() + getPistadeporte();
-    }
-
-    // Valor que recibe el jugador por hipotecarla
-    public float getValorHipoteca() {
-        return this.valor / 2.0f;
-    }
-
-    public boolean tieneEdificios() {
-        return getNumEdificios() > 0;
-    }
 
     public void anhadirAvatar(Avatar av) {
         avatares.add(av);
@@ -564,21 +377,6 @@ public class Casilla {
         return this.vecesVisitada;
     }
 
-    public float getValorEdificios(){
-        float valor_total = 0;
-        valor_total += this.getCasas()*Valor.SOLAR_PRECIOS_CASA[this.getPosicion()];
-        valor_total += this.getHotel()*Valor.SOLAR_PRECIOS_HOTEL[this.getPosicion()];
-        valor_total += this.getPiscina()*Valor.SOLAR_PRECIOS_PISCINA[this.getPosicion()];
-        valor_total += this.getPistadeporte()*Valor.SOLAR_PRECIOS_PISTADEPORTE[this.getPosicion()];
-        return valor_total;
-    }
 
-    public void actualizarAlquiler() {
-        if (getNumEdificios() > 0)
-            this.impuesto = getCasas()*Valor.SOLAR_ALQUILERES_CASA[this.posicion]
-                    +getHotel()*Valor.SOLAR_ALQUILERES_HOTEL[this.posicion]+getPiscina()*Valor.SOLAR_ALQUILERES_PISCINA[this.posicion]
-                    +getPistadeporte()*Valor.SOLAR_ALQUILERES_PISTADEPORTE[this.posicion];
-        else
-            this.impuesto = Valor.SOLAR_ALQUILERES[this.posicion];
-    }
-}
+
+

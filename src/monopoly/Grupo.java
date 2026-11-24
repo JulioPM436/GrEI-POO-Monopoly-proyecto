@@ -8,10 +8,10 @@ import java.util.ArrayList;
  * Guarda sus casillas y su color, y permite saber si un jugador posee el grupo
  * completo, que es el requisito para edificar en él.
  */
-class Grupo {
+public class Grupo {
 
     //Atributos:
-    private ArrayList<Casilla> miembros; //Casillas miembros del grupo.
+    private ArrayList<Propiedad> miembros; //Casillas miembros del grupo.
     private String colorGrupo; //Color del grupo
     private int numCasillas; //Número de casillas del grupo.ç
 
@@ -31,7 +31,7 @@ class Grupo {
      * @param cas2       Segunda casilla del grupo.
      * @param colorGrupo Color del grupo.
      */
-    public Grupo(Casilla cas1, Casilla cas2, String colorGrupo) {
+    public Grupo(Propiedad cas1, Propiedad cas2, String colorGrupo) {
         this.miembros = new ArrayList<>();
         this.miembros.add(cas1);
         this.miembros.add(cas2);
@@ -49,7 +49,7 @@ class Grupo {
      * @param cas3       Tercera casilla del grupo.
      * @param colorGrupo Color del grupo.
      */
-    public Grupo(Casilla cas1, Casilla cas2, Casilla cas3, String colorGrupo) {
+    public Grupo(Propiedad cas1, Propiedad cas2, Propiedad cas3, String colorGrupo) {
         this.miembros = new ArrayList<>();
         this.miembros.add(cas1);
         this.miembros.add(cas2);
@@ -67,7 +67,7 @@ class Grupo {
      *
      * @param miembro Casilla que se añade al grupo.
      */
-    public void anhadirCasilla(Casilla miembro) {
+    public void anhadirCasilla(Propiedad miembro) {
         if (this.miembros == null) {
             this.miembros = new ArrayList<>();
         }
@@ -84,12 +84,12 @@ class Grupo {
      *         {@code false} en otro caso.
      */
     public boolean esDuenhoGrupo(Jugador jugador) {
-        for (Casilla c : miembros) {
-            if (c.getDuenho() != jugador) {
+        for (Propiedad p : miembros) {
+            if (!p.perteneceAJugador(jugador)) {
                 return false;
             }
         }
-        return true;
+        return !miembros.isEmpty();
     }
 
     /**
@@ -130,7 +130,7 @@ class Grupo {
         this.colorGrupo = colorGrupo;
     }
 
-    public ArrayList<Casilla> getMiembros() {
+    public ArrayList<Propiedad> getMiembros() {
         return miembros;
     }
 
@@ -140,7 +140,7 @@ class Grupo {
 
     public float getRentabilidadGrupo() {
         float total = 0.0f;
-        for (Casilla c : this.miembros) {
+        for (Propiedad c : this.miembros) {
             if (c != null) {
                 total += c.getDineroGenerado();
             }
